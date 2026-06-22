@@ -1,8 +1,38 @@
 .filters {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 1rem;
   flex-wrap: wrap;
+}
+
+.filter-selects {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-dropdown {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-primary);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  min-width: 200px;
+}
+
+.filter-dropdown option {
+  background: var(--bg-dark);
+  color: var(--text-primary);
 }
 
 .filter-btn {
