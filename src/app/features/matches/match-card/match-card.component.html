@@ -1,0 +1,39 @@
+<div class="card glass-panel" [class.live]="isLive">
+  <div class="card-header">
+    <span class="stage">{{ match.StageName?.[0]?.Description || 'Fase de Grupos' }}</span>
+    <span class="date">{{ match.Date | date:'dd/MM/yyyy HH:mm' }}</span>
+  </div>
+
+  <div class="match-info">
+    <div class="team home">
+      <img *ngIf="match.Home?.IdCountry" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Home.IdCountry" [alt]="homeTeam" class="flag">
+      <div *ngIf="!match.Home?.IdCountry" class="flag placeholder"></div>
+      <span class="team-name">{{ homeTeam }}</span>
+    </div>
+
+    <div class="score-container">
+      <div class="score" *ngIf="match.HomeTeamScore !== null">
+        <span>{{ homeScore }}</span>
+        <span class="divider">-</span>
+        <span>{{ awayScore }}</span>
+      </div>
+      <div class="vs" *ngIf="match.HomeTeamScore === null">VS</div>
+      <div class="live-badge" *ngIf="isLive">
+        {{ uiResources['matchinfo.live'] || 'Ao Vivo' }}
+      </div>
+    </div>
+
+    <div class="team away">
+      <span class="team-name">{{ awayTeam }}</span>
+      <img *ngIf="match.Away?.IdCountry" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Away.IdCountry" [alt]="awayTeam" class="flag">
+      <div *ngIf="!match.Away?.IdCountry" class="flag placeholder"></div>
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <span class="location">
+      <i class="icon-pin"></i> 
+      {{ match.Stadium?.Name?.[0]?.Description || 'Estádio a definir' }}
+    </span>
+  </div>
+</div>

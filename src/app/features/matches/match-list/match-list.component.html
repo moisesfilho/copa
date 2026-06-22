@@ -1,0 +1,16 @@
+<div class="filters">
+  <button class="filter-btn glass-panel" [class.active]="activeFilter() === 'ALL'" (click)="setFilter('ALL')">Todos</button>
+  <button class="filter-btn glass-panel" [class.active]="activeFilter() === 'LIVE'" (click)="setFilter('LIVE')">Ao Vivo</button>
+  <button class="filter-btn glass-panel" [class.active]="activeFilter() === 'UPCOMING'" (click)="setFilter('UPCOMING')">Próximos</button>
+  <button class="filter-btn glass-panel" [class.active]="activeFilter() === 'FINISHED'" (click)="setFilter('FINISHED')">Encerrados</button>
+</div>
+
+<div class="match-grid">
+  <app-match-card *ngFor="let match of filteredMatches()" [match]="match" [uiResources]="uiResources"></app-match-card>
+</div>
+
+<div class="empty-state glass-panel" *ngIf="filteredMatches().length === 0">
+  <div class="empty-icon">⚽</div>
+  <h3>Nenhuma partida encontrada</h3>
+  <p>Tente alterar os filtros de busca para ver mais jogos.</p>
+</div>

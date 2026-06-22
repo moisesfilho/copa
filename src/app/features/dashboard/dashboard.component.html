@@ -1,0 +1,28 @@
+<div class="container">
+  <header class="dashboard-header glass-panel">
+    <div class="logo">
+      <div class="glow-orb"></div>
+      <h1>Copa do Mundo 2026</h1>
+    </div>
+    <div class="stats">
+      <div class="stat-box">
+        <span class="label">Jogos Encontrados</span>
+        <span class="value">{{ matches().length }}</span>
+      </div>
+      <button class="theme-toggle" (click)="toggleTheme()">
+        {{ isDarkMode() ? '☀️ Claro' : '🌙 Escuro' }}
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard-content">
+    <div *ngIf="loading()" class="loader-container">
+      <div class="spinner"></div>
+      <p>Carregando dados da FIFA...</p>
+    </div>
+
+    <ng-container *ngIf="!loading()">
+      <app-match-list [matches]="matches()" [uiResources]="uiResources()"></app-match-list>
+    </ng-container>
+  </main>
+</div>
