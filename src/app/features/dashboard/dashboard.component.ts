@@ -19,13 +19,6 @@ export class DashboardComponent implements OnInit {
   isDarkMode = signal<boolean>(true);
 
   ngOnInit() {
-    // Check initial theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-      this.setTheme(false);
-    } else {
-      this.setTheme(true);
-    }
     this.api.getUIResources().subscribe({
       next: (res) => {
         // Formata os resources num dicionário para fácil acesso
@@ -52,20 +45,5 @@ export class DashboardComponent implements OnInit {
         this.loading.set(false);
       }
     });
-  }
-
-  toggleTheme() {
-    this.setTheme(!this.isDarkMode());
-  }
-
-  private setTheme(isDark: boolean) {
-    this.isDarkMode.set(isDark);
-    if (isDark) {
-      document.body.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.body.setAttribute('data-theme', 'light');
-      localStorage.setItem('theme', 'light');
-    }
   }
 }
