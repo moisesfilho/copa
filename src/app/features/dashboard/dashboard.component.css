@@ -91,3 +91,43 @@ h1 {
   border-color: var(--accent-color);
   box-shadow: var(--accent-glow);
 }
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .logo {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .stats {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 1rem;
+  }
+
+  .stat-box {
+    align-items: center;
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+  }
+
+  .label {
+    font-size: 0.75rem;
+  }
+  
+  .value {
+    font-size: 1.25rem;
+  }
+}
