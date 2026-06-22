@@ -9,6 +9,14 @@
         <span class="label">Jogos Encontrados</span>
         <span class="value">{{ matches().length }}</span>
       </div>
+      <div class="stat-box">
+        <span class="label">Encerrados</span>
+        <span class="value">{{ completedMatches() }}</span>
+      </div>
+      <div class="stat-box">
+        <span class="label">Concluídos (%)</span>
+        <span class="value">{{ completedPercentage() }}</span>
+      </div>
     </div>
   </header>
 

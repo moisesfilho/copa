@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { MatchListComponent } from '../matches/match-list/match-list.component';
@@ -17,6 +17,13 @@ export class DashboardComponent implements OnInit {
   uiResources = signal<any>({});
   loading = signal<boolean>(true);
   isDarkMode = signal<boolean>(true);
+
+  completedMatches = computed(() => this.matches().filter(m => m.MatchStatus === 0).length);
+  completedPercentage = computed(() => {
+    const total = this.matches().length;
+    if (total === 0) return '0%';
+    return ((this.completedMatches() / total) * 100).toFixed(1) + '%';
+  });
 
   ngOnInit() {
     this.api.getUIResources().subscribe({
