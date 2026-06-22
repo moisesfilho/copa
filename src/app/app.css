@@ -152,6 +152,36 @@
   transform: translateY(-2px);
 }
 
+.lang-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 4px;
+}
+
+.lang-toggle button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.4rem 0.75rem;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-toggle button.active {
+  background: var(--accent-color);
+  color: #fff;
+  box-shadow: var(--accent-glow);
+}
+
+.lang-toggle button:hover:not(.active) {
+  color: var(--text-primary);
+}
+
 .content-area {
   flex: 1;
   padding: 2rem;

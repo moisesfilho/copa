@@ -39,11 +39,10 @@
       <!-- Toggles Row -->
       <div style="display: flex; gap: 1rem; justify-content: center; width: 100%;">
         <!-- Language Toggle -->
-        <button class="theme-toggle" (click)="i18n.toggleLanguage()" [attr.aria-label]="'Alternar idioma'">
-          <span class="icon" style="font-weight: bold; font-size: 0.8rem;">
-            {{ i18n.currentLang() | uppercase }}
-          </span>
-        </button>
+        <div class="lang-toggle">
+          <button [class.active]="i18n.currentLang() === 'pt'" (click)="i18n.setLanguage('pt')">PT</button>
+          <button [class.active]="i18n.currentLang() === 'en'" (click)="i18n.setLanguage('en')">EN</button>
+        </div>
 
         <!-- Theme Toggle -->
         <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="'Alternar tema'">
