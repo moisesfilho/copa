@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, OnInit, OnDestroy, SimpleChanges, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { FifaApiService } from '../../../core/services/fifa-api.service';
@@ -11,15 +11,23 @@ import { FifaApiService } from '../../../core/services/fifa-api.service';
   templateUrl: './match-detail-modal.component.html',
   styleUrls: ['./match-detail-modal.component.css']
 })
-export class MatchDetailModalComponent implements OnChanges {
+export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
   private api = inject(FifaApiService);
 
   @Input() match: any = null;
   @Output() close = new EventEmitter<void>();
 
-  teamStats = signal<{ home: any, away: any } | null>(null);
-  powerRanking = signal<any[]>([]);
+  teamStats = signal<{ home: any, away: any, inContest?: number } | null>(null);
+  goals = signal<any[]>([]);
   loadingStats = signal<boolean>(false);
+
+  ngOnInit() {
+    document.body.style.overflow = 'hidden';
+  }
+
+  ngOnDestroy() {
+    document.body.style.overflow = '';
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['match'] && this.match) {
@@ -33,26 +41,59 @@ export class MatchDetailModalComponent implements OnChanges {
   private fetchAdvancedStats(idIfes: string) {
     this.loadingStats.set(true);
     this.teamStats.set(null);
-    this.powerRanking.set([]);
+    this.goals.set([]);
 
     forkJoin({
       teams: this.api.getMatchTeamStats(idIfes),
-      power: this.api.getMatchPowerRanking(idIfes)
+      timeline: this.api.getMatchTimeline(this.match.IdCompetition, this.match.IdSeason, this.match.IdStage, this.match.IdMatch)
     }).subscribe({
       next: (res) => {
         if (res.teams) {
           const homeId = this.match.Home?.IdTeam;
           const awayId = this.match.Away?.IdTeam;
           
+          const homeStats = this.parseTeamStats(res.teams[homeId]);
+          const awayStats = this.parseTeamStats(res.teams[awayId]);
+
+          let inContest = 0;
+          if (homeStats['BallPossession'] !== undefined && awayStats['BallPossession'] !== undefined) {
+            const total = homeStats['BallPossession'] + awayStats['BallPossession'];
+            if (total < 100) {
+              inContest = 100 - total;
+            }
+          }
+
           this.teamStats.set({
-            home: this.parseTeamStats(res.teams[homeId]),
-            away: this.parseTeamStats(res.teams[awayId])
+            home: homeStats,
+            away: awayStats,
+            inContest: inContest
           });
         }
-        if (res.power && res.power.outfieldPlayers) {
-          // Sort by some internal metric or just take top 10
-          this.powerRanking.set(res.power.outfieldPlayers.slice(0, 5));
+        
+        if (res.timeline && res.timeline.Event) {
+          const matchGoals = res.timeline.Event.filter((e: any) => 
+            e.Type === 0 || e.Type === 34 || e.Type === 41 || 
+            (e.TypeLocalized && e.TypeLocalized[0]?.Description?.toLowerCase().includes('gol!'))
+          ).map((e: any) => {
+            let playerName = 'Jogador';
+            if (e.EventDescription && e.EventDescription[0]) {
+               const desc = e.EventDescription[0].Description;
+               const match = desc.match(/^(.*?)\s*\(/);
+               if (match && match[1]) {
+                 playerName = match[1];
+               } else {
+                 playerName = desc; // fallback se não achar o parêntese
+               }
+            }
+            return {
+              ...e,
+              playerName
+            };
+          });
+          
+          this.goals.set(matchGoals);
         }
+        
         this.loadingStats.set(false);
       },
       error: (err) => {
@@ -66,7 +107,13 @@ export class MatchDetailModalComponent implements OnChanges {
     if (!rawStats) return {};
     const parsed: Record<string, any> = {};
     rawStats.forEach(stat => {
-      parsed[stat[0]] = stat[1]; // ['BallPossession', 45, true] -> { BallPossession: 45 }
+      let key = stat[0];
+      let value = stat[1];
+      if (key === 'Possession') {
+        key = 'BallPossession';
+        value = Math.round(value * 100);
+      }
+      parsed[key] = value;
     });
     return parsed;
   }

@@ -1,5 +1,12 @@
 <div class="modal-overlay" (click)="onClose()">
-  <div class="modal-content glass-panel" (click)="$event.stopPropagation()">
+
+  <!-- Loading State -->
+  <div class="stats-loading" *ngIf="loadingStats()" (click)="$event.stopPropagation()">
+    <div class="spinner-small" style="width: 50px; height: 50px; border-width: 4px; margin-bottom: 1rem;"></div>
+    <p style="color: #fff; font-size: 1.2rem; font-weight: 500;">Carregando detalhes da partida...</p>
+  </div>
+
+  <div class="modal-content glass-panel" *ngIf="!loadingStats()" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="onClose()">✕</button>
 
     <div *ngIf="match">
@@ -30,6 +37,21 @@
       </header>
 
       <div class="modal-body">
+        <!-- Goals -->
+        <div class="goals-section" *ngIf="goals()?.length">
+          <h3>Gols da Partida</h3>
+          <div class="goals-list">
+            <div class="goal-item" *ngFor="let goal of goals()" [ngClass]="{'home-goal': goal.IdTeam === match.Home?.IdTeam, 'away-goal': goal.IdTeam === match.Away?.IdTeam}">
+              <div class="goal-time">{{ goal.MatchMinute }}</div>
+              <div class="goal-info">
+                <strong>{{ goal.playerName }}</strong>
+                <span class="goal-type" *ngIf="goal.Type === 34">Pênalti</span>
+                <span class="goal-type" *ngIf="goal.Type === 41">Gol contra</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div class="info-grid">
           <div class="info-card" *ngIf="match.Stadium">
             <div class="icon">🏟️</div>
@@ -73,22 +95,28 @@
 
         <hr class="divider">
 
-        <!-- Spinner Loading Stats -->
-        <div class="stats-loading" *ngIf="loadingStats()">
-          <div class="spinner-small"></div>
-          <p>Carregando dados estatísticos...</p>
-        </div>
-
         <!-- Advanced Stats -->
         <div class="advanced-stats-section" *ngIf="teamStats()">
-          <h3>Estatísticas da Partida</h3>
+          <div class="stats-header-row">
+            <div class="flag-wrapper home">
+              <img class="stats-flag" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Home?.IdCountry" [alt]="match.Home?.IdCountry">
+            </div>
+            <h3>Estatísticas da Partida</h3>
+            <div class="flag-wrapper away">
+              <img class="stats-flag" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Away?.IdCountry" [alt]="match.Away?.IdCountry">
+            </div>
+          </div>
           
-          <div class="stat-row">
+          <div class="stat-row possession-row">
             <span class="stat-val home">{{ teamStats()?.home?.BallPossession || 0 }}%</span>
-            <span class="stat-label">Posse de Bola</span>
+            <div class="stat-label">
+              <div>Posse de Bola</div>
+              <div class="in-contest-text" *ngIf="teamStats()?.inContest">{{ teamStats()?.inContest }}% em disputa</div>
+            </div>
             <span class="stat-val away">{{ teamStats()?.away?.BallPossession || 0 }}%</span>
             <div class="progress-bar-container">
               <div class="progress-bar home" [style.width.%]="teamStats()?.home?.BallPossession || 0"></div>
+              <div class="progress-bar in-contest" *ngIf="teamStats()?.inContest" [style.width.%]="teamStats()?.inContest"></div>
               <div class="progress-bar away" [style.width.%]="teamStats()?.away?.BallPossession || 0"></div>
             </div>
           </div>
@@ -118,19 +146,6 @@
           </div>
         </div>
 
-        <!-- Power Ranking -->
-        <div class="power-ranking-section" *ngIf="powerRanking()?.length">
-          <h3>Destaques (Top 5)</h3>
-          <div class="player-grid">
-            <div class="player-card" *ngFor="let p of powerRanking(); let idx = index">
-              <div class="rank">#{{ idx + 1 }}</div>
-              <div class="player-info">
-                <strong>{{ p.playerName?.[0]?.description || 'Jogador' }}</strong>
-                <span>{{ p.teamName?.[0]?.description }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>

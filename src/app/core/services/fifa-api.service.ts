@@ -29,4 +29,8 @@ export class FifaApiService {
   getMatchPowerRanking(idIfes: string): Observable<any> {
     return this.http.get<any>(`https://fdh-api.fifa.com/v1/powerranking/match/${idIfes}.json`);
   }
+
+  getMatchTimeline(idComp: string, idSeason: string, idStage: string, idMatch: string): Observable<any> {
+    return this.http.get<any>(`https://api.fifa.com/api/v3/timelines/${idComp}/${idSeason}/${idStage}/${idMatch}?language=pt`);
+  }
 }
