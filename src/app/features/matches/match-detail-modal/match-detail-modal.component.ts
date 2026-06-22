@@ -13,6 +13,7 @@ import { FifaApiService } from '../../../core/services/fifa-api.service';
 })
 export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
   private api = inject(FifaApiService);
+  private pollingInterval: any;
 
   @Input() match: any = null;
   @Output() close = new EventEmitter<void>();
@@ -27,21 +28,39 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
 
   ngOnDestroy() {
     document.body.style.overflow = '';
+    this.clearPolling();
+  }
+
+  private clearPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['match'] && this.match) {
+      this.clearPolling();
       const idIfes = this.match.Properties?.IdIFES;
       if (idIfes) {
         this.fetchAdvancedStats(idIfes);
+        
+        // Polling para partidas ao vivo
+        if (this.match.MatchStatus === 3) {
+          this.pollingInterval = setInterval(() => {
+            this.fetchAdvancedStats(idIfes, true);
+          }, 10000);
+        }
       }
     }
   }
 
-  private fetchAdvancedStats(idIfes: string) {
-    this.loadingStats.set(true);
-    this.teamStats.set(null);
-    this.goals.set([]);
+  private fetchAdvancedStats(idIfes: string, isPolling = false) {
+    if (!isPolling) {
+      this.loadingStats.set(true);
+      this.teamStats.set(null);
+      this.goals.set([]);
+    }
 
     forkJoin({
       teams: this.api.getMatchTeamStats(idIfes),
@@ -94,11 +113,15 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
           this.goals.set(matchGoals);
         }
         
-        this.loadingStats.set(false);
+        if (!isPolling) {
+          this.loadingStats.set(false);
+        }
       },
       error: (err) => {
         console.error('Erro ao buscar estatísticas avançadas', err);
-        this.loadingStats.set(false);
+        if (!isPolling) {
+          this.loadingStats.set(false);
+        }
       }
     });
   }

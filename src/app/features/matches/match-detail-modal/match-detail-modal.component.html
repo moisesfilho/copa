@@ -14,6 +14,9 @@
         <div class="match-stage">
           <span class="stage">{{ match.StageName?.[0]?.Description }}</span>
           <span class="group" *ngIf="match.GroupName?.[0]?.Description"> • {{ match.GroupName[0].Description }}</span>
+          <div class="live-indicator" *ngIf="match.MatchStatus === 3">
+            <span class="live-dot"></span> Ao Vivo
+          </div>
         </div>
         
         <div class="teams-container">
@@ -24,8 +27,8 @@
           </div>
           
           <div class="scorebox">
-            <span class="score" *ngIf="match.MatchStatus === 0">{{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}</span>
-            <span class="time" *ngIf="match.MatchStatus !== 0">{{ match.Date | date:'HH:mm' }}</span>
+            <span class="score" *ngIf="match.MatchStatus === 0 || match.MatchStatus === 3">{{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}</span>
+            <span class="time" *ngIf="match.MatchStatus !== 0 && match.MatchStatus !== 3">{{ match.Date | date:'HH:mm' }}</span>
           </div>
 
           <div class="team away">

@@ -1,12 +1,12 @@
 <div class="filters">
-  <div class="filter-buttons">
-    <button class="filter-btn glass-panel" [class.active]="activeFilter() === 'ALL'" (click)="setFilter('ALL')">Todos</button>
-    <button class="filter-btn glass-panel" [class.active]="activeFilter() === 'LIVE'" (click)="setFilter('LIVE')">Ao Vivo</button>
-    <button class="filter-btn glass-panel" [class.active]="activeFilter() === 'UPCOMING'" (click)="setFilter('UPCOMING')">Próximos</button>
-    <button class="filter-btn glass-panel" [class.active]="activeFilter() === 'FINISHED'" (click)="setFilter('FINISHED')">Encerrados</button>
-  </div>
-  
   <div class="filter-selects">
+    <select class="filter-dropdown glass-panel" [value]="activeFilter()" (change)="setStatusFilter($event)">
+      <option value="ALL">Todos os Jogos</option>
+      <option value="LIVE">Ao Vivo</option>
+      <option value="UPCOMING">Próximos</option>
+      <option value="FINISHED">Encerrados</option>
+    </select>
+
     <select class="filter-dropdown glass-panel" [value]="selectedStage()" (change)="setStageFilter($event)">
       <option value="ALL">Todas as Fases</option>
       <option *ngFor="let stage of availableStages()" [value]="stage">{{ stage }}</option>

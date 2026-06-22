@@ -99,6 +99,11 @@ export class MatchListComponent implements OnChanges {
     this.applyFilter();
   }
 
+  setStatusFilter(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.setFilter(select.value as 'ALL' | 'LIVE' | 'FINISHED' | 'UPCOMING');
+  }
+
   setStageFilter(event: Event) {
     const select = event.target as HTMLSelectElement;
     this.selectedStage.set(select.value);

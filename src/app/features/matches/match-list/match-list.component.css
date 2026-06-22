@@ -5,11 +5,7 @@
   margin-bottom: 2rem;
 }
 
-.filter-buttons {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
+
 
 .filter-selects {
   display: flex;
@@ -18,23 +14,27 @@
 }
 
 .filter-dropdown {
-  padding: 0.75rem 2.5rem 0.75rem 1.2rem;
+  flex: 1;
+  min-width: 130px;
+  width: 100%;
+  padding: 0.6rem 2rem 0.6rem 0.8rem;
   border: 1px solid var(--glass-border);
   background: var(--glass-bg);
   color: var(--text-primary);
   border-radius: 12px;
   cursor: pointer;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   outline: none;
-  min-width: auto;
-  max-width: 100%;
   appearance: none;
   -webkit-appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 1rem center;
+  background-position: right 0.8rem center;
   background-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .filter-dropdown option {
@@ -42,29 +42,7 @@
   color: var(--text-primary);
 }
 
-.filter-btn {
-  padding: 0.75rem 1.5rem;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  color: var(--text-primary);
-  border-radius: 30px;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
-}
 
-.filter-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.filter-btn.active {
-  background: var(--accent-color);
-  color: #fff;
-  border-color: var(--accent-color);
-  box-shadow: var(--accent-glow);
-}
 
 .match-grid {
   display: grid;
