@@ -16,6 +16,16 @@
       <option value="ALL">Todos os Grupos</option>
       <option *ngFor="let group of availableGroups()" [value]="group">{{ group }}</option>
     </select>
+
+    <select class="filter-dropdown glass-panel" [value]="selectedContinent()" (change)="setContinentFilter($event)">
+      <option value="ALL">Todos os Continentes</option>
+      <option *ngFor="let continent of availableContinents()" [value]="continent">{{ continent }}</option>
+    </select>
+
+    <select class="filter-dropdown glass-panel" [value]="selectedTeam()" (change)="setTeamFilter($event)">
+      <option value="ALL">Todas as Seleções</option>
+      <option *ngFor="let team of availableTeams()" [value]="team">{{ team }}</option>
+    </select>
   </div>
 </div>
 
