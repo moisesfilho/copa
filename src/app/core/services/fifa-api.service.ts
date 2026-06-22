@@ -21,4 +21,12 @@ export class FifaApiService {
   getUIResources(): Observable<any> {
     return this.http.get<any>(this.cxmResourcesUrl);
   }
+
+  getMatchTeamStats(idIfes: string): Observable<any> {
+    return this.http.get<any>(`https://fdh-api.fifa.com/v1/stats/match/${idIfes}/teams.json`);
+  }
+
+  getMatchPowerRanking(idIfes: string): Observable<any> {
+    return this.http.get<any>(`https://fdh-api.fifa.com/v1/powerranking/match/${idIfes}.json`);
+  }
 }

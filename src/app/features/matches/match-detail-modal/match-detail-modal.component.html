@@ -70,6 +70,67 @@
             </li>
           </ul>
         </div>
+
+        <hr class="divider">
+
+        <!-- Spinner Loading Stats -->
+        <div class="stats-loading" *ngIf="loadingStats()">
+          <div class="spinner-small"></div>
+          <p>Carregando dados estatísticos...</p>
+        </div>
+
+        <!-- Advanced Stats -->
+        <div class="advanced-stats-section" *ngIf="teamStats()">
+          <h3>Estatísticas da Partida</h3>
+          
+          <div class="stat-row">
+            <span class="stat-val home">{{ teamStats()?.home?.BallPossession || 0 }}%</span>
+            <span class="stat-label">Posse de Bola</span>
+            <span class="stat-val away">{{ teamStats()?.away?.BallPossession || 0 }}%</span>
+            <div class="progress-bar-container">
+              <div class="progress-bar home" [style.width.%]="teamStats()?.home?.BallPossession || 0"></div>
+              <div class="progress-bar away" [style.width.%]="teamStats()?.away?.BallPossession || 0"></div>
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <span class="stat-val home">{{ teamStats()?.home?.AttemptAtGoal || 0 }}</span>
+            <span class="stat-label">Finalizações</span>
+            <span class="stat-val away">{{ teamStats()?.away?.AttemptAtGoal || 0 }}</span>
+          </div>
+
+          <div class="stat-row">
+            <span class="stat-val home">{{ teamStats()?.home?.PassesCompleted || 0 }}</span>
+            <span class="stat-label">Passes Certos</span>
+            <span class="stat-val away">{{ teamStats()?.away?.PassesCompleted || 0 }}</span>
+          </div>
+
+          <div class="stat-row">
+            <span class="stat-val home">{{ teamStats()?.home?.Corners || 0 }}</span>
+            <span class="stat-label">Escanteios</span>
+            <span class="stat-val away">{{ teamStats()?.away?.Corners || 0 }}</span>
+          </div>
+          
+          <div class="stat-row">
+            <span class="stat-val home">{{ teamStats()?.home?.YellowCards || 0 }}</span>
+            <span class="stat-label">Cartões Amarelos</span>
+            <span class="stat-val away">{{ teamStats()?.away?.YellowCards || 0 }}</span>
+          </div>
+        </div>
+
+        <!-- Power Ranking -->
+        <div class="power-ranking-section" *ngIf="powerRanking()?.length">
+          <h3>Destaques (Top 5)</h3>
+          <div class="player-grid">
+            <div class="player-card" *ngFor="let p of powerRanking(); let idx = index">
+              <div class="rank">#{{ idx + 1 }}</div>
+              <div class="player-info">
+                <strong>{{ p.playerName?.[0]?.description || 'Jogador' }}</strong>
+                <span>{{ p.teamName?.[0]?.description }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
