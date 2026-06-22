@@ -1,19 +1,19 @@
 <div class="container">
   <header class="dashboard-header glass-panel">
     <div class="logo">
-      <h1>Copa do Mundo 2026</h1>
+      <h1>{{ i18n.t().dashboard.title }}</h1>
     </div>
     <div class="stats">
       <div class="stat-box">
-        <span class="label">Total de Jogos</span>
+        <span class="label">{{ i18n.t().dashboard.total }}</span>
         <span class="value">{{ matches().length }}</span>
       </div>
       <div class="stat-box">
-        <span class="label">Encerrados</span>
+        <span class="label">{{ i18n.t().dashboard.finished }}</span>
         <span class="value">{{ completedMatches() }}</span>
       </div>
       <div class="stat-box">
-        <span class="label">Concluídos (%)</span>
+        <span class="label">{{ i18n.t().dashboard.percent }}</span>
         <span class="value">{{ completedPercentage() }}</span>
       </div>
     </div>
@@ -23,7 +23,7 @@
     @if (loading()) {
       <div class="loader-container">
         <div class="spinner"></div>
-        <p>Carregando dados da FIFA...</p>
+        <p>{{ i18n.t().dashboard.loading }}</p>
       </div>
     }
 

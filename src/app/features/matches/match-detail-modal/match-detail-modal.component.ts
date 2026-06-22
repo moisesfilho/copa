@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, OnChanges, OnInit, OnDestroy, S
 import { CommonModule, DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { FifaApiService } from '../../../core/services/fifa-api.service';
+import { I18nService } from '../../../core/services/i18n.service';
 
 @Component({
   selector: 'app-match-detail-modal',
@@ -13,6 +14,7 @@ import { FifaApiService } from '../../../core/services/fifa-api.service';
 })
 export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
   private api = inject(FifaApiService);
+  i18n = inject(I18nService);
   private pollingInterval: any;
 
   @Input() match: any = null;
@@ -62,9 +64,11 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
       this.goals.set([]);
     }
 
+    const lang = this.i18n.currentLang();
+
     forkJoin({
       teams: this.api.getMatchTeamStats(idIfes),
-      timeline: this.api.getMatchTimeline(this.match.IdCompetition, this.match.IdSeason, this.match.IdStage, this.match.IdMatch)
+      timeline: this.api.getMatchTimeline(this.match.IdCompetition, this.match.IdSeason, this.match.IdStage, this.match.IdMatch, lang)
     }).subscribe({
       next: (res) => {
         if (res.teams) {

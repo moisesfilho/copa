@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Language } from './i18n.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,18 +9,14 @@ import { Observable } from 'rxjs';
 export class FifaApiService {
   private http = inject(HttpClient);
   
-  // Endpoint específico para os 500 jogos da Copa de 2026 em português
-  private readonly matchesUrl = 'https://api.fifa.com/api/v3/calendar/matches?language=pt&count=500&idSeason=285023';
-
-  // Endpoint para pegar as traduções dinâmicas da tela
-  private readonly cxmResourcesUrl = 'https://cxm-api.fifa.com/fifaplusweb/api/resources?locale=pt&identifier=MatchInformation';
-
-  getMatches(): Observable<any> {
-    return this.http.get<any>(this.matchesUrl);
+  getMatches(lang: Language = 'pt'): Observable<any> {
+    const apiLang = lang === 'en' ? 'en-GB' : 'pt';
+    return this.http.get<any>(`https://api.fifa.com/api/v3/calendar/matches?language=${apiLang}&count=500&idSeason=285023`);
   }
 
-  getUIResources(): Observable<any> {
-    return this.http.get<any>(this.cxmResourcesUrl);
+  getUIResources(lang: Language = 'pt'): Observable<any> {
+    const apiLang = lang === 'en' ? 'en-GB' : 'pt';
+    return this.http.get<any>(`https://cxm-api.fifa.com/fifaplusweb/api/resources?locale=${apiLang}&identifier=MatchInformation`);
   }
 
   getMatchTeamStats(idIfes: string): Observable<any> {
@@ -30,7 +27,8 @@ export class FifaApiService {
     return this.http.get<any>(`https://fdh-api.fifa.com/v1/powerranking/match/${idIfes}.json`);
   }
 
-  getMatchTimeline(idComp: string, idSeason: string, idStage: string, idMatch: string): Observable<any> {
-    return this.http.get<any>(`https://api.fifa.com/api/v3/timelines/${idComp}/${idSeason}/${idStage}/${idMatch}?language=pt`);
+  getMatchTimeline(idComp: string, idSeason: string, idStage: string, idMatch: string, lang: Language = 'pt'): Observable<any> {
+    const apiLang = lang === 'en' ? 'en-GB' : 'pt';
+    return this.http.get<any>(`https://api.fifa.com/api/v3/timelines/${idComp}/${idSeason}/${idStage}/${idMatch}?language=${apiLang}`);
   }
 }

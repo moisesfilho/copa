@@ -7,7 +7,7 @@
         style="width: 50px; height: 50px; border-width: 4px; margin-bottom: 1rem"
       ></div>
       <p style="color: #fff; font-size: 1.2rem; font-weight: 500">
-        Carregando detalhes da partida...
+        {{ i18n.t().match.loadingDetails }}
       </p>
     </div>
   }
@@ -24,7 +24,7 @@
                 <span class="group"> • {{ match.GroupName[0].Description }}</span>
               }
               @if (match.MatchStatus === 3) {
-                <div class="live-indicator"><span class="live-dot"></span> Ao Vivo</div>
+                <div class="live-indicator"><span class="live-dot"></span> {{ i18n.t().match.live }}</div>
               }
             </div>
             <div class="teams-container">
@@ -64,7 +64,7 @@
             <!-- Goals -->
             @if (goals()?.length) {
               <div class="goals-section">
-                <h3>Gols da Partida</h3>
+                <h3>{{ i18n.t().match.goals }}</h3>
                 <div class="goals-list">
                   @for (goal of goals(); track goal) {
                     <div
@@ -78,10 +78,10 @@
                       <div class="goal-info">
                         <strong>{{ goal.playerName }}</strong>
                         @if (goal.Type === 34) {
-                          <span class="goal-type">Pênalti</span>
+                          <span class="goal-type">{{ i18n.t().match.penalty }}</span>
                         }
                         @if (goal.Type === 41) {
-                          <span class="goal-type">Gol contra</span>
+                          <span class="goal-type">{{ i18n.t().match.ownGoal }}</span>
                         }
                       </div>
                     </div>
@@ -94,7 +94,7 @@
                 <div class="info-card">
                   <div class="icon">🏟️</div>
                   <div class="details">
-                    <strong>Estádio</strong>
+                    <strong>{{ i18n.t().match.stadium }}</strong>
                     <span>{{ match.Stadium.Name?.[0]?.Description }}</span>
                     <span class="sub">{{ match.Stadium.CityName?.[0]?.Description }}</span>
                   </div>
@@ -104,9 +104,9 @@
                 <div class="info-card">
                   <div class="icon">📅</div>
                   <div class="details">
-                    <strong>Data e Hora</strong>
+                    <strong>{{ i18n.t().match.date }}</strong>
                     <span>{{ match.Date | date: 'dd/MM/yyyy' }}</span>
-                    <span class="sub">Local: {{ match.LocalDate | date: 'HH:mm' }}</span>
+                    <span class="sub">{{ i18n.t().match.localTime }}: {{ match.LocalDate | date: 'HH:mm' }}</span>
                   </div>
                 </div>
               }
@@ -114,7 +114,7 @@
                 <div class="info-card">
                   <div class="icon">👥</div>
                   <div class="details">
-                    <strong>Público</strong>
+                    <strong>{{ i18n.t().match.attendance }}</strong>
                     <span>{{ match.Attendance | number }}</span>
                   </div>
                 </div>
@@ -122,7 +122,7 @@
             </div>
             @if (match.Officials?.length) {
               <div class="officials-section">
-                <h3>Equipe de Arbitragem</h3>
+                <h3>{{ i18n.t().match.officials }}</h3>
                 <ul class="officials-list">
                   @for (official of match.Officials; track official) {
                     <li>
@@ -135,7 +135,7 @@
                       />
                       <div class="official-info">
                         <strong>{{ official.Name?.[0]?.Description }}</strong>
-                        <span>{{ official.TypeLocalized?.[0]?.Description || 'Árbitro' }}</span>
+                        <span>{{ official.TypeLocalized?.[0]?.Description || i18n.t().match.referee }}</span>
                       </div>
                     </li>
                   }
@@ -156,7 +156,7 @@
                       [alt]="match.Home?.IdCountry"
                     />
                   </div>
-                  <h3>Estatísticas da Partida</h3>
+                  <h3>{{ i18n.t().match.stats }}</h3>
                   <div class="flag-wrapper away">
                     <img
                       class="stats-flag"
@@ -170,9 +170,9 @@
                 <div class="stat-row possession-row">
                   <span class="stat-val home">{{ teamStats()?.home?.BallPossession || 0 }}%</span>
                   <div class="stat-label">
-                    <div>Posse de Bola</div>
+                    <div>{{ i18n.t().match.possession }}</div>
                     @if (teamStats()?.inContest) {
-                      <div class="in-contest-text">{{ teamStats()?.inContest }}% em disputa</div>
+                      <div class="in-contest-text">{{ teamStats()?.inContest }}% {{ i18n.t().match.inContest }}</div>
                     }
                   </div>
                   <span class="stat-val away">{{ teamStats()?.away?.BallPossession || 0 }}%</span>
@@ -195,22 +195,22 @@
                 </div>
                 <div class="stat-row">
                   <span class="stat-val home">{{ teamStats()?.home?.AttemptAtGoal || 0 }}</span>
-                  <span class="stat-label">Finalizações</span>
+                  <span class="stat-label">{{ i18n.t().match.attempts }}</span>
                   <span class="stat-val away">{{ teamStats()?.away?.AttemptAtGoal || 0 }}</span>
                 </div>
                 <div class="stat-row">
                   <span class="stat-val home">{{ teamStats()?.home?.PassesCompleted || 0 }}</span>
-                  <span class="stat-label">Passes Certos</span>
+                  <span class="stat-label">{{ i18n.t().match.passes }}</span>
                   <span class="stat-val away">{{ teamStats()?.away?.PassesCompleted || 0 }}</span>
                 </div>
                 <div class="stat-row">
                   <span class="stat-val home">{{ teamStats()?.home?.Corners || 0 }}</span>
-                  <span class="stat-label">Escanteios</span>
+                  <span class="stat-label">{{ i18n.t().match.corners }}</span>
                   <span class="stat-val away">{{ teamStats()?.away?.Corners || 0 }}</span>
                 </div>
                 <div class="stat-row">
                   <span class="stat-val home">{{ teamStats()?.home?.YellowCards || 0 }}</span>
-                  <span class="stat-label">Cartões Amarelos</span>
+                  <span class="stat-label">{{ i18n.t().match.yellowCards }}</span>
                   <span class="stat-val away">{{ teamStats()?.away?.YellowCards || 0 }}</span>
                 </div>
               </div>

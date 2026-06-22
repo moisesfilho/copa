@@ -1,5 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { I18nService } from '../../../core/services/i18n.service';
 
 @Component({
   selector: 'app-match-card',
@@ -9,6 +10,8 @@ import { CommonModule, DatePipe } from '@angular/common';
   styleUrls: ['./match-card.component.css']
 })
 export class MatchCardComponent {
+  i18n = inject(I18nService);
+
   @Input() match!: any;
   @Input() uiResources: any;
 

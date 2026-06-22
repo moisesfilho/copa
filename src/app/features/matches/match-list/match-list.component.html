@@ -5,10 +5,10 @@
       [value]="activeFilter()"
       (change)="setStatusFilter($event)"
     >
-      <option value="ALL">Todos os Jogos</option>
-      <option value="LIVE">Ao Vivo</option>
-      <option value="UPCOMING">Próximos</option>
-      <option value="FINISHED">Encerrados</option>
+      <option value="ALL">{{ i18n.t().filters.all }}</option>
+      <option value="LIVE">{{ i18n.t().filters.live }}</option>
+      <option value="UPCOMING">{{ i18n.t().filters.upcoming }}</option>
+      <option value="FINISHED">{{ i18n.t().filters.finished }}</option>
     </select>
 
     <select
@@ -16,7 +16,7 @@
       [value]="selectedStage()"
       (change)="setStageFilter($event)"
     >
-      <option value="ALL">Todas as Fases</option>
+      <option value="ALL">{{ i18n.t().filters.stage }}</option>
       @for (stage of availableStages(); track stage) {
         <option [value]="stage">{{ stage }}</option>
       }
@@ -27,7 +27,7 @@
       [value]="selectedGroup()"
       (change)="setGroupFilter($event)"
     >
-      <option value="ALL">Todos os Grupos</option>
+      <option value="ALL">{{ i18n.t().filters.group }}</option>
       @for (group of availableGroups(); track group) {
         <option [value]="group">{{ group }}</option>
       }
@@ -38,9 +38,9 @@
       [value]="selectedContinent()"
       (change)="setContinentFilter($event)"
     >
-      <option value="ALL">Todos os Continentes</option>
+      <option value="ALL">{{ i18n.t().filters.continent }}</option>
       @for (continent of availableContinents(); track continent) {
-        <option [value]="continent">{{ continent }}</option>
+        <option [value]="continent">{{ i18n.t().continents[continent] || continent }}</option>
       }
     </select>
 
@@ -49,7 +49,7 @@
       [value]="selectedTeam()"
       (change)="setTeamFilter($event)"
     >
-      <option value="ALL">Todas as Seleções</option>
+      <option value="ALL">{{ i18n.t().filters.team }}</option>
       @for (team of availableTeams(); track team) {
         <option [value]="team">{{ team }}</option>
       }
@@ -61,7 +61,7 @@
       class="filter-actions"
       style="display: flex; justify-content: flex-end; margin-top: 0.5rem"
     >
-      <button class="clear-filters-btn" (click)="clearFilters()">✕ Limpar Filtros</button>
+      <button class="clear-filters-btn" (click)="clearFilters()">✕ {{ i18n.t().filters.clear }}</button>
     </div>
   }
 </div>
@@ -79,7 +79,6 @@
 @if (filteredMatches().length === 0) {
   <div class="empty-state glass-panel">
     <div class="empty-icon">⚽</div>
-    <h3>Nenhuma partida encontrada</h3>
-    <p>Tente alterar os filtros de busca para ver mais jogos.</p>
+    <h3>{{ i18n.t().filters.noMatches }}</h3>
   </div>
 }

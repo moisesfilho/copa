@@ -12,6 +12,7 @@ import {
 
 import { MatchCardComponent } from '../match-card/match-card.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { I18nService } from '../../../core/services/i18n.service';
 
 @Component({
   selector: 'app-match-list',
@@ -28,6 +29,7 @@ export class MatchListComponent implements OnChanges, OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    public i18n: I18nService
   ) {}
 
   onMatchClick(match: any) {

@@ -1,13 +1,13 @@
 <div class="container">
   <header class="page-header glass-panel">
-    <h1>Classificação</h1>
-    <p>Acompanhe a tabela detalhada com os critérios de desempate oficiais da FIFA.</p>
+    <h1>{{ i18n.t().standings.title }}</h1>
+    <p>{{ i18n.t().standings.subtitle }}</p>
   </header>
 
   @if (loading()) {
     <div class="loader-container">
       <div class="spinner"></div>
-      <p>Calculando tabelas e saldos de gols...</p>
+      <p>{{ i18n.t().standings.loading }}</p>
     </div>
   }
 
@@ -21,15 +21,15 @@
               <thead>
                 <tr>
                   <th class="pos" title="Posição">#</th>
-                  <th class="team">Seleção</th>
-                  <th class="pts" title="Pontos">PTS</th>
-                  <th class="stat" title="Jogos">J</th>
-                  <th class="stat" title="Vitórias">V</th>
-                  <th class="stat" title="Empates">E</th>
-                  <th class="stat" title="Derrotas">D</th>
-                  <th class="stat hide-mobile" title="Gols Pró">GP</th>
-                  <th class="stat hide-mobile" title="Gols Contra">GC</th>
-                  <th class="stat" title="Saldo de Gols">SG</th>
+                  <th class="team">{{ i18n.t().standings.team }}</th>
+                  <th class="pts" title="Pontos">{{ i18n.t().standings.pts }}</th>
+                  <th class="stat" title="Jogos">{{ i18n.t().standings.p }}</th>
+                  <th class="stat" title="Vitórias">{{ i18n.t().standings.w }}</th>
+                  <th class="stat" title="Empates">{{ i18n.t().standings.d }}</th>
+                  <th class="stat" title="Derrotas">{{ i18n.t().standings.l }}</th>
+                  <th class="stat hide-mobile" title="Gols Pró">{{ i18n.t().standings.gf }}</th>
+                  <th class="stat hide-mobile" title="Gols Contra">{{ i18n.t().standings.ga }}</th>
+                  <th class="stat" title="Saldo de Gols">{{ i18n.t().standings.gd }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -74,8 +74,8 @@
   @if (!loading() && groupNames().length === 0) {
     <div class="empty-state glass-panel">
       <div class="empty-icon">📊</div>
-      <h3>Nenhuma tabela gerada</h3>
-      <p>Não há dados de fase de grupos disponíveis no momento.</p>
+      <h3>{{ i18n.t().standings.emptyTitle }}</h3>
+      <p>{{ i18n.t().standings.emptyDesc }}</p>
     </div>
   }
 </div>

@@ -1,14 +1,17 @@
-import { Component, signal, OnInit, HostListener } from '@angular/core';
+import { Component, signal, OnInit, HostListener, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { UpperCasePipe } from '@angular/common';
+import { I18nService } from './core/services/i18n.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, UpperCasePipe],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
 export class App implements OnInit {
+  i18n = inject(I18nService);
   isSidebarOpen = signal(false);
   isDarkMode = signal(true);
 

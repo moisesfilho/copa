@@ -1,6 +1,6 @@
 <div class="card match-card glass-panel" [class.live]="isLive" (click)="onClick()">
   <div class="card-header">
-    <span class="stage">{{ match.StageName?.[0]?.Description || 'Fase de Grupos' }}</span>
+    <span class="stage">{{ match.StageName?.[0]?.Description || i18n.t().match.noInfo }}</span>
     <span class="date">{{ match.Date | date: 'dd/MM/yyyy HH:mm' }}</span>
   </div>
 
@@ -32,7 +32,7 @@
       }
       @if (isLive) {
         <div class="live-badge">
-          {{ uiResources['matchinfo.live'] || 'Ao Vivo' }}
+          {{ uiResources['matchinfo.live'] || i18n.t().match.live }}
         </div>
       }
     </div>
@@ -55,7 +55,7 @@
   <div class="card-footer">
     <span class="location">
       <i class="icon-pin"></i>
-      {{ match.Stadium?.Name?.[0]?.Description || 'Estádio a definir' }}
+      {{ match.Stadium?.Name?.[0]?.Description || i18n.t().match.noInfo }}
     </span>
   </div>
 </div>
