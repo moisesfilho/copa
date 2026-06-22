@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 
 @Component({
@@ -9,8 +9,14 @@ import { CommonModule, DatePipe } from '@angular/common';
   styleUrls: ['./match-card.component.css']
 })
 export class MatchCardComponent {
-  @Input() match: any;
+  @Input() match!: any;
   @Input() uiResources: any;
+
+  @Output() matchClicked = new EventEmitter<any>();
+
+  onClick() {
+    this.matchClicked.emit(this.match);
+  }
 
   get homeTeam() {
     return this.match.Home?.TeamName?.[0]?.Description || 'TBD';

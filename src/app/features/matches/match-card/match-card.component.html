@@ -1,4 +1,4 @@
-<div class="card glass-panel" [class.live]="isLive">
+<div class="card match-card glass-panel" [class.live]="isLive" (click)="onClick()">
   <div class="card-header">
     <span class="stage">{{ match.StageName?.[0]?.Description || 'Fase de Grupos' }}</span>
     <span class="date">{{ match.Date | date:'dd/MM/yyyy HH:mm' }}</span>

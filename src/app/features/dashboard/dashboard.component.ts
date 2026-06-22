@@ -2,11 +2,12 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { MatchListComponent } from '../matches/match-list/match-list.component';
+import { MatchDetailModalComponent } from '../matches/match-detail-modal/match-detail-modal.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatchListComponent],
+  imports: [CommonModule, MatchListComponent, MatchDetailModalComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -17,6 +18,7 @@ export class DashboardComponent implements OnInit {
   uiResources = signal<any>({});
   loading = signal<boolean>(true);
   isDarkMode = signal<boolean>(true);
+  selectedMatch = signal<any | null>(null);
 
   completedMatches = computed(() => this.matches().filter(m => m.MatchStatus === 0).length);
   completedPercentage = computed(() => {
@@ -52,5 +54,13 @@ export class DashboardComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  onMatchSelected(match: any) {
+    this.selectedMatch.set(match);
+  }
+
+  closeModal() {
+    this.selectedMatch.set(null);
   }
 }

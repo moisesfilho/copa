@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, computed, signal, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatchCardComponent } from '../match-card/match-card.component';
 
@@ -12,6 +12,11 @@ import { MatchCardComponent } from '../match-card/match-card.component';
 export class MatchListComponent implements OnChanges {
   @Input() matches: any[] = [];
   @Input() uiResources: any = {};
+  @Output() matchClicked = new EventEmitter<any>();
+
+  onMatchClick(match: any) {
+    this.matchClicked.emit(match);
+  }
 
   // Continent Mapping for 2026 World Cup teams (mock or official data)
   private continentMap: { [key: string]: string } = {

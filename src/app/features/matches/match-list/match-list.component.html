@@ -30,7 +30,7 @@
 </div>
 
 <div class="match-grid">
-  <app-match-card *ngFor="let match of filteredMatches()" [match]="match" [uiResources]="uiResources"></app-match-card>
+    <app-match-card *ngFor="let m of filteredMatches()" [match]="m" [uiResources]="uiResources" (matchClicked)="onMatchClick($event)"></app-match-card>
 </div>
 
 <div class="empty-state glass-panel" *ngIf="filteredMatches().length === 0">

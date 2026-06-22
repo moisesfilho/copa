@@ -1,0 +1,76 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content glass-panel" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="onClose()">✕</button>
+
+    <div *ngIf="match">
+      <header class="modal-header">
+        <div class="match-stage">
+          <span class="stage">{{ match.StageName?.[0]?.Description }}</span>
+          <span class="group" *ngIf="match.GroupName?.[0]?.Description"> • {{ match.GroupName[0].Description }}</span>
+        </div>
+        
+        <div class="teams-container">
+          <div class="team home">
+            <img class="flag" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Home?.IdCountry" [alt]="match.Home?.IdCountry">
+            <h2>{{ match.Home?.TeamName?.[0]?.Description }}</h2>
+            <span class="tactics" *ngIf="match.Home?.Tactics">{{ match.Home.Tactics }}</span>
+          </div>
+          
+          <div class="scorebox">
+            <span class="score" *ngIf="match.MatchStatus === 0">{{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}</span>
+            <span class="time" *ngIf="match.MatchStatus !== 0">{{ match.Date | date:'HH:mm' }}</span>
+          </div>
+
+          <div class="team away">
+            <img class="flag" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Away?.IdCountry" [alt]="match.Away?.IdCountry">
+            <h2>{{ match.Away?.TeamName?.[0]?.Description }}</h2>
+            <span class="tactics" *ngIf="match.Away?.Tactics">{{ match.Away.Tactics }}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="modal-body">
+        <div class="info-grid">
+          <div class="info-card" *ngIf="match.Stadium">
+            <div class="icon">🏟️</div>
+            <div class="details">
+              <strong>Estádio</strong>
+              <span>{{ match.Stadium.Name?.[0]?.Description }}</span>
+              <span class="sub">{{ match.Stadium.CityName?.[0]?.Description }}</span>
+            </div>
+          </div>
+
+          <div class="info-card" *ngIf="match.Date">
+            <div class="icon">📅</div>
+            <div class="details">
+              <strong>Data e Hora</strong>
+              <span>{{ match.Date | date:'dd/MM/yyyy' }}</span>
+              <span class="sub">Local: {{ match.LocalDate | date:'HH:mm' }}</span>
+            </div>
+          </div>
+
+          <div class="info-card" *ngIf="match.Attendance">
+            <div class="icon">👥</div>
+            <div class="details">
+              <strong>Público</strong>
+              <span>{{ match.Attendance | number }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="officials-section" *ngIf="match.Officials?.length">
+          <h3>Equipe de Arbitragem</h3>
+          <ul class="officials-list">
+            <li *ngFor="let official of match.Officials">
+              <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-1/' + official.IdCountry" class="mini-flag" [alt]="official.IdCountry">
+              <div class="official-info">
+                <strong>{{ official.Name?.[0]?.Description }}</strong>
+                <span>{{ official.TypeLocalized?.[0]?.Description || 'Árbitro' }}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

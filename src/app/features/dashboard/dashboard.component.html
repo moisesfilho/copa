@@ -27,7 +27,9 @@
     </div>
 
     <ng-container *ngIf="!loading()">
-      <app-match-list [matches]="matches()" [uiResources]="uiResources()"></app-match-list>
+      <app-match-list [matches]="matches()" [uiResources]="uiResources()" (matchClicked)="onMatchSelected($event)"></app-match-list>
     </ng-container>
+    
+    <app-match-detail-modal *ngIf="selectedMatch()" [match]="selectedMatch()" (close)="closeModal()"></app-match-detail-modal>
   </main>
 </div>
