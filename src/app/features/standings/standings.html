@@ -24,8 +24,8 @@
               <th class="stat" title="Vitórias">V</th>
               <th class="stat" title="Empates">E</th>
               <th class="stat" title="Derrotas">D</th>
-              <th class="stat" title="Gols Pró">GP</th>
-              <th class="stat" title="Gols Contra">GC</th>
+              <th class="stat hide-mobile" title="Gols Pró">GP</th>
+              <th class="stat hide-mobile" title="Gols Contra">GC</th>
               <th class="stat" title="Saldo de Gols">SG</th>
             </tr>
           </thead>
@@ -41,8 +41,8 @@
               <td class="stat">{{ team.won }}</td>
               <td class="stat">{{ team.drawn }}</td>
               <td class="stat">{{ team.lost }}</td>
-              <td class="stat">{{ team.goalsFor }}</td>
-              <td class="stat">{{ team.goalsAgainst }}</td>
+              <td class="stat hide-mobile">{{ team.goalsFor }}</td>
+              <td class="stat hide-mobile">{{ team.goalsAgainst }}</td>
               <td class="stat" [class.positive]="team.goalDifference > 0" [class.negative]="team.goalDifference < 0">
                 <span *ngIf="team.goalDifference > 0">+</span>{{ team.goalDifference }}
               </td>

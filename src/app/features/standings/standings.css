@@ -158,3 +158,30 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 500px) {
+  .hide-mobile {
+    display: none;
+  }
+  
+  .standings-table th, 
+  .standings-table td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.85rem;
+  }
+  
+  .team-col {
+    min-width: 0;
+  }
+  
+  .team-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
+  }
+  
+  .group-card {
+    padding: 1rem;
+  }
+}
