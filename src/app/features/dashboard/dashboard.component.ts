@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { MatchListComponent } from '../matches/match-list/match-list.component';
 import { MatchDetailModalComponent } from '../matches/match-detail-modal/match-detail-modal.component';
@@ -8,22 +8,22 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatchListComponent, MatchDetailModalComponent],
+  imports: [MatchListComponent, MatchDetailModalComponent],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit {
   private api = inject(FifaApiService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  
+
   matches = signal<any[]>([]);
   uiResources = signal<any>({});
   loading = signal<boolean>(true);
   isDarkMode = signal<boolean>(true);
   selectedMatch = signal<any | null>(null);
 
-  completedMatches = computed(() => this.matches().filter(m => m.MatchStatus === 0).length);
+  completedMatches = computed(() => this.matches().filter((m) => m.MatchStatus === 0).length);
   completedPercentage = computed(() => {
     const total = this.matches().length;
     if (total === 0) return '0%';
@@ -42,14 +42,14 @@ export class DashboardComponent implements OnInit {
         }
         this.uiResources.set(dict);
       },
-      error: (err) => console.error('Erro ao carregar UI resources', err)
+      error: (err) => console.error('Erro ao carregar UI resources', err),
     });
 
     this.api.getMatches().subscribe({
       next: (res) => {
         if (res && res.Results) {
           this.matches.set(res.Results);
-          
+
           // Verifica se há um ID de partida na URL inicial
           const matchId = this.route.snapshot.queryParams['match'];
           if (matchId) {
@@ -62,36 +62,38 @@ export class DashboardComponent implements OnInit {
       error: (err) => {
         console.error('Erro ao carregar jogos', err);
         this.loading.set(false);
-      }
+      },
     });
 
     // Escuta mudanças na URL enquanto o app estiver rodando
-    this.route.queryParams.subscribe(params => {
-      const matchId = params['match'];
-      const currentMatches = this.matches();
-      
-      if (matchId && currentMatches.length > 0) {
-        const match = currentMatches.find(m => m.IdMatch === matchId);
-        if (match) this.selectedMatch.set(match);
-      } else if (!matchId && this.selectedMatch()) {
-        this.selectedMatch.set(null);
-      }
+    this.route.queryParams.subscribe({
+      next: (params) => {
+        const matchId = params['match'];
+        const currentMatches = this.matches();
+
+        if (matchId && currentMatches.length > 0) {
+          const match = currentMatches.find((m) => m.IdMatch === matchId);
+          if (match) this.selectedMatch.set(match);
+        } else if (!matchId && this.selectedMatch()) {
+          this.selectedMatch.set(null);
+        }
+      },
     });
   }
 
   onMatchSelected(match: any) {
-    this.router.navigate([], { 
-      relativeTo: this.route, 
-      queryParams: { match: match.IdMatch }, 
-      queryParamsHandling: 'merge' 
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { match: match.IdMatch },
+      queryParamsHandling: 'merge',
     });
   }
 
   closeModal() {
-    this.router.navigate([], { 
-      relativeTo: this.route, 
-      queryParams: { match: null }, 
-      queryParamsHandling: 'merge' 
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { match: null },
+      queryParamsHandling: 'merge',
     });
   }
 }

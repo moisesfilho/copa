@@ -20,15 +20,26 @@
   </header>
 
   <main class="dashboard-content">
-    <div *ngIf="loading()" class="loader-container">
-      <div class="spinner"></div>
-      <p>Carregando dados da FIFA...</p>
-    </div>
+    @if (loading()) {
+      <div class="loader-container">
+        <div class="spinner"></div>
+        <p>Carregando dados da FIFA...</p>
+      </div>
+    }
 
-    <ng-container *ngIf="!loading()">
-      <app-match-list [matches]="matches()" [uiResources]="uiResources()" (matchClicked)="onMatchSelected($event)"></app-match-list>
-    </ng-container>
-    
-    <app-match-detail-modal *ngIf="selectedMatch()" [match]="selectedMatch()" (close)="closeModal()"></app-match-detail-modal>
+    @if (!loading()) {
+      <app-match-list
+        [matches]="matches()"
+        [uiResources]="uiResources()"
+        (matchClicked)="onMatchSelected($event)"
+      ></app-match-list>
+    }
+
+    @if (selectedMatch()) {
+      <app-match-detail-modal
+        [match]="selectedMatch()"
+        (close)="closeModal()"
+      ></app-match-detail-modal>
+    }
   </main>
 </div>

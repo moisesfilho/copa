@@ -1,155 +1,223 @@
 <div class="modal-overlay" (click)="onClose()">
-
   <!-- Loading State -->
-  <div class="stats-loading" *ngIf="loadingStats()" (click)="$event.stopPropagation()">
-    <div class="spinner-small" style="width: 50px; height: 50px; border-width: 4px; margin-bottom: 1rem;"></div>
-    <p style="color: #fff; font-size: 1.2rem; font-weight: 500;">Carregando detalhes da partida...</p>
-  </div>
-
-  <div class="modal-content glass-panel" *ngIf="!loadingStats()" (click)="$event.stopPropagation()">
-    <button class="close-btn" (click)="onClose()">✕</button>
-
-    <div *ngIf="match">
-      <header class="modal-header">
-        <div class="match-stage">
-          <span class="stage">{{ match.StageName?.[0]?.Description }}</span>
-          <span class="group" *ngIf="match.GroupName?.[0]?.Description"> • {{ match.GroupName[0].Description }}</span>
-          <div class="live-indicator" *ngIf="match.MatchStatus === 3">
-            <span class="live-dot"></span> Ao Vivo
-          </div>
-        </div>
-        
-        <div class="teams-container">
-          <div class="team home">
-            <img class="flag" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Home?.IdCountry" [alt]="match.Home?.IdCountry">
-            <h2>{{ match.Home?.TeamName?.[0]?.Description }}</h2>
-            <span class="tactics" *ngIf="match.Home?.Tactics">{{ match.Home.Tactics }}</span>
-          </div>
-          
-          <div class="scorebox">
-            <span class="score" *ngIf="match.MatchStatus === 0 || match.MatchStatus === 3">{{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}</span>
-            <span class="time" *ngIf="match.MatchStatus !== 0 && match.MatchStatus !== 3">{{ match.Date | date:'HH:mm' }}</span>
-          </div>
-
-          <div class="team away">
-            <img class="flag" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Away?.IdCountry" [alt]="match.Away?.IdCountry">
-            <h2>{{ match.Away?.TeamName?.[0]?.Description }}</h2>
-            <span class="tactics" *ngIf="match.Away?.Tactics">{{ match.Away.Tactics }}</span>
-          </div>
-        </div>
-      </header>
-
-      <div class="modal-body">
-        <!-- Goals -->
-        <div class="goals-section" *ngIf="goals()?.length">
-          <h3>Gols da Partida</h3>
-          <div class="goals-list">
-            <div class="goal-item" *ngFor="let goal of goals()" [ngClass]="{'home-goal': goal.IdTeam === match.Home?.IdTeam, 'away-goal': goal.IdTeam === match.Away?.IdTeam}">
-              <div class="goal-time">{{ goal.MatchMinute }}</div>
-              <div class="goal-info">
-                <strong>{{ goal.playerName }}</strong>
-                <span class="goal-type" *ngIf="goal.Type === 34">Pênalti</span>
-                <span class="goal-type" *ngIf="goal.Type === 41">Gol contra</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="info-grid">
-          <div class="info-card" *ngIf="match.Stadium">
-            <div class="icon">🏟️</div>
-            <div class="details">
-              <strong>Estádio</strong>
-              <span>{{ match.Stadium.Name?.[0]?.Description }}</span>
-              <span class="sub">{{ match.Stadium.CityName?.[0]?.Description }}</span>
-            </div>
-          </div>
-
-          <div class="info-card" *ngIf="match.Date">
-            <div class="icon">📅</div>
-            <div class="details">
-              <strong>Data e Hora</strong>
-              <span>{{ match.Date | date:'dd/MM/yyyy' }}</span>
-              <span class="sub">Local: {{ match.LocalDate | date:'HH:mm' }}</span>
-            </div>
-          </div>
-
-          <div class="info-card" *ngIf="match.Attendance">
-            <div class="icon">👥</div>
-            <div class="details">
-              <strong>Público</strong>
-              <span>{{ match.Attendance | number }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="officials-section" *ngIf="match.Officials?.length">
-          <h3>Equipe de Arbitragem</h3>
-          <ul class="officials-list">
-            <li *ngFor="let official of match.Officials">
-              <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-1/' + official.IdCountry" class="mini-flag" [alt]="official.IdCountry">
-              <div class="official-info">
-                <strong>{{ official.Name?.[0]?.Description }}</strong>
-                <span>{{ official.TypeLocalized?.[0]?.Description || 'Árbitro' }}</span>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <hr class="divider">
-
-        <!-- Advanced Stats -->
-        <div class="advanced-stats-section" *ngIf="teamStats()">
-          <div class="stats-header-row">
-            <div class="flag-wrapper home">
-              <img class="stats-flag" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Home?.IdCountry" [alt]="match.Home?.IdCountry">
-            </div>
-            <h3>Estatísticas da Partida</h3>
-            <div class="flag-wrapper away">
-              <img class="stats-flag" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Away?.IdCountry" [alt]="match.Away?.IdCountry">
-            </div>
-          </div>
-          
-          <div class="stat-row possession-row">
-            <span class="stat-val home">{{ teamStats()?.home?.BallPossession || 0 }}%</span>
-            <div class="stat-label">
-              <div>Posse de Bola</div>
-              <div class="in-contest-text" *ngIf="teamStats()?.inContest">{{ teamStats()?.inContest }}% em disputa</div>
-            </div>
-            <span class="stat-val away">{{ teamStats()?.away?.BallPossession || 0 }}%</span>
-            <div class="progress-bar-container">
-              <div class="progress-bar home" [style.width.%]="teamStats()?.home?.BallPossession || 0"></div>
-              <div class="progress-bar in-contest" *ngIf="teamStats()?.inContest" [style.width.%]="teamStats()?.inContest"></div>
-              <div class="progress-bar away" [style.width.%]="teamStats()?.away?.BallPossession || 0"></div>
-            </div>
-          </div>
-
-          <div class="stat-row">
-            <span class="stat-val home">{{ teamStats()?.home?.AttemptAtGoal || 0 }}</span>
-            <span class="stat-label">Finalizações</span>
-            <span class="stat-val away">{{ teamStats()?.away?.AttemptAtGoal || 0 }}</span>
-          </div>
-
-          <div class="stat-row">
-            <span class="stat-val home">{{ teamStats()?.home?.PassesCompleted || 0 }}</span>
-            <span class="stat-label">Passes Certos</span>
-            <span class="stat-val away">{{ teamStats()?.away?.PassesCompleted || 0 }}</span>
-          </div>
-
-          <div class="stat-row">
-            <span class="stat-val home">{{ teamStats()?.home?.Corners || 0 }}</span>
-            <span class="stat-label">Escanteios</span>
-            <span class="stat-val away">{{ teamStats()?.away?.Corners || 0 }}</span>
-          </div>
-          
-          <div class="stat-row">
-            <span class="stat-val home">{{ teamStats()?.home?.YellowCards || 0 }}</span>
-            <span class="stat-label">Cartões Amarelos</span>
-            <span class="stat-val away">{{ teamStats()?.away?.YellowCards || 0 }}</span>
-          </div>
-        </div>
-
-      </div>
+  @if (loadingStats()) {
+    <div class="stats-loading" (click)="$event.stopPropagation()">
+      <div
+        class="spinner-small"
+        style="width: 50px; height: 50px; border-width: 4px; margin-bottom: 1rem"
+      ></div>
+      <p style="color: #fff; font-size: 1.2rem; font-weight: 500">
+        Carregando detalhes da partida...
+      </p>
     </div>
-  </div>
+  }
+
+  @if (!loadingStats()) {
+    <div class="modal-content glass-panel" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="onClose()">✕</button>
+      @if (match) {
+        <div>
+          <header class="modal-header">
+            <div class="match-stage">
+              <span class="stage">{{ match.StageName?.[0]?.Description }}</span>
+              @if (match.GroupName?.[0]?.Description) {
+                <span class="group"> • {{ match.GroupName[0].Description }}</span>
+              }
+              @if (match.MatchStatus === 3) {
+                <div class="live-indicator"><span class="live-dot"></span> Ao Vivo</div>
+              }
+            </div>
+            <div class="teams-container">
+              <div class="team home">
+                <img
+                  class="flag"
+                  [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Home?.IdCountry"
+                  [alt]="match.Home?.IdCountry"
+                />
+                <h2>{{ match.Home?.TeamName?.[0]?.Description }}</h2>
+                @if (match.Home?.Tactics) {
+                  <span class="tactics">{{ match.Home.Tactics }}</span>
+                }
+              </div>
+              <div class="scorebox">
+                @if (match.MatchStatus === 0 || match.MatchStatus === 3) {
+                  <span class="score">{{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}</span>
+                }
+                @if (match.MatchStatus !== 0 && match.MatchStatus !== 3) {
+                  <span class="time">{{ match.Date | date: 'HH:mm' }}</span>
+                }
+              </div>
+              <div class="team away">
+                <img
+                  class="flag"
+                  [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Away?.IdCountry"
+                  [alt]="match.Away?.IdCountry"
+                />
+                <h2>{{ match.Away?.TeamName?.[0]?.Description }}</h2>
+                @if (match.Away?.Tactics) {
+                  <span class="tactics">{{ match.Away.Tactics }}</span>
+                }
+              </div>
+            </div>
+          </header>
+          <div class="modal-body">
+            <!-- Goals -->
+            @if (goals()?.length) {
+              <div class="goals-section">
+                <h3>Gols da Partida</h3>
+                <div class="goals-list">
+                  @for (goal of goals(); track goal) {
+                    <div
+                      class="goal-item"
+                      [ngClass]="{
+                        'home-goal': goal.IdTeam === match.Home?.IdTeam,
+                        'away-goal': goal.IdTeam === match.Away?.IdTeam,
+                      }"
+                    >
+                      <div class="goal-time">{{ goal.MatchMinute }}</div>
+                      <div class="goal-info">
+                        <strong>{{ goal.playerName }}</strong>
+                        @if (goal.Type === 34) {
+                          <span class="goal-type">Pênalti</span>
+                        }
+                        @if (goal.Type === 41) {
+                          <span class="goal-type">Gol contra</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+            <div class="info-grid">
+              @if (match.Stadium) {
+                <div class="info-card">
+                  <div class="icon">🏟️</div>
+                  <div class="details">
+                    <strong>Estádio</strong>
+                    <span>{{ match.Stadium.Name?.[0]?.Description }}</span>
+                    <span class="sub">{{ match.Stadium.CityName?.[0]?.Description }}</span>
+                  </div>
+                </div>
+              }
+              @if (match.Date) {
+                <div class="info-card">
+                  <div class="icon">📅</div>
+                  <div class="details">
+                    <strong>Data e Hora</strong>
+                    <span>{{ match.Date | date: 'dd/MM/yyyy' }}</span>
+                    <span class="sub">Local: {{ match.LocalDate | date: 'HH:mm' }}</span>
+                  </div>
+                </div>
+              }
+              @if (match.Attendance) {
+                <div class="info-card">
+                  <div class="icon">👥</div>
+                  <div class="details">
+                    <strong>Público</strong>
+                    <span>{{ match.Attendance | number }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+            @if (match.Officials?.length) {
+              <div class="officials-section">
+                <h3>Equipe de Arbitragem</h3>
+                <ul class="officials-list">
+                  @for (official of match.Officials; track official) {
+                    <li>
+                      <img
+                        [src]="
+                          'https://api.fifa.com/api/v3/picture/flags-sq-1/' + official.IdCountry
+                        "
+                        class="mini-flag"
+                        [alt]="official.IdCountry"
+                      />
+                      <div class="official-info">
+                        <strong>{{ official.Name?.[0]?.Description }}</strong>
+                        <span>{{ official.TypeLocalized?.[0]?.Description || 'Árbitro' }}</span>
+                      </div>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+            <hr class="divider" />
+            <!-- Advanced Stats -->
+            @if (teamStats()) {
+              <div class="advanced-stats-section">
+                <div class="stats-header-row">
+                  <div class="flag-wrapper home">
+                    <img
+                      class="stats-flag"
+                      [src]="
+                        'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Home?.IdCountry
+                      "
+                      [alt]="match.Home?.IdCountry"
+                    />
+                  </div>
+                  <h3>Estatísticas da Partida</h3>
+                  <div class="flag-wrapper away">
+                    <img
+                      class="stats-flag"
+                      [src]="
+                        'https://api.fifa.com/api/v3/picture/flags-sq-4/' + match.Away?.IdCountry
+                      "
+                      [alt]="match.Away?.IdCountry"
+                    />
+                  </div>
+                </div>
+                <div class="stat-row possession-row">
+                  <span class="stat-val home">{{ teamStats()?.home?.BallPossession || 0 }}%</span>
+                  <div class="stat-label">
+                    <div>Posse de Bola</div>
+                    @if (teamStats()?.inContest) {
+                      <div class="in-contest-text">{{ teamStats()?.inContest }}% em disputa</div>
+                    }
+                  </div>
+                  <span class="stat-val away">{{ teamStats()?.away?.BallPossession || 0 }}%</span>
+                  <div class="progress-bar-container">
+                    <div
+                      class="progress-bar home"
+                      [style.width.%]="teamStats()?.home?.BallPossession || 0"
+                    ></div>
+                    @if (teamStats()?.inContest) {
+                      <div
+                        class="progress-bar in-contest"
+                        [style.width.%]="teamStats()?.inContest"
+                      ></div>
+                    }
+                    <div
+                      class="progress-bar away"
+                      [style.width.%]="teamStats()?.away?.BallPossession || 0"
+                    ></div>
+                  </div>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-val home">{{ teamStats()?.home?.AttemptAtGoal || 0 }}</span>
+                  <span class="stat-label">Finalizações</span>
+                  <span class="stat-val away">{{ teamStats()?.away?.AttemptAtGoal || 0 }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-val home">{{ teamStats()?.home?.PassesCompleted || 0 }}</span>
+                  <span class="stat-label">Passes Certos</span>
+                  <span class="stat-val away">{{ teamStats()?.away?.PassesCompleted || 0 }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-val home">{{ teamStats()?.home?.Corners || 0 }}</span>
+                  <span class="stat-label">Escanteios</span>
+                  <span class="stat-val away">{{ teamStats()?.away?.Corners || 0 }}</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-val home">{{ teamStats()?.home?.YellowCards || 0 }}</span>
+                  <span class="stat-label">Cartões Amarelos</span>
+                  <span class="stat-val away">{{ teamStats()?.away?.YellowCards || 0 }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
 </div>

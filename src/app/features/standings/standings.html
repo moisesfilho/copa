@@ -4,58 +4,78 @@
     <p>Acompanhe a tabela detalhada com os critérios de desempate oficiais da FIFA.</p>
   </header>
 
-  <div *ngIf="loading()" class="loader-container">
-    <div class="spinner"></div>
-    <p>Calculando tabelas e saldos de gols...</p>
-  </div>
-
-  <div class="standings-grid" *ngIf="!loading()">
-    <div class="group-card glass-panel" *ngFor="let group of groupNames()">
-      <h2 class="group-title">{{ group }}</h2>
-      
-      <div class="table-responsive">
-        <table class="standings-table">
-          <thead>
-            <tr>
-              <th class="pos" title="Posição">#</th>
-              <th class="team">Seleção</th>
-              <th class="pts" title="Pontos">PTS</th>
-              <th class="stat" title="Jogos">J</th>
-              <th class="stat" title="Vitórias">V</th>
-              <th class="stat" title="Empates">E</th>
-              <th class="stat" title="Derrotas">D</th>
-              <th class="stat hide-mobile" title="Gols Pró">GP</th>
-              <th class="stat hide-mobile" title="Gols Contra">GC</th>
-              <th class="stat" title="Saldo de Gols">SG</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let team of standings()[group]; let i = index" [class.qualified]="i < 2">
-              <td class="pos">{{ i + 1 }}</td>
-              <td class="team-col">
-                <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + team.flagId" [alt]="team.name" class="flag-mini">
-                <span class="team-name">{{ team.name }}</span>
-              </td>
-              <td class="pts">{{ team.points }}</td>
-              <td class="stat">{{ team.played }}</td>
-              <td class="stat">{{ team.won }}</td>
-              <td class="stat">{{ team.drawn }}</td>
-              <td class="stat">{{ team.lost }}</td>
-              <td class="stat hide-mobile">{{ team.goalsFor }}</td>
-              <td class="stat hide-mobile">{{ team.goalsAgainst }}</td>
-              <td class="stat" [class.positive]="team.goalDifference > 0" [class.negative]="team.goalDifference < 0">
-                <span *ngIf="team.goalDifference > 0">+</span>{{ team.goalDifference }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  @if (loading()) {
+    <div class="loader-container">
+      <div class="spinner"></div>
+      <p>Calculando tabelas e saldos de gols...</p>
     </div>
-  </div>
+  }
 
-  <div class="empty-state glass-panel" *ngIf="!loading() && groupNames().length === 0">
-    <div class="empty-icon">📊</div>
-    <h3>Nenhuma tabela gerada</h3>
-    <p>Não há dados de fase de grupos disponíveis no momento.</p>
-  </div>
+  @if (!loading()) {
+    <div class="standings-grid">
+      @for (group of groupNames(); track group) {
+        <div class="group-card glass-panel">
+          <h2 class="group-title">{{ group }}</h2>
+          <div class="table-responsive">
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th class="pos" title="Posição">#</th>
+                  <th class="team">Seleção</th>
+                  <th class="pts" title="Pontos">PTS</th>
+                  <th class="stat" title="Jogos">J</th>
+                  <th class="stat" title="Vitórias">V</th>
+                  <th class="stat" title="Empates">E</th>
+                  <th class="stat" title="Derrotas">D</th>
+                  <th class="stat hide-mobile" title="Gols Pró">GP</th>
+                  <th class="stat hide-mobile" title="Gols Contra">GC</th>
+                  <th class="stat" title="Saldo de Gols">SG</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (team of standings()[group]; track team; let i = $index) {
+                  <tr [class.qualified]="i < 2">
+                    <td class="pos">{{ i + 1 }}</td>
+                    <td class="team-col">
+                      <img
+                        [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + team.flagId"
+                        [alt]="team.name"
+                        class="flag-mini"
+                      />
+                      <span class="team-name">{{ team.name }}</span>
+                    </td>
+                    <td class="pts">{{ team.points }}</td>
+                    <td class="stat">{{ team.played }}</td>
+                    <td class="stat">{{ team.won }}</td>
+                    <td class="stat">{{ team.drawn }}</td>
+                    <td class="stat">{{ team.lost }}</td>
+                    <td class="stat hide-mobile">{{ team.goalsFor }}</td>
+                    <td class="stat hide-mobile">{{ team.goalsAgainst }}</td>
+                    <td
+                      class="stat"
+                      [class.positive]="team.goalDifference > 0"
+                      [class.negative]="team.goalDifference < 0"
+                    >
+                      @if (team.goalDifference > 0) {
+                        <span>+</span>
+                      }
+                      {{ team.goalDifference }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading() && groupNames().length === 0) {
+    <div class="empty-state glass-panel">
+      <div class="empty-icon">📊</div>
+      <h3>Nenhuma tabela gerada</h3>
+      <p>Não há dados de fase de grupos disponíveis no momento.</p>
+    </div>
+  }
 </div>

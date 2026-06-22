@@ -1,44 +1,85 @@
 <div class="filters">
   <div class="filter-selects">
-    <select class="filter-dropdown glass-panel" [value]="activeFilter()" (change)="setStatusFilter($event)">
+    <select
+      class="filter-dropdown glass-panel"
+      [value]="activeFilter()"
+      (change)="setStatusFilter($event)"
+    >
       <option value="ALL">Todos os Jogos</option>
       <option value="LIVE">Ao Vivo</option>
       <option value="UPCOMING">Próximos</option>
       <option value="FINISHED">Encerrados</option>
     </select>
 
-    <select class="filter-dropdown glass-panel" [value]="selectedStage()" (change)="setStageFilter($event)">
+    <select
+      class="filter-dropdown glass-panel"
+      [value]="selectedStage()"
+      (change)="setStageFilter($event)"
+    >
       <option value="ALL">Todas as Fases</option>
-      <option *ngFor="let stage of availableStages()" [value]="stage">{{ stage }}</option>
+      @for (stage of availableStages(); track stage) {
+        <option [value]="stage">{{ stage }}</option>
+      }
     </select>
 
-    <select class="filter-dropdown glass-panel" [value]="selectedGroup()" (change)="setGroupFilter($event)">
+    <select
+      class="filter-dropdown glass-panel"
+      [value]="selectedGroup()"
+      (change)="setGroupFilter($event)"
+    >
       <option value="ALL">Todos os Grupos</option>
-      <option *ngFor="let group of availableGroups()" [value]="group">{{ group }}</option>
+      @for (group of availableGroups(); track group) {
+        <option [value]="group">{{ group }}</option>
+      }
     </select>
 
-    <select class="filter-dropdown glass-panel" [value]="selectedContinent()" (change)="setContinentFilter($event)">
+    <select
+      class="filter-dropdown glass-panel"
+      [value]="selectedContinent()"
+      (change)="setContinentFilter($event)"
+    >
       <option value="ALL">Todos os Continentes</option>
-      <option *ngFor="let continent of availableContinents()" [value]="continent">{{ continent }}</option>
+      @for (continent of availableContinents(); track continent) {
+        <option [value]="continent">{{ continent }}</option>
+      }
     </select>
 
-    <select class="filter-dropdown glass-panel" [value]="selectedTeam()" (change)="setTeamFilter($event)">
+    <select
+      class="filter-dropdown glass-panel"
+      [value]="selectedTeam()"
+      (change)="setTeamFilter($event)"
+    >
       <option value="ALL">Todas as Seleções</option>
-      <option *ngFor="let team of availableTeams()" [value]="team">{{ team }}</option>
+      @for (team of availableTeams(); track team) {
+        <option [value]="team">{{ team }}</option>
+      }
     </select>
   </div>
 
-  <div class="filter-actions" *ngIf="hasActiveFilters()" style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
-    <button class="clear-filters-btn" (click)="clearFilters()">✕ Limpar Filtros</button>
-  </div>
+  @if (hasActiveFilters()) {
+    <div
+      class="filter-actions"
+      style="display: flex; justify-content: flex-end; margin-top: 0.5rem"
+    >
+      <button class="clear-filters-btn" (click)="clearFilters()">✕ Limpar Filtros</button>
+    </div>
+  }
 </div>
 
 <div class="match-grid">
-    <app-match-card *ngFor="let m of filteredMatches()" [match]="m" [uiResources]="uiResources" (matchClicked)="onMatchClick($event)"></app-match-card>
+  @for (m of filteredMatches(); track m) {
+    <app-match-card
+      [match]="m"
+      [uiResources]="uiResources"
+      (matchClicked)="onMatchClick($event)"
+    ></app-match-card>
+  }
 </div>
 
-<div class="empty-state glass-panel" *ngIf="filteredMatches().length === 0">
-  <div class="empty-icon">⚽</div>
-  <h3>Nenhuma partida encontrada</h3>
-  <p>Tente alterar os filtros de busca para ver mais jogos.</p>
-</div>
+@if (filteredMatches().length === 0) {
+  <div class="empty-state glass-panel">
+    <div class="empty-icon">⚽</div>
+    <h3>Nenhuma partida encontrada</h3>
+    <p>Tente alterar os filtros de busca para ver mais jogos.</p>
+  </div>
+}
