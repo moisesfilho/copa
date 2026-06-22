@@ -1,0 +1,17 @@
+{
+  "name": "Copa do Mundo 2026",
+  "short_name": "Copa 26",
+  "theme_color": "#1e293b",
+  "background_color": "#0f172a",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "192x192 512x512",
+      "type": "image/x-icon",
+      "purpose": "any maskable"
+    }
+  ]
+}
