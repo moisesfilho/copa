@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { MatchListComponent } from '../matches/match-list/match-list.component';
 import { MatchDetailModalComponent } from '../matches/match-detail-modal/match-detail-modal.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,6 +14,8 @@ import { MatchDetailModalComponent } from '../matches/match-detail-modal/match-d
 })
 export class DashboardComponent implements OnInit {
   private api = inject(FifaApiService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   
   matches = signal<any[]>([]);
   uiResources = signal<any>({});
@@ -46,6 +49,13 @@ export class DashboardComponent implements OnInit {
       next: (res) => {
         if (res && res.Results) {
           this.matches.set(res.Results);
+          
+          // Verifica se há um ID de partida na URL inicial
+          const matchId = this.route.snapshot.queryParams['match'];
+          if (matchId) {
+            const match = res.Results.find((m: any) => m.IdMatch === matchId);
+            this.selectedMatch.set(match || null);
+          }
         }
         this.loading.set(false);
       },
@@ -54,13 +64,34 @@ export class DashboardComponent implements OnInit {
         this.loading.set(false);
       }
     });
+
+    // Escuta mudanças na URL enquanto o app estiver rodando
+    this.route.queryParams.subscribe(params => {
+      const matchId = params['match'];
+      const currentMatches = this.matches();
+      
+      if (matchId && currentMatches.length > 0) {
+        const match = currentMatches.find(m => m.IdMatch === matchId);
+        if (match) this.selectedMatch.set(match);
+      } else if (!matchId && this.selectedMatch()) {
+        this.selectedMatch.set(null);
+      }
+    });
   }
 
   onMatchSelected(match: any) {
-    this.selectedMatch.set(match);
+    this.router.navigate([], { 
+      relativeTo: this.route, 
+      queryParams: { match: match.IdMatch }, 
+      queryParamsHandling: 'merge' 
+    });
   }
 
   closeModal() {
-    this.selectedMatch.set(null);
+    this.router.navigate([], { 
+      relativeTo: this.route, 
+      queryParams: { match: null }, 
+      queryParamsHandling: 'merge' 
+    });
   }
 }
