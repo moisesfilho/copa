@@ -24,7 +24,7 @@ export function calculateStandings(matches: any[]): Record<string, TeamStats[]> 
     const stageName = m.StageName?.[0]?.Description;
     const groupName = m.GroupName?.[0]?.Description;
     
-    if (!stageName || !groupName || stageName.toLowerCase().indexOf('group') === -1 && stageName.toLowerCase().indexOf('fase de') === -1 && groupName.indexOf('Group') === -1) {
+    if (!stageName || !groupName || (groupName.toLowerCase().indexOf('group') === -1 && groupName.toLowerCase().indexOf('grupo') === -1)) {
       return; 
     }
 
