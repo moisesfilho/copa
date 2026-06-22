@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, computed, signal, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, computed, signal, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatchCardComponent } from '../match-card/match-card.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-match-list',
@@ -9,10 +10,12 @@ import { MatchCardComponent } from '../match-card/match-card.component';
   templateUrl: './match-list.component.html',
   styleUrls: ['./match-list.component.css']
 })
-export class MatchListComponent implements OnChanges {
+export class MatchListComponent implements OnChanges, OnInit {
   @Input() matches: any[] = [];
   @Input() uiResources: any = {};
   @Output() matchClicked = new EventEmitter<any>();
+
+  constructor(private route: ActivatedRoute, private router: Router) {}
 
   onMatchClick(match: any) {
     this.matchClicked.emit(match);
@@ -55,6 +58,25 @@ export class MatchListComponent implements OnChanges {
   selectedTeam = signal<string>('ALL');
   selectedContinent = signal<string>('ALL');
 
+  hasActiveFilters = computed(() => {
+    return this.activeFilter() !== 'ALL' ||
+           this.selectedStage() !== 'ALL' ||
+           this.selectedGroup() !== 'ALL' ||
+           this.selectedTeam() !== 'ALL' ||
+           this.selectedContinent() !== 'ALL';
+  });
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.activeFilter.set((params['status'] as any) || 'ALL');
+      this.selectedStage.set(params['stage'] || 'ALL');
+      this.selectedGroup.set(params['group'] || 'ALL');
+      this.selectedTeam.set(params['team'] || 'ALL');
+      this.selectedContinent.set(params['continent'] || 'ALL');
+      this.applyFilter();
+    });
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['matches']) {
       this.extractFilters();
@@ -94,38 +116,48 @@ export class MatchListComponent implements OnChanges {
     this.availableContinents.set(Array.from(continents).sort());
   }
 
+  private updateURLParams(params: any) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: params,
+      queryParamsHandling: 'merge'
+    });
+  }
+
   setFilter(filter: 'ALL' | 'LIVE' | 'FINISHED' | 'UPCOMING') {
-    this.activeFilter.set(filter);
-    this.applyFilter();
+    this.updateURLParams({ status: filter === 'ALL' ? null : filter });
   }
 
   setStatusFilter(event: Event) {
     const select = event.target as HTMLSelectElement;
-    this.setFilter(select.value as 'ALL' | 'LIVE' | 'FINISHED' | 'UPCOMING');
+    this.updateURLParams({ status: select.value === 'ALL' ? null : select.value });
   }
 
   setStageFilter(event: Event) {
     const select = event.target as HTMLSelectElement;
-    this.selectedStage.set(select.value);
-    this.applyFilter();
+    this.updateURLParams({ stage: select.value === 'ALL' ? null : select.value });
   }
 
   setGroupFilter(event: Event) {
     const select = event.target as HTMLSelectElement;
-    this.selectedGroup.set(select.value);
-    this.applyFilter();
+    this.updateURLParams({ group: select.value === 'ALL' ? null : select.value });
   }
 
   setTeamFilter(event: Event) {
     const select = event.target as HTMLSelectElement;
-    this.selectedTeam.set(select.value);
-    this.applyFilter();
+    this.updateURLParams({ team: select.value === 'ALL' ? null : select.value });
   }
 
   setContinentFilter(event: Event) {
     const select = event.target as HTMLSelectElement;
-    this.selectedContinent.set(select.value);
-    this.applyFilter();
+    this.updateURLParams({ continent: select.value === 'ALL' ? null : select.value });
+  }
+
+  clearFilters() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {}
+    });
   }
 
   private applyFilter() {
