@@ -1,6 +1,6 @@
 {
-  "name": "Copa do Mundo 2026",
-  "short_name": "Copa 26",
+  "name": "Copa 2026",
+  "short_name": "Copa 2026",
   "theme_color": "#1e293b",
   "background_color": "#0f172a",
   "display": "standalone",
@@ -8,9 +8,15 @@
   "start_url": "./",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "192x192 512x512",
-      "type": "image/x-icon",
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
