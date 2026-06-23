@@ -1,33 +1,4 @@
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-}
 
-.page-header {
-  padding: 2rem;
-  border-radius: 20px;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.page-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 800;
-}
-
-[data-theme="light"] .page-header h1 {
-  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.page-header p {
-  color: var(--text-secondary);
-}
 
 .standings-grid {
   display: grid;
@@ -41,11 +12,10 @@
   }
 }
 
-
-
 .group-card {
   padding: 1.5rem;
   border-radius: 20px;
+  min-width: 0;
 }
 
 .group-title {

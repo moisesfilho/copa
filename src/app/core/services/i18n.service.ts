@@ -5,6 +5,7 @@ export type Language = 'pt' | 'en';
 export interface Translations {
   menu: any;
   filters: any;
+  matches: any;
   dashboard: any;
   standings: any;
   match: any;
@@ -42,8 +43,13 @@ const TRANSLATIONS: Record<Language, Translations> = {
       definedTitleOnly: 'Mostrar todas as partidas',
       definedTitleAll: 'Ocultar partidas sem seleções definidas'
     },
+    matches: {
+      title: 'Partidas da Copa',
+      subtitle: 'Acompanhe os resultados, horários e locais de todos os confrontos.'
+    },
     dashboard: {
       title: 'Copa do Mundo 2026',
+      subtitle: 'Acompanhe de perto as estatísticas e os jogos da sua seleção preferida.',
       total: 'Total de Jogos',
       finished: 'Encerrados',
       percent: 'Concluídos (%)',
@@ -128,8 +134,13 @@ const TRANSLATIONS: Record<Language, Translations> = {
       definedTitleOnly: 'Show all matches',
       definedTitleAll: 'Hide matches with undefined teams'
     },
+    matches: {
+      title: 'World Cup Matches',
+      subtitle: 'Follow the results, schedules, and venues of all matchups.'
+    },
     dashboard: {
       title: 'World Cup 2026',
+      subtitle: 'Closely follow the stats and matches of your favorite team.',
       total: 'Total Matches',
       finished: 'Finished',
       percent: 'Completed (%)',

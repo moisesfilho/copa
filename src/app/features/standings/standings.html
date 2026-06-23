@@ -23,10 +23,10 @@
                   <th class="pos" title="Posição">#</th>
                   <th class="team">{{ i18n.t().standings.team }}</th>
                   <th class="pts" title="Pontos">{{ i18n.t().standings.pts }}</th>
-                  <th class="stat" title="Jogos">{{ i18n.t().standings.p }}</th>
-                  <th class="stat" title="Vitórias">{{ i18n.t().standings.w }}</th>
-                  <th class="stat" title="Empates">{{ i18n.t().standings.d }}</th>
-                  <th class="stat" title="Derrotas">{{ i18n.t().standings.l }}</th>
+                  <th class="stat hide-mobile" title="Jogos">{{ i18n.t().standings.p }}</th>
+                  <th class="stat hide-mobile" title="Vitórias">{{ i18n.t().standings.w }}</th>
+                  <th class="stat hide-mobile" title="Empates">{{ i18n.t().standings.d }}</th>
+                  <th class="stat hide-mobile" title="Derrotas">{{ i18n.t().standings.l }}</th>
                   <th class="stat hide-mobile" title="Gols Pró">{{ i18n.t().standings.gf }}</th>
                   <th class="stat hide-mobile" title="Gols Contra">{{ i18n.t().standings.ga }}</th>
                   <th class="stat" title="Saldo de Gols">{{ i18n.t().standings.gd }}</th>
@@ -45,10 +45,10 @@
                       <span class="team-name">{{ team.name }}</span>
                     </td>
                     <td class="pts">{{ team.points }}</td>
-                    <td class="stat">{{ team.played }}</td>
-                    <td class="stat">{{ team.won }}</td>
-                    <td class="stat">{{ team.drawn }}</td>
-                    <td class="stat">{{ team.lost }}</td>
+                    <td class="stat hide-mobile">{{ team.played }}</td>
+                    <td class="stat hide-mobile">{{ team.won }}</td>
+                    <td class="stat hide-mobile">{{ team.drawn }}</td>
+                    <td class="stat hide-mobile">{{ team.lost }}</td>
                     <td class="stat hide-mobile">{{ team.goalsFor }}</td>
                     <td class="stat hide-mobile">{{ team.goalsAgainst }}</td>
                     <td
