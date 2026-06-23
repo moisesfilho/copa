@@ -56,10 +56,7 @@
     </select>
   </div>
 
-  <div
-    class="filter-actions"
-    style="display: flex; justify-content: flex-end; margin-top: 0.5rem; gap: 0.5rem"
-  >
+  <div class="filter-actions">
     <button 
       class="sort-btn glass-panel" 
       (click)="toggleDefinedTeams()" 
@@ -73,7 +70,9 @@
       <span class="icon">↕️</span> {{ sortOrder() === 'ASC' ? i18n.t().filters.sortOldest : i18n.t().filters.sortNewest }}
     </button>
     @if (hasActiveFilters()) {
-      <button class="clear-filters-btn" (click)="clearFilters()">✕ {{ i18n.t().filters.clear }}</button>
+      <button class="clear-filters-btn glass-panel" (click)="clearFilters()">
+        <span class="icon">✕</span> {{ i18n.t().filters.clear }}
+      </button>
     }
   </div>
 </div>
