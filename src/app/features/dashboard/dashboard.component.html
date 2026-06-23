@@ -4,7 +4,7 @@
     <p>{{ i18n.t().dashboard.subtitle }}</p>
   </header>
 
-  <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem; padding: 0 0.5rem;">
+  <div class="favorite-selector-wrapper">
     <div class="favorite-selector">
       <label for="favTeam" class="label">Seleção Favorita:</label>
       <select id="favTeam" class="filter-dropdown" (change)="setFavoriteTeam($event)">

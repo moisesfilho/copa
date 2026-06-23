@@ -94,6 +94,13 @@
   }
 }
 
+.favorite-selector-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
 .favorite-selector {
   display: flex;
   align-items: center;
@@ -247,7 +254,7 @@
   align-items: center;
   gap: 0.25rem;
   width: 100%;
-  max-width: 130px;
+  max-width: 100%;
 }
 
 .event-item.home-event {
@@ -320,6 +327,20 @@
   }
 }
 
+@media (max-width: 768px) {
+  .dashboard-grid {
+    gap: 1rem;
+  }
+  
+  .widget h2 {
+    font-size: 1.25rem;
+  }
+  
+  .group-card {
+    padding: 1rem !important;
+  }
+}
+
 @media (max-width: 500px) {
   .hide-mobile {
     display: none;
@@ -338,5 +359,69 @@
 
   .match-action {
     display: none;
+  }
+
+  .match-teams {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .team-side {
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .event-item {
+    justify-content: center !important;
+  }
+
+  .home-event .player-name,
+  .away-event .player-name {
+    text-align: center !important;
+  }
+
+  .favorite-selector-wrapper {
+    justify-content: center;
+  }
+
+  .favorite-selector {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .favorite-selector .label {
+    text-align: left;
+  }
+}
+
+@media (max-width: 360px) {
+  .group-card {
+    padding: 0.75rem !important;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+  }
+
+  .team-col {
+    min-width: 110px;
+  }
+
+  .widget h2 {
+    font-size: 1.1rem;
+  }
+
+  .match-list-item {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .match-score {
+    font-size: 1.1rem;
   }
 }

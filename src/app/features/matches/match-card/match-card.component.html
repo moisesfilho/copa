@@ -1,4 +1,5 @@
-<div class="card match-card glass-panel" [class.live]="isLive" [class.dashboard-mode]="isDashboardMode" (click)="onClick()">
+<div class="card match-card glass-panel" [class.live]="isLive" [class.dashboard-mode]="isDashboardMode"
+  (click)="onClick()">
   <div class="card-header">
     <span class="stage">{{ match.StageName?.[0]?.Description || i18n.t().match.noInfo }}</span>
     <span class="date">{{ match.Date | date: 'dd/MM/yyyy HH:mm' }}</span>
@@ -7,47 +8,41 @@
   <div class="match-info">
     <div class="team home">
       @if (match.Home?.IdCountry) {
-        <img
-          [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Home.IdCountry"
-          [alt]="homeTeam"
-          class="flag"
-        />
+      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Home.IdCountry" [alt]="homeTeam"
+        class="flag" />
       }
       @if (!match.Home?.IdCountry) {
-        <div class="flag placeholder"></div>
+      <div class="flag placeholder"></div>
       }
       <span class="team-name">{{ homeTeam }}</span>
     </div>
 
     <div class="score-container">
       @if (match.HomeTeamScore !== null) {
-        <div class="score">
-          <span>{{ homeScore }}</span>
-          <span class="divider">-</span>
-          <span>{{ awayScore }}</span>
-        </div>
+      <div class="score">
+        <span>{{ homeScore }}</span>
+        <span class="divider">-</span>
+        <span>{{ awayScore }}</span>
+      </div>
       }
       @if (match.HomeTeamScore === null) {
-        <div class="vs">VS</div>
+      <div class="vs">VS</div>
       }
       @if (isLive) {
-        <div class="live-badge">
-          {{ uiResources['matchinfo.live'] || i18n.t().match.live }}
-        </div>
+      <div class="live-badge">
+        {{ uiResources['matchinfo.live'] || i18n.t().match.live }}
+      </div>
       }
     </div>
 
     <div class="team away">
       <span class="team-name">{{ awayTeam }}</span>
       @if (match.Away?.IdCountry) {
-        <img
-          [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Away.IdCountry"
-          [alt]="awayTeam"
-          class="flag"
-        />
+      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Away.IdCountry" [alt]="awayTeam"
+        class="flag" />
       }
       @if (!match.Away?.IdCountry) {
-        <div class="flag placeholder"></div>
+      <div class="flag placeholder"></div>
       }
     </div>
   </div>
@@ -58,19 +53,20 @@
       {{ match.Stadium?.Name?.[0]?.Description || i18n.t().match.noInfo }}
     </span>
   </div>
-  
+
   @if (isDashboardMode && match.Officials?.length) {
-    <div class="officials-section" style="padding: 1rem; border-top: 1px solid var(--glass-border); margin-top: auto;">
-      <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--text-secondary);">Equipe de Arbitragem</h4>
-      <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
-        @for (official of match.Officials; track official) {
-          <li style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
-            <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-1/' + official.IdCountry" [alt]="official.IdCountry" style="width: 16px; border-radius: 2px;">
-            <strong style="color: var(--text-primary);">{{ official.Name?.[0]?.Description }}</strong>
-            <span style="color: var(--text-secondary);">{{ official.TypeLocalized?.[0]?.Description || 'Árbitro' }}</span>
-          </li>
-        }
-      </ul>
-    </div>
+  <div class="officials-section" style="padding: 1rem; border-top: 1px solid var(--glass-border); margin-top: auto;">
+    <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--text-secondary);">Equipe de Arbitragem</h4>
+    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+      @for (official of match.Officials; track official) {
+      <li style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+        <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-1/' + official.IdCountry" [alt]="official.IdCountry"
+          style="width: 16px; border-radius: 2px;">
+        <strong style="color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;" [title]="official.Name?.[0]?.Description">{{ official.Name?.[0]?.Description }}</strong>
+        <span style="color: var(--text-secondary); margin-left: auto;">{{ official.TypeLocalized?.[0]?.Description || 'Árbitro' }}</span>
+      </li>
+      }
+    </ul>
+  </div>
   }
 </div>
