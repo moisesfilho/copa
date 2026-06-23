@@ -31,9 +31,17 @@
 
 .standings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
   gap: 2rem;
+  grid-template-columns: 1fr;
 }
+
+@media (min-width: 969px) {
+  .standings-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
 
 .group-card {
   padding: 1.5rem;
@@ -159,12 +167,6 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-@media (max-width: 768px) {
-  .standings-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 500px) {

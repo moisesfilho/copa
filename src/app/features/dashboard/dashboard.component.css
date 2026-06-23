@@ -334,6 +334,12 @@ h1 {
   opacity: 1;
 }
 
+.dashboard-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
 .widget {
   display: flex;
   flex-direction: column;
@@ -346,9 +352,9 @@ h1 {
   display: block;
 }
 
-@media (min-width: 1024px) {
-  .widget-wide {
-    grid-column: span 2;
+@media (min-width: 969px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

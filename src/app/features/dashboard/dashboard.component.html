@@ -34,7 +34,7 @@
     }
 
     @if (!loading() && favoriteTeam()) {
-      <div class="dashboard-grid" style="display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
+      <div class="dashboard-grid">
         
         <!-- Next Match Widget -->
         <div class="widget">
@@ -54,7 +54,7 @@
         </div>
 
         <!-- Standings Widget -->
-        <div class="widget widget-wide">
+        <div class="widget">
           <h2 style="margin-bottom: 1rem;">Classificação do Grupo</h2>
           @if (favoriteGroupStandings(); as groupStandings) {
             <div class="group-card glass-panel" style="margin: 0; padding: 1.5rem;">
