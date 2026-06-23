@@ -1,4 +1,4 @@
-<div class="card match-card glass-panel" [class.live]="isLive" (click)="onClick()">
+<div class="card match-card glass-panel" [class.live]="isLive" [class.dashboard-mode]="isDashboardMode" (click)="onClick()">
   <div class="card-header">
     <span class="stage">{{ match.StageName?.[0]?.Description || i18n.t().match.noInfo }}</span>
     <span class="date">{{ match.Date | date: 'dd/MM/yyyy HH:mm' }}</span>
@@ -58,4 +58,19 @@
       {{ match.Stadium?.Name?.[0]?.Description || i18n.t().match.noInfo }}
     </span>
   </div>
+  
+  @if (isDashboardMode && match.Officials?.length) {
+    <div class="officials-section" style="padding: 1rem; border-top: 1px solid var(--glass-border); margin-top: auto;">
+      <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--text-secondary);">Equipe de Arbitragem</h4>
+      <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+        @for (official of match.Officials; track official) {
+          <li style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+            <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-1/' + official.IdCountry" [alt]="official.IdCountry" style="width: 16px; border-radius: 2px;">
+            <strong style="color: var(--text-primary);">{{ official.Name?.[0]?.Description }}</strong>
+            <span style="color: var(--text-secondary);">{{ official.TypeLocalized?.[0]?.Description || 'Árbitro' }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  }
 </div>

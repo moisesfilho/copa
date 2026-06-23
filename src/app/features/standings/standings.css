@@ -78,10 +78,18 @@
 }
 
 .team-col {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   min-width: 160px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.team-col img {
+  vertical-align: middle;
+  margin-right: 0.75rem;
+}
+
+.team-col .team-name {
+  vertical-align: middle;
 }
 
 .flag-mini {

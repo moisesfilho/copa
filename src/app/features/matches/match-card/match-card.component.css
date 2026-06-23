@@ -119,6 +119,10 @@
   100% { opacity: 1; }
 }
 
+.card.dashboard-mode {
+  height: 100%;
+}
+
 @media (max-width: 400px) {
   .team-name {
     display: none;

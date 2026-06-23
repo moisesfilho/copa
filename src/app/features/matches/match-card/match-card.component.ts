@@ -14,6 +14,7 @@ export class MatchCardComponent {
 
   @Input() match!: any;
   @Input() uiResources: any;
+  @Input() isDashboardMode = false;
 
   @Output() matchClicked = new EventEmitter<any>();
 

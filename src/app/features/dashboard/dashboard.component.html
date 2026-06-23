@@ -43,6 +43,7 @@
             <app-match-card
               [match]="match"
               [uiResources]="uiResources()"
+              [isDashboardMode]="true"
               (matchClicked)="onMatchSelected($event)"
             ></app-match-card>
           } @else {
@@ -53,7 +54,7 @@
         </div>
 
         <!-- Standings Widget -->
-        <div class="widget">
+        <div class="widget widget-wide">
           <h2 style="margin-bottom: 1rem;">Classificação do Grupo</h2>
           @if (favoriteGroupStandings(); as groupStandings) {
             <div class="group-card glass-panel" style="margin: 0; padding: 1.5rem;">
@@ -100,6 +101,42 @@
           } @else {
             <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
               Não há dados de fase de grupos para {{ favoriteTeam() }}.
+            </div>
+          }
+        </div>
+
+        <!-- Finished Matches Widget -->
+        <div class="widget" style="grid-column: 1 / -1;">
+          <h2 style="margin-bottom: 1rem;">Partidas Encerradas</h2>
+          @if (finishedMatches().length > 0) {
+            <div class="glass-panel" style="margin: 0; padding: 0; overflow: hidden;">
+              <ul style="list-style: none; padding: 0; margin: 0;">
+                @for (match of finishedMatches(); track match.IdMatch) {
+                  <li class="match-list-item" (click)="onMatchSelected(match)">
+                    <div class="match-date">
+                      {{ match.Date | date:'dd/MM/yyyy' }}
+                    </div>
+                    <div class="match-teams">
+                      <span [style.font-weight]="match.Home.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
+                        {{ match.Home.TeamName?.[0]?.Description || match.Home.IdCountry }}
+                      </span>
+                      <span class="match-score">
+                        {{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}
+                      </span>
+                      <span [style.font-weight]="match.Away.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
+                        {{ match.Away.TeamName?.[0]?.Description || match.Away.IdCountry }}
+                      </span>
+                    </div>
+                    <div class="match-action">
+                      Detalhes ➔
+                    </div>
+                  </li>
+                }
+              </ul>
+            </div>
+          } @else {
+            <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+              Nenhuma partida encerrada encontrada para {{ favoriteTeam() }}.
             </div>
           }
         </div>

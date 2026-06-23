@@ -6,11 +6,12 @@ import { calculateStandings } from '../../core/utils/standings-calculator';
 import { MatchCardComponent } from '../matches/match-card/match-card.component';
 import { MatchDetailModalComponent } from '../matches/match-detail-modal/match-detail-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatchCardComponent, MatchDetailModalComponent],
+  imports: [MatchCardComponent, MatchDetailModalComponent, DatePipe],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
@@ -61,6 +62,15 @@ export class DashboardComponent implements OnInit {
       return teamMatches[teamMatches.length - 1];
     }
     return null;
+  });
+
+  finishedMatches = computed(() => {
+    const team = this.favoriteTeam();
+    if (!team) return [];
+
+    return this.matches()
+      .filter(m => (m.Home?.IdCountry === team || m.Away?.IdCountry === team) && m.MatchStatus === 0 && m.HomeTeamScore !== null)
+      .sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime()); // Sort descending (most recent first)
   });
 
   favoriteGroupStandings = computed(() => {
