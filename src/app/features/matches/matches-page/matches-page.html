@@ -1,0 +1,31 @@
+<div class="container">
+  <header class="dashboard-header glass-panel">
+    <div class="logo">
+      <h1>{{ i18n.t().menu?.matches || 'Partidas' }}</h1>
+    </div>
+  </header>
+
+  <main class="dashboard-content">
+    @if (loading()) {
+      <div class="loader-container">
+        <div class="spinner"></div>
+        <p>{{ i18n.t().dashboard.loading }}</p>
+      </div>
+    }
+
+    @if (!loading()) {
+      <app-match-list
+        [matches]="matches()"
+        [uiResources]="uiResources()"
+        (matchClicked)="onMatchSelected($event)"
+      ></app-match-list>
+    }
+
+    @if (selectedMatch()) {
+      <app-match-detail-modal
+        [match]="selectedMatch()"
+        (close)="closeModal()"
+      ></app-match-detail-modal>
+    }
+  </main>
+</div>

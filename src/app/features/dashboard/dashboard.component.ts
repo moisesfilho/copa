@@ -2,14 +2,15 @@ import { Component, OnInit, inject, signal, computed, effect } from '@angular/co
 
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { I18nService } from '../../core/services/i18n.service';
-import { MatchListComponent } from '../matches/match-list/match-list.component';
+import { calculateStandings } from '../../core/utils/standings-calculator';
+import { MatchCardComponent } from '../matches/match-card/match-card.component';
 import { MatchDetailModalComponent } from '../matches/match-detail-modal/match-detail-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatchListComponent, MatchDetailModalComponent],
+  imports: [MatchCardComponent, MatchDetailModalComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
@@ -20,16 +21,62 @@ export class DashboardComponent implements OnInit {
   i18n = inject(I18nService);
 
   matches = signal<any[]>([]);
+  standings = signal<any[]>([]);
   uiResources = signal<any>({});
   loading = signal<boolean>(true);
-  isDarkMode = signal<boolean>(true);
   selectedMatch = signal<any | null>(null);
 
-  completedMatches = computed(() => this.matches().filter((m) => m.MatchStatus === 0).length);
-  completedPercentage = computed(() => {
-    const total = this.matches().length;
-    if (total === 0) return '0%';
-    return ((this.completedMatches() / total) * 100).toFixed(1) + '%';
+  favoriteTeam = signal<string | null>(localStorage.getItem('favoriteTeam'));
+
+  availableTeams = computed(() => {
+    const teamsMap = new Map<string, string>();
+    for (const m of this.matches()) {
+      if (m.Home?.IdCountry && m.Home?.TeamName?.[0]?.Description) {
+        teamsMap.set(m.Home.IdCountry, m.Home.TeamName[0].Description);
+      }
+      if (m.Away?.IdCountry && m.Away?.TeamName?.[0]?.Description) {
+        teamsMap.set(m.Away.IdCountry, m.Away.TeamName[0].Description);
+      }
+    }
+    return Array.from(teamsMap.entries())
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  nextMatch = computed(() => {
+    const team = this.favoriteTeam();
+    if (!team) return null;
+    
+    // Sort matches by date
+    const teamMatches = this.matches()
+      .filter(m => m.Home?.IdCountry === team || m.Away?.IdCountry === team)
+      .sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
+
+    // Find the next upcoming or live match
+    const upcoming = teamMatches.find(m => m.MatchStatus === 1 || m.MatchStatus === 3 || (m.MatchStatus === 0 && m.HomeTeamScore === null));
+    if (upcoming) return upcoming;
+    
+    // If no upcoming matches, return the latest finished match
+    if (teamMatches.length > 0) {
+      return teamMatches[teamMatches.length - 1];
+    }
+    return null;
+  });
+
+  favoriteGroupStandings = computed(() => {
+    const team = this.favoriteTeam();
+    if (!team) return null;
+
+    const allStandings = calculateStandings(this.matches());
+    // Find which group the favorite team is in
+    for (const groupName of Object.keys(allStandings)) {
+      const groupTeams = allStandings[groupName];
+      // TeamStats flagId uses IdCountry
+      if (groupTeams.some(t => t.flagId === team)) {
+        return { name: groupName, teams: groupTeams };
+      }
+    }
+    return null;
   });
 
   constructor() {
@@ -60,7 +107,6 @@ export class DashboardComponent implements OnInit {
               const match = res.Results.find((m: any) => m.IdMatch === matchId);
               this.selectedMatch.set(match || null);
             } else if (this.selectedMatch()) {
-              // Update selected match with new language data
               const updatedMatch = res.Results.find((m: any) => m.IdMatch === this.selectedMatch().IdMatch);
               this.selectedMatch.set(updatedMatch || null);
             }
@@ -76,8 +122,6 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    // Escuta mudanças na URL enquanto o app estiver rodando
     this.route.queryParams.subscribe({
       next: (params) => {
         const matchId = params['match'];
@@ -91,6 +135,18 @@ export class DashboardComponent implements OnInit {
         }
       },
     });
+  }
+
+  setFavoriteTeam(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const team = select.value;
+    if (team) {
+      this.favoriteTeam.set(team);
+      localStorage.setItem('favoriteTeam', team);
+    } else {
+      this.favoriteTeam.set(null);
+      localStorage.removeItem('favoriteTeam');
+    }
   }
 
   onMatchSelected(match: any) {

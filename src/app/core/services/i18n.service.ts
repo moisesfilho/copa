@@ -16,6 +16,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
     menu: {
       title: 'Copa 2026',
       dashboard: 'Dashboard',
+      matches: 'Partidas',
       standings: 'Classificação',
       install: '📲 Instalar App'
     },
@@ -101,6 +102,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
     menu: {
       title: 'World Cup 2026',
       dashboard: 'Dashboard',
+      matches: 'Matches',
       standings: 'Standings',
       install: '📲 Install App'
     },

@@ -20,6 +20,9 @@
       >
         <span class="nav-icon">📊</span> {{ i18n.t().menu.dashboard }}
       </a>
+      <a routerLink="/partidas" routerLinkActive="active" (click)="closeSidebar()">
+        <span class="nav-icon">⚽</span> {{ i18n.t().menu.matches }}
+      </a>
       <a routerLink="/classificacao" routerLinkActive="active" (click)="closeSidebar()">
         <span class="nav-icon">📈</span> {{ i18n.t().menu.standings }}
       </a>

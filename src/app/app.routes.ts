@@ -6,6 +6,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
   {
+    path: 'partidas',
+    loadComponent: () => import('./features/matches/matches-page/matches-page').then(m => m.MatchesPageComponent)
+  },
+  {
     path: 'classificacao',
     loadComponent: () => import('./features/standings/standings').then(m => m.StandingsComponent)
   }
