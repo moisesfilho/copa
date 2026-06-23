@@ -241,15 +241,20 @@ const TRANSLATIONS: Record<Language, Translations> = {
   providedIn: 'root'
 })
 export class I18nService {
-  currentLang = signal<Language>('pt');
+  currentLang = signal<Language>((localStorage.getItem('language') as Language) || 'pt');
   
   t = computed(() => TRANSLATIONS[this.currentLang()]);
 
   toggleLanguage() {
-    this.currentLang.update(lang => lang === 'pt' ? 'en' : 'pt');
+    this.currentLang.update(lang => {
+      const newLang = lang === 'pt' ? 'en' : 'pt';
+      localStorage.setItem('language', newLang);
+      return newLang;
+    });
   }
 
   setLanguage(lang: Language) {
     this.currentLang.set(lang);
+    localStorage.setItem('language', lang);
   }
 }
