@@ -47,6 +47,45 @@
     </div>
   </div>
 
+  @if (isLive && events?.length) {
+    <div class="live-events-container">
+      <div class="home-events">
+        @for (event of events; track event) {
+          @if (event.IdTeam === match.Home?.IdTeam) {
+            <div class="match-event-item">
+              <span class="player-name">{{ event.playerName }}</span>
+              <span class="event-meta">
+                {{ event.MatchMinute }}
+                @if (event.isCard) {
+                  @if (event.cardType === 'yellow') { 🟨 } @else { 🟥 }
+                } @else {
+                  ⚽
+                }
+              </span>
+            </div>
+          }
+        }
+      </div>
+      <div class="away-events">
+        @for (event of events; track event) {
+          @if (event.IdTeam === match.Away?.IdTeam) {
+            <div class="match-event-item">
+              <span class="event-meta">
+                @if (event.isCard) {
+                  @if (event.cardType === 'yellow') { 🟨 } @else { 🟥 }
+                } @else {
+                  ⚽
+                }
+                {{ event.MatchMinute }}
+              </span>
+              <span class="player-name">{{ event.playerName }}</span>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+
   <div class="card-footer">
     <span class="location">
       <i class="icon-pin"></i>

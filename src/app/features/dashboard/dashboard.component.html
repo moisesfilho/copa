@@ -37,6 +37,27 @@
     @if (!loading() && favoriteTeam()) {
       <div class="dashboard-grid">
         
+        <!-- Live Matches Widget -->
+        @if (liveMatches().length > 0) {
+          <div class="widget" style="grid-column: 1 / -1;">
+            <h2 style="margin-bottom: 1rem; color: var(--success); display: flex; align-items: center; gap: 0.5rem;">
+              <span class="live-dot" style="width: 10px; height: 10px; background: var(--success); border-radius: 50%; display: inline-block; animation: pulse 2s infinite;"></span>
+              Ao Vivo Agora
+            </h2>
+            <div class="live-matches-grid">
+              @for (match of liveMatches(); track match.IdMatch) {
+                <app-match-card
+                  [match]="match"
+                  [events]="matchEvents()[match.IdMatch]"
+                  [uiResources]="uiResources()"
+                  [isDashboardMode]="true"
+                  (matchClicked)="onMatchSelected($event)"
+                ></app-match-card>
+              }
+            </div>
+          </div>
+        }
+        
         <!-- Next Match Widget -->
         <div class="widget">
           <h2 style="margin-bottom: 1rem;">Próxima Partida</h2>

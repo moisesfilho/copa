@@ -1,3 +1,9 @@
+:host {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .card {
   padding: 1.5rem;
   display: flex;
@@ -5,6 +11,10 @@
   gap: 1.25rem;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
   cursor: pointer;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .card:hover {
@@ -113,6 +123,53 @@
   border-top: 1px dotted var(--glass-border);
 }
 
+.live-events-container {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  border-top: 1px dotted rgba(255, 255, 255, 0.1);
+  padding-top: 0.75rem;
+  margin-top: -0.5rem;
+}
+
+.home-events, .away-events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.home-events {
+  text-align: right;
+  align-items: flex-end;
+  padding-right: 2rem;
+}
+
+.away-events {
+  text-align: left;
+  align-items: flex-start;
+  padding-left: 2rem;
+}
+
+.match-event-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  max-width: 100%;
+}
+
+.event-meta {
+  white-space: nowrap;
+}
+
+.live-events-container .player-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
 @keyframes pulse {
   0% {
     opacity: 1;
@@ -159,6 +216,17 @@
   .team-name {
     font-size: 1rem;
     white-space: normal;
+    text-align: center;
+  }
+
+  .live-events-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .home-events, .away-events {
+    padding: 0;
+    align-items: center;
     text-align: center;
   }
 }

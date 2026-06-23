@@ -13,6 +13,7 @@ export class MatchCardComponent {
   i18n = inject(I18nService);
 
   @Input() match!: any;
+  @Input() events: any[] = [];
   @Input() uiResources: any;
   @Input() isDashboardMode = false;
 

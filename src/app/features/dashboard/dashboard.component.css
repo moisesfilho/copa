@@ -307,18 +307,28 @@
   display: grid;
   gap: 2rem;
   grid-template-columns: 1fr;
+  max-width: 100%;
 }
 
 .widget {
   display: flex;
   flex-direction: column;
   height: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .widget>app-match-card,
 .widget>.group-card {
   flex: 1;
   display: block;
+  max-width: 100%;
+}
+
+.live-matches-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
 }
 
 @media (min-width: 969px) {

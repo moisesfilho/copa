@@ -45,6 +45,12 @@ export class DashboardComponent implements OnInit {
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 
+  liveMatches = computed(() => {
+    return this.matches()
+      .filter(m => m.MatchStatus === 3)
+      .sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
+  });
+
   nextMatch = computed(() => {
     const team = this.favoriteTeam();
     if (!team) return null;
@@ -92,7 +98,7 @@ export class DashboardComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const matchesToLoad = this.finishedMatches();
+      const matchesToLoad = [...this.finishedMatches(), ...this.liveMatches()];
       const lang = this.i18n.currentLang();
       const currentEvents = this.matchEvents();
       let updated = false;
