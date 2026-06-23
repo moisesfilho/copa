@@ -101,6 +101,10 @@ export class MatchListComponent implements OnChanges, OnInit {
   selectedTeam = signal<string>('ALL');
   selectedContinent = signal<string>('ALL');
 
+  sortOrder = signal<'ASC' | 'DESC'>('ASC');
+
+  onlyDefinedTeams = signal<boolean>(false);
+
   hasActiveFilters = computed(() => {
     return (
       this.activeFilter() !== 'ALL' ||
@@ -119,6 +123,7 @@ export class MatchListComponent implements OnChanges, OnInit {
         this.selectedGroup.set(params['group'] || 'ALL');
         this.selectedTeam.set(params['team'] || 'ALL');
         this.selectedContinent.set(params['continent'] || 'ALL');
+        this.onlyDefinedTeams.set(params['defined'] === 'true');
         this.applyFilter();
       },
     });
@@ -200,11 +205,20 @@ export class MatchListComponent implements OnChanges, OnInit {
     this.updateURLParams({ continent: select.value === 'ALL' ? null : select.value });
   }
 
+  toggleDefinedTeams() {
+    this.updateURLParams({ defined: this.onlyDefinedTeams() ? null : 'true' });
+  }
+
   clearFilters() {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: {},
+      queryParams: { match: this.route.snapshot.queryParams['match'] || null },
     });
+  }
+
+  toggleSortOrder() {
+    this.sortOrder.update(order => order === 'ASC' ? 'DESC' : 'ASC');
+    this.applyFilter();
   }
 
   private applyFilter() {
@@ -257,10 +271,29 @@ export class MatchListComponent implements OnChanges, OnInit {
       });
     }
 
+    if (this.onlyDefinedTeams()) {
+      filtered = filtered.filter((m) => {
+        const home = m.Home?.TeamName?.[0]?.Description;
+        const away = m.Away?.TeamName?.[0]?.Description;
+        // Check if at least one team is defined (has a mapped continent)
+        // Alternative: we could check if it has a real IdCountry
+        const homeDefined = home && !!this.continentMap[home];
+        const awayDefined = away && !!this.continentMap[away];
+        
+        // Also fallback to check if IdCountry is present in case continentMap is missing a team
+        const homeIdCountry = m.Home?.IdCountry;
+        const awayIdCountry = m.Away?.IdCountry;
+        
+        return homeDefined || awayDefined || homeIdCountry || awayIdCountry;
+      });
+    }
+
     // Sort by date
-    filtered = [...filtered].sort(
-      (a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime(),
-    );
+    filtered = [...filtered].sort((a, b) => {
+      const timeA = new Date(a.Date).getTime();
+      const timeB = new Date(b.Date).getTime();
+      return this.sortOrder() === 'ASC' ? timeA - timeB : timeB - timeA;
+    });
     this.filteredMatches.set(filtered);
   }
 }

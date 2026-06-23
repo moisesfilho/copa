@@ -61,7 +61,36 @@
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
 }
 
+.sort-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
 
+.sort-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.sort-btn.active {
+  background: rgba(16, 185, 129, 0.15); /* Greenish tint for active */
+  color: var(--success, #10b981);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.sort-btn.active:hover {
+  background: rgba(16, 185, 129, 0.25);
+}
 
 .match-grid {
   display: grid;

@@ -31,7 +31,15 @@ const TRANSLATIONS: Record<Language, Translations> = {
       continent: 'Continente',
       clear: 'Limpar',
       filteredMatches: 'Partidas Filtradas',
-      noMatches: 'Nenhuma partida encontrada para os filtros selecionados.'
+      noMatches: 'Nenhuma partida encontrada para os filtros selecionados.',
+      sortOldest: 'Mais Antigos',
+      sortNewest: 'Mais Recentes',
+      sortTitleOldest: 'Do mais antigo para o mais recente',
+      sortTitleNewest: 'Do mais recente para o mais antigo',
+      definedOnly: 'Apenas Definidas',
+      definedShowAll: 'Mostrar Indefinidas',
+      definedTitleOnly: 'Mostrar todas as partidas',
+      definedTitleAll: 'Ocultar partidas sem seleções definidas'
     },
     dashboard: {
       title: 'Copa do Mundo 2026',
@@ -108,7 +116,15 @@ const TRANSLATIONS: Record<Language, Translations> = {
       continent: 'Continent',
       clear: 'Clear',
       filteredMatches: 'Filtered Matches',
-      noMatches: 'No matches found for the selected filters.'
+      noMatches: 'No matches found for the selected filters.',
+      sortOldest: 'Oldest First',
+      sortNewest: 'Newest First',
+      sortTitleOldest: 'From oldest to newest',
+      sortTitleNewest: 'From newest to oldest',
+      definedOnly: 'Defined Only',
+      definedShowAll: 'Show Undefined',
+      definedTitleOnly: 'Show all matches',
+      definedTitleAll: 'Hide matches with undefined teams'
     },
     dashboard: {
       title: 'World Cup 2026',

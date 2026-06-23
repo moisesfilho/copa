@@ -56,14 +56,26 @@
     </select>
   </div>
 
-  @if (hasActiveFilters()) {
-    <div
-      class="filter-actions"
-      style="display: flex; justify-content: flex-end; margin-top: 0.5rem"
+  <div
+    class="filter-actions"
+    style="display: flex; justify-content: flex-end; margin-top: 0.5rem; gap: 0.5rem"
+  >
+    <button 
+      class="sort-btn glass-panel" 
+      (click)="toggleDefinedTeams()" 
+      [title]="onlyDefinedTeams() ? i18n.t().filters.definedTitleOnly : i18n.t().filters.definedTitleAll"
+      [class.active]="onlyDefinedTeams()"
     >
+      <span class="icon">{{ onlyDefinedTeams() ? '✔️' : '⭕' }}</span> 
+      {{ onlyDefinedTeams() ? i18n.t().filters.definedOnly : i18n.t().filters.definedShowAll }}
+    </button>
+    <button class="sort-btn glass-panel" (click)="toggleSortOrder()" [title]="sortOrder() === 'ASC' ? i18n.t().filters.sortTitleOldest : i18n.t().filters.sortTitleNewest">
+      <span class="icon">↕️</span> {{ sortOrder() === 'ASC' ? i18n.t().filters.sortOldest : i18n.t().filters.sortNewest }}
+    </button>
+    @if (hasActiveFilters()) {
       <button class="clear-filters-btn" (click)="clearFilters()">✕ {{ i18n.t().filters.clear }}</button>
-    </div>
-  }
+    }
+  </div>
 </div>
 
 <div class="match-grid">
