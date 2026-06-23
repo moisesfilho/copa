@@ -12,5 +12,9 @@ export const routes: Routes = [
   {
     path: 'classificacao',
     loadComponent: () => import('./features/standings/standings').then(m => m.StandingsComponent)
+  },
+  {
+    path: 'sobre',
+    loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent)
   }
 ];

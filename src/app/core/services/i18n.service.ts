@@ -9,6 +9,7 @@ export interface Translations {
   dashboard: any;
   standings: any;
   match: any;
+  about: any;
   continents: { [key: string]: string };
 }
 
@@ -19,6 +20,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
       dashboard: 'Dashboard',
       matches: 'Partidas',
       standings: 'Classificação',
+      about: 'Sobre',
       install: '📲 Instalar App'
     },
     filters: {
@@ -115,6 +117,29 @@ const TRANSLATIONS: Record<Language, Translations> = {
       corners: 'Escanteios',
       yellowCards: 'Cartões Amarelos'
     },
+    about: {
+      title: 'Copa 2026',
+      description: 'Bem-vindo ao **Copa 2026**, uma aplicação moderna desenvolvida para você acompanhar de perto todas as emoções, partidas e resultados da Copa do Mundo.',
+      featuresTitle: '✨ Principais Funcionalidades',
+      features: [
+        '**Acompanhamento Ao Vivo**: Atualizações de placares, gols e cartões em tempo real.',
+        '**Seleção Favorita**: Escolha o seu país do coração e tenha o painel principal focado nas estatísticas da sua seleção.',
+        '**Lista de Artilheiros**: Fique de olho nos jogadores que mais balançaram a rede.',
+        '**Classificação dos Grupos**: Acompanhe o desempenho das seleções na fase de grupos.',
+        '**Internacionalização**: Suporte nativo para Português e Inglês.',
+        '**Dark Mode**: Opção de tema claro e escuro.'
+      ],
+      mobileTitle: '📱 Experiência Mobile & Instalação',
+      mobile: [
+        '**100% Responsivo**: Layout que se adapta perfeitamente em todas as telas.',
+        '**PWA (Instalável)**: Instale o aplicativo diretamente no seu celular ou desktop.'
+      ],
+      dataTitle: '📊 Dados Oficiais',
+      dataDesc: 'Todos os resultados e eventos são consumidos diretamente e **oficialmente pela API pública da FIFA**.',
+      developerTitle: '👨‍💻 Desenvolvedor',
+      developerDesc: 'Desenvolvido com dedicação por **Moisés Filho**, Líder e Gestor em Tecnologia da Informação com mais de 19 anos de experiência, sendo 15 anos focados em liderança de times, arquitetura de software e cultura DevOps/SRE.',
+      developerLink: 'Ver currículo'
+    },
     continents: {
       'África (CAF)': 'África (CAF)',
       'América do Sul (CONMEBOL)': 'América do Sul (CONMEBOL)',
@@ -130,6 +155,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
       dashboard: 'Dashboard',
       matches: 'Matches',
       standings: 'Standings',
+      about: 'About',
       install: '📲 Install App'
     },
     filters: {
@@ -226,6 +252,29 @@ const TRANSLATIONS: Record<Language, Translations> = {
       corners: 'Corners',
       yellowCards: 'Yellow Cards'
     },
+    about: {
+      title: 'World Cup 2026',
+      description: 'Welcome to **World Cup 2026**, a modern application developed for you to closely follow all the emotions, matches, and results of the World Cup.',
+      featuresTitle: '✨ Main Features',
+      features: [
+        '**Live Tracking**: Real-time updates of scores, goals, and cards.',
+        '**Favorite Team**: Choose your favorite country and have the main panel focused on its statistics.',
+        '**Top Scorers**: Keep an eye on the players who have scored the most goals.',
+        '**Group Standings**: Track team performance in the group stage.',
+        '**Internationalization**: Native support for English and Portuguese.',
+        '**Dark Mode**: Light and dark theme options.'
+      ],
+      mobileTitle: '📱 Mobile Experience & Installation',
+      mobile: [
+        '**100% Responsive**: Layout that adapts perfectly on all screens.',
+        '**PWA (Installable)**: Install the application directly on your phone or desktop.'
+      ],
+      dataTitle: '📊 Official Data',
+      dataDesc: 'All results and events are consumed directly and **officially from the public FIFA API**.',
+      developerTitle: '👨‍💻 Developer',
+      developerDesc: 'Developed with dedication by **Moisés Filho**, an IT Leader and Manager with over 19 years of experience, including 15 years focused on team leadership, software architecture, and DevOps/SRE culture.',
+      developerLink: 'View resume'
+    },
     continents: {
       'África (CAF)': 'Africa (CAF)',
       'América do Sul (CONMEBOL)': 'South America (CONMEBOL)',
@@ -242,7 +291,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
 })
 export class I18nService {
   currentLang = signal<Language>((localStorage.getItem('language') as Language) || 'pt');
-  
+
   t = computed(() => TRANSLATIONS[this.currentLang()]);
 
   toggleLanguage() {
