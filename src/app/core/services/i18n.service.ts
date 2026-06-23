@@ -16,7 +16,7 @@ export interface Translations {
 const TRANSLATIONS: Record<Language, Translations> = {
   pt: {
     menu: {
-      title: 'Copa 2026',
+      title: 'Copados 2026',
       dashboard: 'Dashboard',
       matches: 'Partidas',
       standings: 'Classificação',
@@ -50,8 +50,8 @@ const TRANSLATIONS: Record<Language, Translations> = {
       subtitle: 'Acompanhe os resultados, horários e locais de todos os confrontos.'
     },
     dashboard: {
-      title: 'Copa do Mundo 2026',
-      subtitle: 'Acompanhe de perto as estatísticas e os jogos da sua seleção preferida.',
+      title: 'Copados 2026',
+      subtitle: 'Acompanhe de perto as estatísticas do torneio e os jogos em destaque.',
       total: 'Total de Jogos',
       finished: 'Encerrados',
       percent: 'Concluídos (%)',
@@ -118,8 +118,8 @@ const TRANSLATIONS: Record<Language, Translations> = {
       yellowCards: 'Cartões Amarelos'
     },
     about: {
-      title: 'Copa 2026',
-      description: 'Bem-vindo ao **Copa 2026**, uma aplicação moderna desenvolvida para você acompanhar de perto todas as emoções, partidas e resultados da Copa do Mundo.',
+      title: 'Copados 2026',
+      description: 'Bem-vindo ao **Copados 2026**, uma aplicação moderna desenvolvida para você acompanhar de perto todas as emoções, partidas e resultados da Copa do Mundo.',
       featuresTitle: '✨ Principais Funcionalidades',
       features: [
         '**Acompanhamento Ao Vivo**: Atualizações de placares, gols e cartões em tempo real.',
@@ -151,7 +151,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
   },
   en: {
     menu: {
-      title: 'World Cup 2026',
+      title: 'Copados 2026',
       dashboard: 'Dashboard',
       matches: 'Matches',
       standings: 'Standings',
@@ -185,8 +185,8 @@ const TRANSLATIONS: Record<Language, Translations> = {
       subtitle: 'Follow the results, schedules, and venues of all matchups.'
     },
     dashboard: {
-      title: 'World Cup 2026',
-      subtitle: 'Closely follow the stats and matches of your favorite team.',
+      title: 'Copados 2026',
+      subtitle: 'Closely follow the tournament stats and featured matches.',
       total: 'Total Matches',
       finished: 'Finished',
       percent: 'Completed (%)',
@@ -253,8 +253,8 @@ const TRANSLATIONS: Record<Language, Translations> = {
       yellowCards: 'Yellow Cards'
     },
     about: {
-      title: 'World Cup 2026',
-      description: 'Welcome to **World Cup 2026**, a modern application developed for you to closely follow all the emotions, matches, and results of the World Cup.',
+      title: 'Copados 2026',
+      description: 'Welcome to **Copados 2026**, a modern application developed for you to closely follow all the emotions, matches, and results of the World Cup.',
       featuresTitle: '✨ Main Features',
       features: [
         '**Live Tracking**: Real-time updates of scores, goals, and cards.',

@@ -1,6 +1,6 @@
-# 🏆 Copa 2026
+# 🏆 Copados 2026
 
-Bem-vindo ao **Copa 2026**, uma aplicação moderna desenvolvida para você acompanhar de perto todas as emoções, partidas e resultados da Copa do Mundo.
+Bem-vindo ao **Copados 2026**, uma aplicação moderna desenvolvida para você acompanhar de perto todas as emoções, partidas e resultados da Copa do Mundo.
 
 ## ✨ Principais Funcionalidades
 
