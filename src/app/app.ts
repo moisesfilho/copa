@@ -1,6 +1,7 @@
 import { Component, signal, OnInit, HostListener, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { I18nService } from './core/services/i18n.service';
+import { LiveUpdateService } from './core/services/live-update.service';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ import { I18nService } from './core/services/i18n.service';
 })
 export class App implements OnInit {
   i18n = inject(I18nService);
+  liveUpdate = inject(LiveUpdateService);
   isSidebarOpen = signal(false);
   isDarkMode = signal(true);
 
@@ -55,6 +57,9 @@ export class App implements OnInit {
     } else {
       this.setTheme(true);
     }
+
+    // Start checking for live matches in the background
+    this.liveUpdate.startPolling();
   }
 
   toggleSidebar() {

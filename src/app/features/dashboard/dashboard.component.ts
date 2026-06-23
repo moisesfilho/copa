@@ -3,6 +3,7 @@ import { Component, OnInit, inject, signal, computed, effect } from '@angular/co
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { calculateStandings } from '../../core/utils/standings-calculator';
+import { LiveUpdateService } from '../../core/services/live-update.service';
 import { MatchCardComponent } from '../matches/match-card/match-card.component';
 import { MatchDetailModalComponent } from '../matches/match-detail-modal/match-detail-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,6 +21,7 @@ export class DashboardComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   i18n = inject(I18nService);
+  liveUpdate = inject(LiveUpdateService);
 
   matches = signal<any[]>([]);
   standings = signal<any[]>([]);
@@ -31,9 +33,18 @@ export class DashboardComponent implements OnInit {
 
   favoriteTeam = signal<string | null>(localStorage.getItem('favoriteTeam'));
 
+  mergedMatches = computed(() => {
+    const liveUpdates = this.liveUpdate.liveMatchUpdates();
+    return this.matches().map(m => liveUpdates[m.IdMatch] || m);
+  });
+
+  mergedMatchEvents = computed(() => {
+    return { ...this.matchEvents(), ...this.liveUpdate.liveEventUpdates() };
+  });
+
   availableTeams = computed(() => {
     const teamsMap = new Map<string, string>();
-    for (const m of this.matches()) {
+    for (const m of this.mergedMatches()) {
       if (m.Home?.IdCountry && m.Home?.TeamName?.[0]?.Description) {
         teamsMap.set(m.Home.IdCountry, m.Home.TeamName[0].Description);
       }
@@ -47,13 +58,13 @@ export class DashboardComponent implements OnInit {
   });
 
   liveMatches = computed(() => {
-    return this.matches()
+    return this.mergedMatches()
       .filter(m => m.MatchStatus === 3)
       .sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
   });
 
   globalNextMatch = computed(() => {
-    const upcoming = this.matches()
+    const upcoming = this.mergedMatches()
       .filter(m => m.MatchStatus === 1 || (m.MatchStatus === 0 && m.HomeTeamScore === null))
       .sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
     
@@ -65,7 +76,7 @@ export class DashboardComponent implements OnInit {
     if (!team) return null;
     
     // Sort matches by date
-    const teamMatches = this.matches()
+    const teamMatches = this.mergedMatches()
       .filter(m => m.Home?.IdCountry === team || m.Away?.IdCountry === team)
       .sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
 
@@ -84,19 +95,19 @@ export class DashboardComponent implements OnInit {
     const team = this.favoriteTeam();
     if (!team) return [];
 
-    return this.matches()
+    return this.mergedMatches()
       .filter(m => (m.Home?.IdCountry === team || m.Away?.IdCountry === team) && m.MatchStatus === 0 && m.HomeTeamScore !== null)
       .sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime()); // Sort descending (most recent first)
   });
 
   globalFinishedMatches = computed(() => {
-    return this.matches()
+    return this.mergedMatches()
       .filter(m => (m.MatchStatus === 0 && m.HomeTeamScore !== null) || m.MatchStatus === 3);
   });
 
   topScorers = computed(() => {
-    const eventsMap = this.matchEvents();
-    const matches = this.matches();
+    const eventsMap = this.mergedMatchEvents();
+    const matches = this.mergedMatches();
     const playerGoals = new Map<string, { name: string, goals: number, teamId: string }>();
 
     for (const matchId in eventsMap) {
@@ -140,7 +151,7 @@ export class DashboardComponent implements OnInit {
     const team = this.favoriteTeam();
     if (!team) return null;
 
-    const allStandings = calculateStandings(this.matches());
+    const allStandings = calculateStandings(this.mergedMatches());
     // Find which group the favorite team is in
     for (const groupName of Object.keys(allStandings)) {
       const groupTeams = allStandings[groupName];

@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal, effect } from '@angular/core';
+import { Component, OnInit, inject, signal, effect, computed } from '@angular/core';
 
 import { FifaApiService } from '../../../core/services/fifa-api.service';
 import { I18nService } from '../../../core/services/i18n.service';
+import { LiveUpdateService } from '../../../core/services/live-update.service';
 import { MatchListComponent } from '../match-list/match-list.component';
 import { MatchDetailModalComponent } from '../match-detail-modal/match-detail-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,8 +19,14 @@ export class MatchesPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   i18n = inject(I18nService);
+  liveUpdate = inject(LiveUpdateService);
 
   matches = signal<any[]>([]);
+  mergedMatches = computed(() => {
+    const liveUpdates = this.liveUpdate.liveMatchUpdates();
+    return this.matches().map(m => liveUpdates[m.IdMatch] || m);
+  });
+
   uiResources = signal<any>({});
   loading = signal<boolean>(true);
   selectedMatch = signal<any | null>(null);

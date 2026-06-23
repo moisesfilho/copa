@@ -14,7 +14,7 @@
 
     @if (!loading()) {
       <app-match-list
-        [matches]="matches()"
+        [matches]="mergedMatches()"
         [uiResources]="uiResources()"
         (matchClicked)="onMatchSelected($event)"
       ></app-match-list>

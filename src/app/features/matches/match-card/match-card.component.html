@@ -1,31 +1,31 @@
 <div class="card match-card glass-panel" [class.live]="isLive" [class.dashboard-mode]="isDashboardMode"
   (click)="onClick()">
   <div class="card-header">
-    <span class="stage">{{ match.StageName?.[0]?.Description || i18n.t().match.noInfo }}</span>
-    <span class="date">{{ match.Date | date: 'dd/MM/yyyy HH:mm' }}</span>
+    <span class="stage">{{ displayMatch.StageName?.[0]?.Description || i18n.t().match.noInfo }}</span>
+    <span class="date">{{ displayMatch.Date | date: 'dd/MM/yyyy HH:mm' }}</span>
   </div>
 
   <div class="match-info">
     <div class="team home">
-      @if (match.Home?.IdCountry) {
-      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Home.IdCountry" [alt]="homeTeam"
+      @if (displayMatch.Home?.IdCountry) {
+      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + displayMatch.Home.IdCountry" [alt]="homeTeam"
         class="flag" />
       }
-      @if (!match.Home?.IdCountry) {
+      @if (!displayMatch.Home?.IdCountry) {
       <div class="flag placeholder"></div>
       }
       <span class="team-name">{{ homeTeam }}</span>
     </div>
 
     <div class="score-container">
-      @if (match.HomeTeamScore !== null) {
+      @if (displayMatch.HomeTeamScore !== null) {
       <div class="score">
         <span>{{ homeScore }}</span>
         <span class="divider">-</span>
         <span>{{ awayScore }}</span>
       </div>
       }
-      @if (match.HomeTeamScore === null) {
+      @if (displayMatch.HomeTeamScore === null) {
       <div class="vs">VS</div>
       }
       @if (isLive) {
@@ -37,21 +37,21 @@
 
     <div class="team away">
       <span class="team-name">{{ awayTeam }}</span>
-      @if (match.Away?.IdCountry) {
-      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Away.IdCountry" [alt]="awayTeam"
+      @if (displayMatch.Away?.IdCountry) {
+      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + displayMatch.Away.IdCountry" [alt]="awayTeam"
         class="flag" />
       }
-      @if (!match.Away?.IdCountry) {
+      @if (!displayMatch.Away?.IdCountry) {
       <div class="flag placeholder"></div>
       }
     </div>
   </div>
 
-  @if (isLive && events?.length) {
+  @if (isLive && displayEvents?.length) {
     <div class="live-events-container">
       <div class="home-events">
-        @for (event of events; track event) {
-          @if (event.IdTeam === match.Home?.IdTeam) {
+        @for (event of displayEvents; track event) {
+          @if (event.IdTeam === displayMatch.Home?.IdTeam) {
             <div class="match-event-item">
               <span class="player-name">{{ event.playerName }}</span>
               <span class="event-meta">
@@ -67,8 +67,8 @@
         }
       </div>
       <div class="away-events">
-        @for (event of events; track event) {
-          @if (event.IdTeam === match.Away?.IdTeam) {
+        @for (event of displayEvents; track event) {
+          @if (event.IdTeam === displayMatch.Away?.IdTeam) {
             <div class="match-event-item">
               <span class="event-meta">
                 @if (event.isCard) {
@@ -89,15 +89,15 @@
   <div class="card-footer">
     <span class="location">
       <i class="icon-pin"></i>
-      {{ match.Stadium?.Name?.[0]?.Description || i18n.t().match.noInfo }}
+      {{ displayMatch.Stadium?.Name?.[0]?.Description || i18n.t().match.noInfo }}
     </span>
   </div>
 
-  @if (isDashboardMode && match.Officials?.length) {
+  @if (isDashboardMode && displayMatch.Officials?.length) {
   <div class="officials-section" style="padding: 1rem; border-top: 1px solid var(--glass-border); margin-top: auto;">
     <h4 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: var(--text-secondary);">Equipe de Arbitragem</h4>
     <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
-      @for (official of match.Officials; track official) {
+      @for (official of displayMatch.Officials; track official) {
       <li style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
         <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-1/' + official.IdCountry" [alt]="official.IdCountry"
           style="width: 16px; border-radius: 2px;">
