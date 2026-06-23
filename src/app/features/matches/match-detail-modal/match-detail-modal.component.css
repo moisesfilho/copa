@@ -80,6 +80,29 @@
   transform: scale(1.05);
 }
 
+.share-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 4.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.share-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
 .modal-header {
   padding: 4rem 2rem 2.5rem;
   background: linear-gradient(to bottom, rgba(255,255,255,0.05) 0%, transparent 100%);
@@ -485,6 +508,10 @@
   .close-btn {
     top: 1rem;
     right: 1rem;
+  }
+  .share-btn {
+    top: 1rem;
+    right: 4rem;
   }
   .modal-header {
     padding: 3.5rem 1rem 1.5rem;

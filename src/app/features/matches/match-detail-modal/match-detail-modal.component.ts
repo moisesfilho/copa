@@ -145,6 +145,68 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
     return parsed;
   }
 
+  getFlagEmoji(fifaCode: string): string {
+    const fifaToIso: Record<string, string> = {
+      ARG: 'AR', AUS: 'AU', BEL: 'BE', BRA: 'BR', CAN: 'CA', CMR: 'CM',
+      CRC: 'CR', CRO: 'HR', DEN: 'DK', ECU: 'EC', ENG: 'GB-ENG', ESP: 'ES',
+      FRA: 'FR', GER: 'DE', GHA: 'GH', IRN: 'IR', JPN: 'JP', KOR: 'KR',
+      KSA: 'SA', MAR: 'MA', MEX: 'MX', NED: 'NL', POL: 'PL', POR: 'PT',
+      QAT: 'QA', SEN: 'SN', SRB: 'RS', SUI: 'CH', TUN: 'TN', URU: 'UY',
+      USA: 'US', WAL: 'GB-WLS'
+    };
+
+    const iso = fifaToIso[fifaCode];
+    if (!iso) return `[${fifaCode}]`;
+    if (iso.startsWith('GB-')) {
+      const codes = iso === 'GB-ENG' ? ['g', 'b', 'e', 'n', 'g'] : ['g', 'b', 'w', 'l', 's'];
+      return String.fromCodePoint(
+        0x1F3F4,
+        ...codes.map(c => 0xE0000 + c.charCodeAt(0)),
+        0xE007F
+      );
+    }
+    return String.fromCodePoint(
+      ...iso.split('').map(c => 0x1F1E6 - 65 + c.toUpperCase().charCodeAt(0))
+    );
+  }
+
+  shareMatch() {
+    if (!this.match) return;
+
+    const homeCode = this.match.Home?.IdCountry || '';
+    const awayCode = this.match.Away?.IdCountry || '';
+    
+    const homeFlag = this.getFlagEmoji(homeCode);
+    const awayFlag = this.getFlagEmoji(awayCode);
+    
+    const homeName = this.match.Home?.TeamName?.[0]?.Description || homeCode;
+    const awayName = this.match.Away?.TeamName?.[0]?.Description || awayCode;
+    
+    const homeScore = this.match.HomeTeamScore ?? '';
+    const awayScore = this.match.AwayTeamScore ?? '';
+    
+    const title = `Copa: ${homeName} x ${awayName}`;
+    const scoreText = (this.match.MatchStatus === 0 || this.match.MatchStatus === 3) 
+      ? ` Placar: ${homeScore} - ${awayScore}` 
+      : '';
+      
+    // A aplicação usa hash routing, então precisamos incluir o #/ na URL
+    const url = window.location.origin + window.location.pathname + '#/?match=' + this.match.IdMatch;
+    
+    const text = `${homeFlag} ${homeName} x ${awayName} ${awayFlag}${scoreText}\nConfira os detalhes da partida direto pelo app: ${url}`;
+
+    if (navigator.share) {
+      navigator.share({
+        title,
+        text
+      }).catch(err => console.error('Erro ao compartilhar', err));
+    } else {
+      navigator.clipboard.writeText(text)
+        .then(() => alert('Link da partida copiado para a área de transferência!'))
+        .catch(err => console.error('Erro ao copiar link', err));
+    }
+  }
+
   onClose() {
     this.close.emit();
   }

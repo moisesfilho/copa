@@ -1,12 +1,11 @@
 import { Component, signal, OnInit, HostListener, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { UpperCasePipe } from '@angular/common';
 import { I18nService } from './core/services/i18n.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, UpperCasePipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
