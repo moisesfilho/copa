@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
   uiResources = signal<any>({});
   loading = signal<boolean>(true);
   selectedMatch = signal<any | null>(null);
+  matchEvents = signal<Record<string, any[]>>({});
 
   favoriteTeam = signal<string | null>(localStorage.getItem('favoriteTeam'));
 
@@ -90,6 +91,74 @@ export class DashboardComponent implements OnInit {
   });
 
   constructor() {
+    effect(() => {
+      const matchesToLoad = this.finishedMatches();
+      const lang = this.i18n.currentLang();
+      const currentEvents = this.matchEvents();
+      let updated = false;
+
+      matchesToLoad.forEach(m => {
+        if (!currentEvents[m.IdMatch]) {
+          // Initialize to avoid fetching twice
+          currentEvents[m.IdMatch] = [];
+          updated = true;
+
+          this.api.getMatchTimeline(m.IdCompetition, m.IdSeason, m.IdStage, m.IdMatch, lang).subscribe({
+            next: (res) => {
+              if (res && res.Event) {
+                const fetchedEvents = res.Event.filter((e: any) => {
+                  const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
+                  return e.Type === 0 || e.Type === 34 || e.Type === 41 || 
+                         typeDesc.includes('gol!') || typeDesc.includes('goal') ||
+                         e.Type === 2 || e.Type === 3 || e.Type === 4 ||
+                         typeDesc.includes('cartão') || typeDesc.includes('card');
+                }).map((e: any) => {
+                  let playerName = 'Jogador';
+                  if (e.EventDescription && e.EventDescription[0]) {
+                     const desc = e.EventDescription[0].Description;
+                     const match = desc.match(/^(.*?)\s*\(/);
+                     if (match && match[1]) {
+                       playerName = match[1];
+                     } else {
+                       playerName = desc; // fallback
+                     }
+                  }
+                  
+                  let isCard = false;
+                  let cardType = '';
+                  const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
+                  if (e.Type === 2 || typeDesc.includes('amarelo') || typeDesc.includes('yellow')) {
+                     isCard = true;
+                     cardType = 'yellow';
+                  } else if (e.Type === 3 || e.Type === 4 || typeDesc.includes('vermelho') || typeDesc.includes('red')) {
+                     isCard = true;
+                     cardType = 'red';
+                  }
+
+                  return {
+                    ...e,
+                    playerName,
+                    isCard,
+                    cardType
+                  };
+                });
+                
+                this.matchEvents.update(eventsMap => ({
+                  ...eventsMap,
+                  [m.IdMatch]: fetchedEvents
+                }));
+              }
+            },
+            error: err => console.error('Error fetching match timeline', err)
+          });
+        }
+      });
+      
+      if (updated) {
+        this.matchEvents.set(currentEvents);
+      }
+    });
+
     effect(() => {
       const lang = this.i18n.currentLang();
       this.loading.set(true);

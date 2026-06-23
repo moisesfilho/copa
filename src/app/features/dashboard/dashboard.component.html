@@ -114,18 +114,65 @@
                 @for (match of finishedMatches(); track match.IdMatch) {
                   <li class="match-list-item" (click)="onMatchSelected(match)">
                     <div class="match-date">
-                      {{ match.Date | date:'dd/MM/yyyy' }}
+                      <div>🗓️ {{ match.Date | date:'dd/MM/yyyy HH:mm' }}</div>
+                      <div class="stadium-info" style="font-size: 0.75rem; margin-top: 0.35rem; opacity: 0.8; line-height: 1.2;">
+                        🏟️ {{ match.Stadium?.Name?.[0]?.Description || 'Estádio' }}
+                      </div>
                     </div>
                     <div class="match-teams">
-                      <span [style.font-weight]="match.Home.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
-                        {{ match.Home.TeamName?.[0]?.Description || match.Home.IdCountry }}
-                      </span>
+                      <div class="team-side home-side">
+                        <span [style.font-weight]="match.Home.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
+                          {{ match.Home.TeamName?.[0]?.Description || match.Home.IdCountry }}
+                        </span>
+                        @if (matchEvents()[match.IdMatch]) {
+                          <div class="goal-scorers">
+                            @for (event of matchEvents()[match.IdMatch]; track event) {
+                              @if (event.IdTeam === match.Home?.IdTeam) {
+                                <span class="event-item home-event">
+                                  <span class="player-name">{{ event.playerName }}</span>
+                                  <span class="event-meta">
+                                    {{ event.MatchMinute }}
+                                    @if (event.isCard) {
+                                      @if (event.cardType === 'yellow') { 🟨 } @else { 🟥 }
+                                    } @else {
+                                      ⚽
+                                    }
+                                  </span>
+                                </span>
+                              }
+                            }
+                          </div>
+                        }
+                      </div>
+
                       <span class="match-score">
                         {{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}
                       </span>
-                      <span [style.font-weight]="match.Away.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
-                        {{ match.Away.TeamName?.[0]?.Description || match.Away.IdCountry }}
-                      </span>
+
+                      <div class="team-side away-side">
+                        <span [style.font-weight]="match.Away.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
+                          {{ match.Away.TeamName?.[0]?.Description || match.Away.IdCountry }}
+                        </span>
+                        @if (matchEvents()[match.IdMatch]) {
+                          <div class="goal-scorers">
+                            @for (event of matchEvents()[match.IdMatch]; track event) {
+                              @if (event.IdTeam === match.Away?.IdTeam) {
+                                <span class="event-item away-event">
+                                  <span class="event-meta">
+                                    @if (event.isCard) {
+                                      @if (event.cardType === 'yellow') { 🟨 } @else { 🟥 }
+                                    } @else {
+                                      ⚽
+                                    }
+                                    {{ event.MatchMinute }}
+                                  </span>
+                                  <span class="player-name">{{ event.playerName }}</span>
+                                </span>
+                              }
+                            }
+                          </div>
+                        }
+                      </div>
                     </div>
                     <div class="match-action">
                       Detalhes ➔
