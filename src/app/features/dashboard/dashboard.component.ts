@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit {
   loading = signal<boolean>(true);
   selectedMatch = signal<any | null>(null);
   matchEvents = signal<Record<string, any[]>>({});
+  isLoadingEvents = signal<boolean>(false);
 
   favoriteTeam = signal<string | null>(localStorage.getItem('favoriteTeam'));
 
@@ -49,6 +50,14 @@ export class DashboardComponent implements OnInit {
     return this.matches()
       .filter(m => m.MatchStatus === 3)
       .sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
+  });
+
+  globalNextMatch = computed(() => {
+    const upcoming = this.matches()
+      .filter(m => m.MatchStatus === 1 || (m.MatchStatus === 0 && m.HomeTeamScore === null))
+      .sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
+    
+    return upcoming.length > 0 ? upcoming[0] : null;
   });
 
   nextMatch = computed(() => {
@@ -80,6 +89,53 @@ export class DashboardComponent implements OnInit {
       .sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime()); // Sort descending (most recent first)
   });
 
+  globalFinishedMatches = computed(() => {
+    return this.matches()
+      .filter(m => (m.MatchStatus === 0 && m.HomeTeamScore !== null) || m.MatchStatus === 3);
+  });
+
+  topScorers = computed(() => {
+    const eventsMap = this.matchEvents();
+    const matches = this.matches();
+    const playerGoals = new Map<string, { name: string, goals: number, teamId: string }>();
+
+    for (const matchId in eventsMap) {
+      const match = matches.find(m => m.IdMatch === matchId);
+      if (!match) continue;
+
+      const events = eventsMap[matchId] || [];
+      for (const e of events) {
+        // Exclude cards and own goals (Type 34)
+        if (!e.isCard && e.Type !== 34) {
+          // It's a goal
+          const playerId = e.IdPlayer || e.playerName; // Fallback to name if ID is missing
+          if (!playerId) continue;
+
+          // Determine the team ID (IdCountry) for the flag
+          let teamId = '';
+          if (e.IdTeam) {
+            if (e.IdTeam === match.Home?.IdTeam) teamId = match.Home?.IdCountry;
+            else if (e.IdTeam === match.Away?.IdTeam) teamId = match.Away?.IdCountry;
+          }
+          if (!teamId) {
+            // Fallback
+            teamId = e.TeamName?.[0]?.Description === match.Home?.TeamName?.[0]?.Description ? match.Home?.IdCountry : match.Away?.IdCountry;
+          }
+
+          if (!playerGoals.has(playerId)) {
+            playerGoals.set(playerId, { name: e.playerName, goals: 0, teamId: teamId || '' });
+          }
+          playerGoals.get(playerId)!.goals += 1;
+        }
+      }
+    }
+
+    // Sort by goals descending, then by name
+    return Array.from(playerGoals.values())
+      .sort((a, b) => b.goals - a.goals || a.name.localeCompare(b.name))
+      .slice(0, 5);
+  });
+
   favoriteGroupStandings = computed(() => {
     const team = this.favoriteTeam();
     if (!team) return null;
@@ -98,17 +154,23 @@ export class DashboardComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const matchesToLoad = [...this.finishedMatches(), ...this.liveMatches()];
+      const matchesToLoad = this.globalFinishedMatches();
       const lang = this.i18n.currentLang();
       const currentEvents = this.matchEvents();
-      let updated = false;
+      
+      const missingMatches = matchesToLoad.filter(m => !currentEvents[m.IdMatch]);
+      
+      if (missingMatches.length > 0) {
+        // Initialize locally to prevent multiple requests while fetching
+        missingMatches.forEach(m => currentEvents[m.IdMatch] = []);
+        
+        let pending = missingMatches.length;
+        const newEvents: Record<string, any[]> = {};
+        
+        // Turn on loading state since we are fetching timelines
+        this.isLoadingEvents.set(true);
 
-      matchesToLoad.forEach(m => {
-        if (!currentEvents[m.IdMatch]) {
-          // Initialize to avoid fetching twice
-          currentEvents[m.IdMatch] = [];
-          updated = true;
-
+        missingMatches.forEach(m => {
           this.api.getMatchTimeline(m.IdCompetition, m.IdSeason, m.IdStage, m.IdMatch, lang).subscribe({
             next: (res) => {
               if (res && res.Event) {
@@ -119,12 +181,12 @@ export class DashboardComponent implements OnInit {
                          e.Type === 2 || e.Type === 3 || e.Type === 4 ||
                          typeDesc.includes('cartão') || typeDesc.includes('card');
                 }).map((e: any) => {
-                  let playerName = 'Jogador';
+                  let playerName = this.i18n.t().dashboard.player || 'Jogador';
                   if (e.EventDescription && e.EventDescription[0]) {
                      const desc = e.EventDescription[0].Description;
-                     const match = desc.match(/^(.*?)\s*\(/);
-                     if (match && match[1]) {
-                       playerName = match[1];
+                     const matchName = desc.match(/^(.*?)\s*\(/);
+                     if (matchName && matchName[1]) {
+                       playerName = matchName[1];
                      } else {
                        playerName = desc; // fallback
                      }
@@ -149,21 +211,34 @@ export class DashboardComponent implements OnInit {
                   };
                 });
                 
-                this.matchEvents.update(eventsMap => ({
-                  ...eventsMap,
-                  [m.IdMatch]: fetchedEvents
-                }));
+                newEvents[m.IdMatch] = fetchedEvents;
               }
             },
-            error: err => console.error('Error fetching match timeline', err)
+            error: err => {
+              console.error('Error fetching match timeline', err);
+              pending--;
+              if (pending === 0) {
+                this.matchEvents.update(eventsMap => ({
+                  ...eventsMap,
+                  ...newEvents
+                }));
+                this.isLoadingEvents.set(false);
+              }
+            },
+            complete: () => {
+              pending--;
+              if (pending === 0) {
+                this.matchEvents.update(eventsMap => ({
+                  ...eventsMap,
+                  ...newEvents
+                }));
+                this.isLoadingEvents.set(false);
+              }
+            }
           });
-        }
-      });
-      
-      if (updated) {
-        this.matchEvents.set(currentEvents);
+        });
       }
-    });
+    }, { allowSignalWrites: true });
 
     effect(() => {
       const lang = this.i18n.currentLang();

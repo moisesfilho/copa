@@ -6,9 +6,9 @@
 
   <div class="favorite-selector-wrapper">
     <div class="favorite-selector">
-      <label for="favTeam" class="label">Seleção Favorita:</label>
+      <label for="favTeam" class="label">{{ i18n.t().dashboard.favTeamLabel }}</label>
       <select id="favTeam" class="filter-dropdown" (change)="setFavoriteTeam($event)">
-        <option value="">-- Escolha uma seleção --</option>
+        <option value="">{{ i18n.t().dashboard.favTeamPlaceholder }}</option>
         @for (team of availableTeams(); track team.id) {
           <option [value]="team.id" [selected]="favoriteTeam() === team.id">{{ team.name }}</option>
         }
@@ -24,17 +24,7 @@
       </div>
     }
 
-    @if (!loading() && !favoriteTeam()) {
-      <div class="empty-state glass-panel" style="text-align: center; padding: 4rem 2rem;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">🌟</div>
-        <h2>Bem-vindo(a) à Copa de 2026!</h2>
-        <p style="color: var(--text-secondary); margin-top: 1rem; max-width: 500px; margin-inline: auto;">
-          Para uma experiência personalizada, escolha sua seleção favorita no menu superior e acompanhe de perto todos os jogos e a classificação do grupo dela.
-        </p>
-      </div>
-    }
-
-    @if (!loading() && favoriteTeam()) {
+    @if (!loading()) {
       <div class="dashboard-grid">
         
         <!-- Live Matches Widget -->
@@ -42,7 +32,7 @@
           <div class="widget" style="grid-column: 1 / -1;">
             <h2 style="margin-bottom: 1rem; color: var(--success); display: flex; align-items: center; gap: 0.5rem;">
               <span class="live-dot" style="width: 10px; height: 10px; background: var(--success); border-radius: 50%; display: inline-block; animation: pulse 2s infinite;"></span>
-              Ao Vivo Agora
+              {{ i18n.t().dashboard.liveNow }}
             </h2>
             <div class="live-matches-grid">
               @for (match of liveMatches(); track match.IdMatch) {
@@ -57,11 +47,11 @@
             </div>
           </div>
         }
-        
-        <!-- Next Match Widget -->
-        <div class="widget">
-          <h2 style="margin-bottom: 1rem;">Próxima Partida</h2>
-          @if (nextMatch(); as match) {
+
+        <!-- 1. Global Next Match Widget (Always visible) -->
+        <div class="widget" [style.grid-column]="!favoriteTeam() ? '1 / -1' : 'auto'">
+          <h2 style="margin-bottom: 1rem;">{{ i18n.t().dashboard.nextMatchGlobal }}</h2>
+          @if (globalNextMatch(); as match) {
             <app-match-card
               [match]="match"
               [uiResources]="uiResources()"
@@ -70,145 +60,223 @@
             ></app-match-card>
           } @else {
             <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
-              Nenhuma partida encontrada para {{ favoriteTeam() }}.
+              {{ i18n.t().dashboard.noMatchScheduled }}
             </div>
           }
         </div>
 
-        <!-- Standings Widget -->
-        <div class="widget">
-          <h2 style="margin-bottom: 1rem;">Classificação do Grupo</h2>
-          @if (favoriteGroupStandings(); as groupStandings) {
-            <div class="group-card glass-panel" style="margin: 0; padding: 1.5rem;">
-              <h3 style="margin-bottom: 1rem; color: var(--accent-color);">Grupo {{ groupStandings.name }}</h3>
-              <div class="table-responsive">
-                <table class="standings-table">
-                  <thead>
-                    <tr>
-                      <th class="pos">#</th>
-                      <th class="team">{{ i18n.t().standings.team }}</th>
-                      <th class="pts" title="Pontos">PTS</th>
-                      <th class="stat hide-mobile" title="Jogos">J</th>
-                      <th class="stat hide-mobile" title="Vitórias">V</th>
-                      <th class="stat" title="Saldo">SG</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (teamStats of groupStandings.teams; track teamStats; let i = $index) {
-                      <tr [class.qualified]="i < 2" [style.background]="teamStats.flagId === favoriteTeam() ? 'rgba(16, 185, 129, 0.1)' : ''">
-                        <td class="pos">{{ i + 1 }}</td>
-                        <td class="team-col">
-                          <img
-                            [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + teamStats.flagId"
-                            [alt]="teamStats.name"
-                            class="flag-mini"
-                            style="width: 20px; height: 15px; border-radius: 2px;"
-                          />
-                          <span class="team-name" [style.font-weight]="teamStats.flagId === favoriteTeam() ? 'bold' : 'normal'">
-                            {{ teamStats.name }}
-                          </span>
-                        </td>
-                        <td class="pts" style="font-weight: bold;">{{ teamStats.points }}</td>
-                        <td class="stat hide-mobile">{{ teamStats.played }}</td>
-                        <td class="stat hide-mobile">{{ teamStats.won }}</td>
-                        <td class="stat" [style.color]="teamStats.goalDifference > 0 ? 'var(--success)' : (teamStats.goalDifference < 0 ? 'var(--danger)' : '')">
-                          {{ teamStats.goalDifference > 0 ? '+' : '' }}{{ teamStats.goalDifference }}
-                        </td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
+        @if (favoriteTeam()) {
+          <!-- 2. Next Match Widget (Sua Seleção) -->
+          <div class="widget">
+            <h2 style="margin-bottom: 1rem;">{{ i18n.t().dashboard.nextMatchFav }}</h2>
+            @if (nextMatch(); as match) {
+              <app-match-card
+                [match]="match"
+                [uiResources]="uiResources()"
+                [isDashboardMode]="true"
+                (matchClicked)="onMatchSelected($event)"
+              ></app-match-card>
+            } @else {
+              <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                {{ i18n.t().dashboard.noMatchFoundFor }} {{ favoriteTeam() }}.
               </div>
-            </div>
-          } @else {
-            <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
-              Não há dados de fase de grupos para {{ favoriteTeam() }}.
-            </div>
-          }
-        </div>
+            }
+          </div>
 
-        <!-- Finished Matches Widget -->
-        <div class="widget" style="grid-column: 1 / -1;">
-          <h2 style="margin-bottom: 1rem;">Partidas Encerradas</h2>
-          @if (finishedMatches().length > 0) {
-            <div class="glass-panel" style="margin: 0; padding: 0; overflow: hidden;">
+          <!-- 3. Standings Widget -->
+          <div class="widget">
+            <h2 style="margin-bottom: 1rem;">{{ i18n.t().dashboard.groupStandings }}</h2>
+            @if (favoriteGroupStandings(); as groupStandings) {
+              <div class="group-card glass-panel" style="margin: 0; padding: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--accent-color);">{{ i18n.t().filters.group }} {{ groupStandings.name }}</h3>
+                <div class="table-responsive">
+                  <table class="standings-table">
+                    <thead>
+                      <tr>
+                        <th class="pos">#</th>
+                        <th class="team">{{ i18n.t().standings.team }}</th>
+                        <th class="pts" title="Pontos">PTS</th>
+                        <th class="stat hide-mobile" title="Jogos">J</th>
+                        <th class="stat hide-mobile" title="Vitórias">V</th>
+                        <th class="stat" title="Saldo">SG</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (teamStats of groupStandings.teams; track teamStats; let i = $index) {
+                        <tr [class.qualified]="i < 2" [style.background]="teamStats.flagId === favoriteTeam() ? 'rgba(16, 185, 129, 0.1)' : ''">
+                          <td class="pos">{{ i + 1 }}</td>
+                          <td class="team-col">
+                            <img
+                              [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + teamStats.flagId"
+                              [alt]="teamStats.name"
+                              class="flag-mini"
+                              style="width: 20px; height: 15px; border-radius: 2px;"
+                            />
+                            <span class="team-name" [style.font-weight]="teamStats.flagId === favoriteTeam() ? 'bold' : 'normal'">
+                              {{ teamStats.name }}
+                            </span>
+                          </td>
+                          <td class="pts" style="font-weight: bold;">{{ teamStats.points }}</td>
+                          <td class="stat hide-mobile">{{ teamStats.played }}</td>
+                          <td class="stat hide-mobile">{{ teamStats.won }}</td>
+                          <td class="stat" [style.color]="teamStats.goalDifference > 0 ? 'var(--success)' : (teamStats.goalDifference < 0 ? 'var(--danger)' : '')">
+                            {{ teamStats.goalDifference > 0 ? '+' : '' }}{{ teamStats.goalDifference }}
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            } @else {
+              <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                {{ i18n.t().dashboard.noGroupDataFor }} {{ favoriteTeam() }}.
+              </div>
+            }
+          </div>
+        }
+
+        <!-- 4. Top Scorers Widget -->
+        <div class="widget">
+          <h2 style="margin-bottom: 1rem;">{{ i18n.t().dashboard.topScorers }}</h2>
+          @if (isLoadingEvents()) {
+            <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
+              <div class="spinner" style="width: 30px; height: 30px; border-width: 3px; border-top-color: var(--accent-color);"></div>
+              <span style="font-size: 0.9rem;">{{ i18n.t().dashboard.loadingData }}</span>
+            </div>
+          } @else if (topScorers().length > 0) {
+            <div class="glass-panel" style="padding: 0; overflow: hidden; height: 100%; display: flex; flex-direction: column; justify-content: center;">
               <ul style="list-style: none; padding: 0; margin: 0;">
-                @for (match of finishedMatches(); track match.IdMatch) {
-                  <li class="match-list-item" (click)="onMatchSelected(match)">
-                    <div class="match-date">
-                      <div>🗓️ {{ match.Date | date:'dd/MM/yyyy HH:mm' }}</div>
-                      <div class="stadium-info" style="font-size: 0.75rem; margin-top: 0.35rem; opacity: 0.8; line-height: 1.2;">
-                        🏟️ {{ match.Stadium?.Name?.[0]?.Description || 'Estádio' }}
-                      </div>
-                    </div>
-                    <div class="match-teams">
-                      <div class="team-side home-side">
-                        <span [style.font-weight]="match.Home.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
-                          {{ match.Home.TeamName?.[0]?.Description || match.Home.IdCountry }}
-                        </span>
-                        @if (matchEvents()[match.IdMatch]) {
-                          <div class="goal-scorers">
-                            @for (event of matchEvents()[match.IdMatch]; track event) {
-                              @if (event.IdTeam === match.Home?.IdTeam) {
-                                <span class="event-item home-event">
-                                  <span class="player-name">{{ event.playerName }}</span>
-                                  <span class="event-meta">
-                                    {{ event.MatchMinute }}
-                                    @if (event.isCard) {
-                                      @if (event.cardType === 'yellow') { 🟨 } @else { 🟥 }
-                                    } @else {
-                                      ⚽
-                                    }
-                                  </span>
-                                </span>
-                              }
-                            }
-                          </div>
+                @for (scorer of topScorers(); track scorer.name; let i = $index) {
+                  <li style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid var(--glass-border); background: {{ scorer.teamId === favoriteTeam() ? 'rgba(16, 185, 129, 0.1)' : 'transparent' }};">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                      <span style="font-weight: bold; color: var(--text-secondary); width: 1.5rem; text-align: center;">{{ i + 1 }}</span>
+                      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + scorer.teamId" 
+                           alt="{{ scorer.teamId }}" 
+                           class="team-flag"
+                           style="width: 24px; height: 18px; border-radius: 2px; object-fit: cover;"
+                           (error)="$event.target && ($any($event.target).style.display = 'none')">
+                      <span style="font-weight: {{ scorer.teamId === favoriteTeam() ? 'bold' : 'normal' }};">
+                        {{ scorer.name }}
+                        @if (scorer.teamId === favoriteTeam()) {
+                          <span style="color: #fbbf24; margin-left: 0.25rem;" [title]="i18n.t().dashboard.fromYourFav">⭐</span>
                         }
-                      </div>
-
-                      <span class="match-score">
-                        {{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}
                       </span>
-
-                      <div class="team-side away-side">
-                        <span [style.font-weight]="match.Away.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
-                          {{ match.Away.TeamName?.[0]?.Description || match.Away.IdCountry }}
-                        </span>
-                        @if (matchEvents()[match.IdMatch]) {
-                          <div class="goal-scorers">
-                            @for (event of matchEvents()[match.IdMatch]; track event) {
-                              @if (event.IdTeam === match.Away?.IdTeam) {
-                                <span class="event-item away-event">
-                                  <span class="event-meta">
-                                    @if (event.isCard) {
-                                      @if (event.cardType === 'yellow') { 🟨 } @else { 🟥 }
-                                    } @else {
-                                      ⚽
-                                    }
-                                    {{ event.MatchMinute }}
-                                  </span>
-                                  <span class="player-name">{{ event.playerName }}</span>
-                                </span>
-                              }
-                            }
-                          </div>
-                        }
-                      </div>
                     </div>
-                    <div class="match-action">
-                      Detalhes ➔
+                    <div style="font-weight: bold; font-size: 1.1rem; color: var(--accent-color);">
+                      {{ scorer.goals }} <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">⚽</span>
                     </div>
                   </li>
                 }
               </ul>
             </div>
           } @else {
-            <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
-              Nenhuma partida encerrada encontrada para {{ favoriteTeam() }}.
+            <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary); height: 100%; display: flex; align-items: center; justify-content: center;">
+              {{ i18n.t().dashboard.noGoals }}
             </div>
           }
         </div>
+
+        @if (favoriteTeam()) {
+          <!-- Finished Matches Widget -->
+          <div class="widget" style="grid-column: 1 / -1;">
+            <h2 style="margin-bottom: 1rem;">{{ i18n.t().dashboard.finishedMatches }}</h2>
+            @if (isLoadingEvents()) {
+              <div class="glass-panel" style="padding: 3rem 2rem; text-align: center; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
+                <div class="spinner" style="width: 30px; height: 30px; border-width: 3px; border-top-color: var(--accent-color);"></div>
+                <span style="font-size: 0.9rem;">{{ i18n.t().dashboard.loadingMatchDetails }}</span>
+              </div>
+            } @else if (finishedMatches().length > 0) {
+              <div class="glass-panel" style="margin: 0; padding: 0; overflow: hidden;">
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                  @for (match of finishedMatches(); track match.IdMatch) {
+                    <li class="match-list-item" (click)="onMatchSelected(match)">
+                      <div class="match-date">
+                        <div>🗓️ {{ match.Date | date:'dd/MM/yyyy HH:mm' }}</div>
+                        <div class="stadium-info" style="font-size: 0.75rem; margin-top: 0.35rem; opacity: 0.8; line-height: 1.2;">
+                          🏟️ {{ match.Stadium?.Name?.[0]?.Description || i18n.t().match.stadium }}
+                        </div>
+                      </div>
+                      <div class="match-teams">
+                        <div class="team-side home-side">
+                          <span [style.font-weight]="match.Home.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
+                            {{ match.Home.TeamName?.[0]?.Description || match.Home.IdCountry }}
+                          </span>
+                          @if (matchEvents()[match.IdMatch]) {
+                            <div class="goal-scorers">
+                              @for (event of matchEvents()[match.IdMatch]; track event) {
+                                @if (event.IdTeam === match.Home?.IdTeam) {
+                                  <span class="event-item home-event">
+                                    <span class="player-name">{{ event.playerName }}</span>
+                                    <span class="event-meta">
+                                      {{ event.MatchMinute }}
+                                      @if (event.isCard) {
+                                        @if (event.cardType === 'yellow') { 🟨 } @else { 🟥 }
+                                      } @else {
+                                        ⚽
+                                      }
+                                    </span>
+                                  </span>
+                                }
+                              }
+                            </div>
+                          }
+                        </div>
+  
+                        <span class="match-score">
+                          {{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}
+                        </span>
+  
+                        <div class="team-side away-side">
+                          <span [style.font-weight]="match.Away.IdCountry === favoriteTeam() ? 'bold' : 'normal'">
+                            {{ match.Away.TeamName?.[0]?.Description || match.Away.IdCountry }}
+                          </span>
+                          @if (matchEvents()[match.IdMatch]) {
+                            <div class="goal-scorers">
+                              @for (event of matchEvents()[match.IdMatch]; track event) {
+                                @if (event.IdTeam === match.Away?.IdTeam) {
+                                  <span class="event-item away-event">
+                                    <span class="event-meta">
+                                      @if (event.isCard) {
+                                        @if (event.cardType === 'yellow') { 🟨 } @else { 🟥 }
+                                      } @else {
+                                        ⚽
+                                      }
+                                      {{ event.MatchMinute }}
+                                    </span>
+                                    <span class="player-name">{{ event.playerName }}</span>
+                                  </span>
+                                }
+                              }
+                            </div>
+                          }
+                        </div>
+                      </div>
+                      <div class="match-action">
+                        {{ i18n.t().dashboard.details }}
+                      </div>
+                    </li>
+                  }
+                </ul>
+              </div>
+            } @else {
+              <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                {{ i18n.t().dashboard.noFinishedMatchesFor }} {{ favoriteTeam() }}.
+              </div>
+            }
+          </div>
+        }
+
+        @if (!favoriteTeam()) {
+          <div class="empty-state glass-panel" style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🌟</div>
+            <h2>{{ i18n.t().dashboard.welcomeTitle }}</h2>
+            <p style="color: var(--text-secondary); margin-top: 1rem; max-width: 500px; margin-inline: auto;">
+              {{ i18n.t().dashboard.welcomeDesc }}
+            </p>
+          </div>
+        }
+
       </div>
     }
 
