@@ -4,14 +4,16 @@
     <p>{{ i18n.t().dashboard.subtitle }}</p>
   </header>
 
-  <div class="favorite-selector glass-panel" style="justify-content: center; margin-bottom: 2rem; padding: 1rem;">
-    <label for="favTeam" class="label">Seleção Favorita:</label>
-    <select id="favTeam" class="filter-dropdown" (change)="setFavoriteTeam($event)">
-      <option value="">-- Escolha uma seleção --</option>
-      @for (team of availableTeams(); track team.id) {
-        <option [value]="team.id" [selected]="favoriteTeam() === team.id">{{ team.name }}</option>
-      }
-    </select>
+  <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem; padding: 0 0.5rem;">
+    <div class="favorite-selector">
+      <label for="favTeam" class="label">Seleção Favorita:</label>
+      <select id="favTeam" class="filter-dropdown" (change)="setFavoriteTeam($event)">
+        <option value="">-- Escolha uma seleção --</option>
+        @for (team of availableTeams(); track team.id) {
+          <option [value]="team.id" [selected]="favoriteTeam() === team.id">{{ team.name }}</option>
+        }
+      </select>
+    </div>
   </div>
 
   <main class="dashboard-content">

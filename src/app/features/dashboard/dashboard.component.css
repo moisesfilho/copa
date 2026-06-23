@@ -1,5 +1,3 @@
-
-
 .stats {
   display: flex;
   gap: 1.5rem;
@@ -45,7 +43,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .theme-toggle {
@@ -70,8 +70,7 @@
   box-shadow: var(--accent-glow);
 }
 
-
-
+@media (max-width: 768px) {
   .stats {
     width: 100%;
     flex-wrap: wrap;
@@ -89,7 +88,7 @@
   .label {
     font-size: 0.75rem;
   }
-  
+
   .value {
     font-size: 1.25rem;
   }
@@ -136,7 +135,7 @@
   font-size: 0.95rem;
 }
 
-.standings-table th, 
+.standings-table th,
 .standings-table td {
   padding: 0.75rem 0.5rem;
   border-bottom: 1px solid var(--glass-border);
@@ -148,7 +147,7 @@
   font-size: 0.85rem;
 }
 
-.standings-table th.team, 
+.standings-table th.team,
 .standings-table td.team-col {
   text-align: left;
 }
@@ -309,8 +308,8 @@
   height: 100%;
 }
 
-.widget > app-match-card,
-.widget > .group-card {
+.widget>app-match-card,
+.widget>.group-card {
   flex: 1;
   display: block;
 }
@@ -325,15 +324,18 @@
   .hide-mobile {
     display: none;
   }
-  
+
   .match-list-item {
     flex-direction: column;
     gap: 0.5rem;
   }
-  .match-date, .match-action {
+
+  .match-date,
+  .match-action {
     width: 100%;
     text-align: center;
   }
+
   .match-action {
     display: none;
   }
