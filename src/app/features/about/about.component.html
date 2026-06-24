@@ -1,5 +1,8 @@
 <div class="container">
-  <header class="page-header glass-panel">
+  <header class="page-header glass-panel" style="position: relative;">
+    <span class="version-badge" style="position: absolute; top: 1rem; right: 1rem; background: var(--accent-color); color: white; padding: 4px 10px; border-radius: 12px; font-weight: bold; font-size: 0.85rem;">
+      v{{ version }}
+    </span>
     <h1><span class="header-icon">🏆</span> {{ i18n.t().about.title }}</h1>
     <p [innerHTML]="parseMarkdown(i18n.t().about.description)"></p>
   </header>
