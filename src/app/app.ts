@@ -1,5 +1,7 @@
 import { Component, signal, OnInit, HostListener, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import { filter } from 'rxjs';
 import { I18nService } from './core/services/i18n.service';
 import { LiveUpdateService } from './core/services/live-update.service';
 
@@ -13,8 +15,12 @@ import { LiveUpdateService } from './core/services/live-update.service';
 export class App implements OnInit {
   i18n = inject(I18nService);
   liveUpdate = inject(LiveUpdateService);
+  swUpdate = inject(SwUpdate);
   isSidebarOpen = signal(false);
   isDarkMode = signal(true);
+  
+  updateAvailable = signal(false);
+  isUpdating = signal(false);
 
   canInstall = signal(false);
   deferredPrompt: any;
@@ -60,6 +66,22 @@ export class App implements OnInit {
 
     // Start checking for live matches in the background
     this.liveUpdate.startPolling();
+
+    // Check for Service Worker updates
+    if (this.swUpdate.isEnabled) {
+      this.swUpdate.versionUpdates
+        .pipe(filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
+        .subscribe(() => {
+          this.updateAvailable.set(true);
+        });
+    }
+  }
+
+  applyUpdate() {
+    this.isUpdating.set(true);
+    this.swUpdate.activateUpdate().then(() => {
+      document.location.reload();
+    });
   }
 
   toggleSidebar() {

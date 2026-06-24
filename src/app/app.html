@@ -119,4 +119,28 @@
       <router-outlet></router-outlet>
     </main>
   </div>
+
+  <!-- Update Available Dialog -->
+  @if (updateAvailable()) {
+    <div class="update-overlay">
+      <div class="update-dialog glass-panel">
+        <div class="update-icon">✨</div>
+        <h3>Atualização Disponível</h3>
+        <p>Uma nova versão do Copados 2026 está pronta. Deseja atualizar agora para aproveitar as últimas novidades?</p>
+        <div class="update-actions">
+          <button class="btn-cancel" (click)="updateAvailable.set(false)">Mais tarde</button>
+          <button class="btn-update" (click)="applyUpdate()">Atualizar agora</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Updating Loading Screen -->
+  @if (isUpdating()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <h2>Atualizando o App...</h2>
+      <p>Por favor, aguarde alguns instantes.</p>
+    </div>
+  }
 </div>
