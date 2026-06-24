@@ -33,6 +33,9 @@ jobs:
       - name: Build
         run: npx ng build
 
+      - name: Setup GitHub Pages SPA routing (404.html fallback)
+        run: cp dist/copa/browser/index.html dist/copa/browser/404.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

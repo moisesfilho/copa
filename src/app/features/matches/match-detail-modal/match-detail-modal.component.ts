@@ -190,8 +190,8 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
       ? ` Placar: ${homeScore} - ${awayScore}` 
       : '';
       
-    // A aplicação usa hash routing, então precisamos incluir o #/ na URL
-    const url = window.location.origin + window.location.pathname + '#/?match=' + this.match.IdMatch;
+    // A aplicação agora usa PathLocationStrategy, então removemos o #/ da URL
+    const url = window.location.origin + window.location.pathname + '?match=' + this.match.IdMatch;
     
     const text = `${homeFlag} ${homeName} x ${awayName} ${awayFlag}${scoreText}\nConfira os detalhes da partida direto pelo app: ${url}`;
 
