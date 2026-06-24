@@ -1,0 +1,51 @@
+<div class="settings-container fade-in">
+  <div class="header">
+    <h1 class="page-title">{{ i18n.t().settings.title }}</h1>
+    <p class="page-desc">{{ i18n.t().settings.description }}</p>
+  </div>
+
+  <div class="settings-card glass-panel">
+    <div class="settings-section">
+      <h3>{{ i18n.t().settings.notifications }}</h3>
+      
+      <!-- All Matches -->
+      <div class="setting-item">
+        <div class="setting-info">
+          <h4>{{ i18n.t().settings.notifyAll }}</h4>
+          <p>{{ i18n.t().settings.notifyAllDesc }}</p>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [ngModel]="notifyAll()" (ngModelChange)="notifyAll.set($event); onToggle('all')">
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <!-- Favorite Match -->
+      <div class="setting-item">
+        <div class="setting-info">
+          <h4>{{ i18n.t().settings.notifyFavorite }}</h4>
+          <p>{{ i18n.t().settings.notifyFavoriteDesc }}</p>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" [ngModel]="notifyFavorite()" (ngModelChange)="notifyFavorite.set($event); onToggle('favorite')">
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <!-- Timing -->
+      <div class="setting-item" [class.disabled]="!notifyAll() && !notifyFavorite()">
+        <div class="setting-info">
+          <h4>{{ i18n.t().settings.notifyTime }}</h4>
+          <p>{{ i18n.t().settings.notifyTimeDesc }}</p>
+        </div>
+        <select class="time-select" [value]="notifyTime()" (change)="onTimeChange($event)" [disabled]="!notifyAll() && !notifyFavorite()">
+          <option value="5">5 {{ i18n.t().settings.minutes }}</option>
+          <option value="10">10 {{ i18n.t().settings.minutes }}</option>
+          <option value="15">15 {{ i18n.t().settings.minutes }}</option>
+          <option value="30">30 {{ i18n.t().settings.minutes }}</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+</div>

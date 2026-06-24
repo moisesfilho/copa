@@ -10,6 +10,7 @@ export interface Translations {
   standings: any;
   match: any;
   about: any;
+  settings: any;
   continents: { [key: string]: string };
 }
 
@@ -21,6 +22,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
       matches: 'Partidas',
       standings: 'Classificação',
       about: 'Sobre',
+      settings: 'Configurações',
       install: '📲 Instalar App'
     },
     filters: {
@@ -93,6 +95,18 @@ const TRANSLATIONS: Record<Language, Translations> = {
       ga: 'GC',
       gd: 'SG'
     },
+    settings: {
+      title: 'Configurações',
+      description: 'Personalize sua experiência no Copados 2026.',
+      notifications: 'Notificações de Partidas (Push)',
+      notifyAll: 'Todas as Partidas',
+      notifyAllDesc: 'Receber um alerta antes de qualquer partida começar.',
+      notifyFavorite: 'Minha Seleção Favorita',
+      notifyFavoriteDesc: 'Receber um alerta apenas quando a seleção que você escolheu for jogar.',
+      notifyTime: 'Antecedência do Alerta',
+      notifyTimeDesc: 'Quantos minutos antes do jogo você deseja ser avisado.',
+      minutes: 'minutos'
+    },
     match: {
       live: 'AO VIVO',
       finished: 'FIM',
@@ -156,6 +170,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
       matches: 'Matches',
       standings: 'Standings',
       about: 'About',
+      settings: 'Settings',
       install: '📲 Install App'
     },
     filters: {
@@ -227,6 +242,18 @@ const TRANSLATIONS: Record<Language, Translations> = {
       gf: 'GF',
       ga: 'GA',
       gd: 'GD'
+    },
+    settings: {
+      title: 'Settings',
+      description: 'Personalize your experience in Copados 2026.',
+      notifications: 'Match Notifications (Push)',
+      notifyAll: 'All Matches',
+      notifyAllDesc: 'Receive an alert before any match starts.',
+      notifyFavorite: 'My Favorite Team',
+      notifyFavoriteDesc: 'Receive an alert only when your chosen team is about to play.',
+      notifyTime: 'Alert Lead Time',
+      notifyTimeDesc: 'How many minutes before the game you want to be notified.',
+      minutes: 'minutes'
     },
     match: {
       live: 'LIVE',

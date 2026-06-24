@@ -4,6 +4,7 @@ import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter } from 'rxjs';
 import { I18nService } from './core/services/i18n.service';
 import { LiveUpdateService } from './core/services/live-update.service';
+import { NotificationService } from './core/services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ import { LiveUpdateService } from './core/services/live-update.service';
 export class App implements OnInit {
   i18n = inject(I18nService);
   liveUpdate = inject(LiveUpdateService);
+  notificationService = inject(NotificationService);
   swUpdate = inject(SwUpdate);
   isSidebarOpen = signal(false);
   isDarkMode = signal(true);
@@ -66,6 +68,7 @@ export class App implements OnInit {
 
     // Start checking for live matches in the background
     this.liveUpdate.startPolling();
+    this.notificationService.startMonitoring();
 
     // Check for Service Worker updates
     if (this.swUpdate.isEnabled) {
