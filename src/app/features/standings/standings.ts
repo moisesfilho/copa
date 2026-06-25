@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -11,7 +11,7 @@ import { calculateStandings, TeamStats } from '../../core/utils/standings-calcul
   templateUrl: './standings.html',
   styleUrls: ['./standings.css'],
 })
-export class StandingsComponent implements OnInit {
+export class StandingsComponent {
   private api = inject(FifaApiService);
   i18n = inject(I18nService);
 
@@ -39,8 +39,5 @@ export class StandingsComponent implements OnInit {
         },
       });
     });
-  }
-
-  ngOnInit() {
   }
 }

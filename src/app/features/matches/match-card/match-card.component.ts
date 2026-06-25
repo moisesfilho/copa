@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { I18nService } from '../../../core/services/i18n.service';
 import { LiveUpdateService } from '../../../core/services/live-update.service';
 

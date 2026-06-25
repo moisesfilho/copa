@@ -91,7 +91,7 @@ export function calculateStandings(matches: any[]): Record<string, TeamStats[]> 
 
   // 3. Sort teams based on FIFA Rules
   Object.keys(tempStats).forEach(groupName => {
-    let teams = Object.values(tempStats[groupName]);
+    const teams = Object.values(tempStats[groupName]);
 
     teams.sort((a, b) => {
       // Rule 1: Points

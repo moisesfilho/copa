@@ -25,7 +25,7 @@ export class NotificationService {
   private notifiedMatches = new Set<string>(JSON.parse(this.getStorageItem('notifiedMatches') || '[]'));
   private pollSubscription?: Subscription;
 
-  constructor() {}
+  // constructor removed
 
   async requestPermission(): Promise<boolean> {
     if (!('Notification' in window)) {
@@ -109,7 +109,7 @@ export class NotificationService {
     }
   }
 
-  private triggerNotification(m: any, isFavoriteMatch: boolean = false) {
+  private triggerNotification(m: any, isFavoriteMatch = false) {
     if (Notification.permission === 'granted') {
       const homeName = m.Home?.TeamName?.[0]?.Description || m.Home?.IdCountry || 'Time 1';
       const awayName = m.Away?.TeamName?.[0]?.Description || m.Away?.IdCountry || 'Time 2';

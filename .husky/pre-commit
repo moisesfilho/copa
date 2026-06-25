@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Rodando testes unitarios..."
+npm test -- --watch=false || exit 1
+
+echo "Rodando testes E2E..."
+npm run e2e || exit 1
+
+echo "Rodando Linting..."
+npm run lint || exit 1
+
+echo "Tudo verdinho! Commit liberado."

@@ -3,7 +3,6 @@ import { StandingsComponent } from './standings';
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { of } from 'rxjs';
-import { signal } from '@angular/core';
 
 describe('StandingsComponent', () => {
   let component: StandingsComponent;

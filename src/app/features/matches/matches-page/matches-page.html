@@ -23,7 +23,7 @@
     @if (selectedMatch()) {
       <app-match-detail-modal
         [match]="selectedMatch()"
-        (close)="closeModal()"
+        (closeModal)="closeModal()"
       ></app-match-detail-modal>
     }
   </main>

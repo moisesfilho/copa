@@ -18,7 +18,7 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
   private pollingInterval: any;
 
   @Input() match: any = null;
-  @Output() close = new EventEmitter<void>();
+  @Output() closeModal = new EventEmitter<void>();
 
   teamStats = signal<{ home: any, away: any, inContest?: number } | null>(null);
   goals = signal<any[]>([]);
@@ -208,6 +208,6 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   onClose() {
-    this.close.emit();
+    this.closeModal.emit();
   }
 }
