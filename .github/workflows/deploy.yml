@@ -73,7 +73,12 @@ jobs:
           key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Lint Code
-        run: npm run lint
+        run: |
+          echo "### 🧹 ESLint Report" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          npm run lint >> $GITHUB_STEP_SUMMARY 2>&1 || LINT_FAILED=true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ "$LINT_FAILED" = "true" ]; then exit 1; fi
 
   test:
     runs-on: ubuntu-latest
