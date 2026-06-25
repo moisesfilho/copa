@@ -19,6 +19,11 @@ test.describe('11 - Notificacoes Push', () => {
     // Click the visual slider instead of the hidden checkbox
     await slider.click({ force: true });
     
-    expect(await checkbox.isChecked()).not.toBe(isChecked);
+    // Use web-first auto-retrying assertion to avoid flakiness
+    if (isChecked) {
+      await expect(checkbox).not.toBeChecked();
+    } else {
+      await expect(checkbox).toBeChecked();
+    }
   });
 });
