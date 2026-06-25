@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { FifaApiService } from './fifa-api.service';
 import { I18nService } from './i18n.service';
-import { BehaviorSubject, Observable, Subscription, timer, of } from 'rxjs';
+import { Subscription, timer, of } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
 
 @Injectable({
