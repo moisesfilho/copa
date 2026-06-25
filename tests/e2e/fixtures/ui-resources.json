@@ -1,0 +1,11 @@
+{
+  "resourceSets": [
+    {
+      "resources": [
+        { "identifier": "MatchStatus_1", "value": "Upcoming" },
+        { "identifier": "MatchStatus_0", "value": "Finished" },
+        { "identifier": "MatchStatus_3", "value": "Live" }
+      ]
+    }
+  ]
+}

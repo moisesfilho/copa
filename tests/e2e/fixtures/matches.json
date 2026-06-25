@@ -1,0 +1,30 @@
+{
+  "Results": [
+    {
+      "IdMatch": "M1",
+      "IdCompetition": "WC26",
+      "Date": "2026-06-11T12:00:00Z",
+      "MatchStatus": 1,
+      "Stadium": { "Name": [{ "Description": "Estádio Azteca" }] },
+      "Home": { "IdTeam": "MEX", "IdCountry": "MEX", "TeamName": [{ "Description": "Mexico" }] },
+      "Away": { "IdTeam": "BRA", "IdCountry": "BRA", "TeamName": [{ "Description": "Brazil" }] },
+      "HomeTeamScore": null,
+      "AwayTeamScore": null,
+      "GroupName": [{ "Description": "Group A" }],
+      "StageName": [{ "Description": "Group Stage" }]
+    },
+    {
+      "IdMatch": "M2",
+      "IdCompetition": "WC26",
+      "Date": "2026-06-12T15:00:00Z",
+      "MatchStatus": 0,
+      "Stadium": { "Name": [{ "Description": "Estádio Maracanã" }] },
+      "Home": { "IdTeam": "ARG", "IdCountry": "ARG", "TeamName": [{ "Description": "Argentina" }] },
+      "Away": { "IdTeam": "FRA", "IdCountry": "FRA", "TeamName": [{ "Description": "France" }] },
+      "HomeTeamScore": 2,
+      "AwayTeamScore": 1,
+      "GroupName": [{ "Description": "Group B" }],
+      "StageName": [{ "Description": "Group Stage" }]
+    }
+  ]
+}
