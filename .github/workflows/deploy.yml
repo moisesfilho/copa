@@ -97,7 +97,7 @@ jobs:
         run: npm test -- --watch=false --reporters=junit --output-file=test-results/junit-unit.xml
 
       - name: Test Report (Unit)
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: Angular Unit Tests
@@ -139,7 +139,7 @@ jobs:
         run: PLAYWRIGHT_JUNIT_OUTPUT_NAME=test-results/junit-e2e.xml npx playwright test --reporter=html,junit
 
       - name: Test Report (E2E)
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: Playwright E2E Tests
