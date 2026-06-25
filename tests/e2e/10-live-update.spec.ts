@@ -13,7 +13,7 @@ test.describe('10 - Live Update', () => {
     await page.route('**/api/resources**', async route => route.fulfill({ json: resourcesMock }));
     
     await page.goto('/');
-    expect(apiCallCount).toBeGreaterThanOrEqual(1);
+    await expect.poll(() => apiCallCount).toBeGreaterThanOrEqual(1);
     
     // Wait for the next API call to be initiated by the interval
     const nextCallPromise = page.waitForRequest(req => req.url().includes('/api/v3/calendar/matches'));
