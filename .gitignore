@@ -43,3 +43,10 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 temp*.json  
+
+# Playwright
+/playwright-report
+/test-results
+
+# Logs
+action.log
