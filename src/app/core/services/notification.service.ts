@@ -84,12 +84,7 @@ export class NotificationService {
             isFavoriteMatch = true;
           }
 
-          let shouldNotify = false;
-          if (isFavoriteMatch && checkFav) {
-            shouldNotify = true;
-          } else if (checkAll) {
-            shouldNotify = true;
-          }
+          const shouldNotify = (isFavoriteMatch && checkFav) || checkAll;
 
           if (shouldNotify) {
             this.triggerNotification(m, isFavoriteMatch);

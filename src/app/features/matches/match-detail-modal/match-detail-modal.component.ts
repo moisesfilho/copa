@@ -101,9 +101,9 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
             let playerName = 'Jogador';
             if (e.EventDescription && e.EventDescription[0]) {
                const desc = e.EventDescription[0].Description;
-               const match = desc.match(/^(.*?)\s*\(/);
+               const match = desc.match(/^([^(]+)/);
                if (match && match[1]) {
-                 playerName = match[1];
+                 playerName = match[1].trim();
                } else {
                  playerName = desc; // fallback se não achar o parêntese
                }

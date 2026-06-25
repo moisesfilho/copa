@@ -3,8 +3,10 @@ const eslint = require('@eslint/js');
 const { defineConfig } = require('eslint/config');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
+const sonarjs = require('eslint-plugin-sonarjs');
 
 module.exports = defineConfig([
+  sonarjs.configs.recommended,
   {
     files: ['**/*.ts'],
     extends: [

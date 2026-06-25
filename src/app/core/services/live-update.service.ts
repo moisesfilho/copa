@@ -36,17 +36,7 @@ export class LiveUpdateService {
         
         liveMatches.forEach((m: any) => {
           updates[m.IdMatch] = m;
-          
-          // Buscar timeline de cada partida ao vivo para atualizar gols
-          this.api.getMatchTimeline(m.IdCompetition, m.IdSeason, m.IdStage, m.IdMatch, this.i18n.currentLang()).subscribe({
-            next: (timelineRes) => {
-               if (timelineRes && timelineRes.Event) {
-                 const parsedEvents = this.parseEvents(timelineRes.Event);
-                 this.liveEventUpdates.update(current => ({ ...current, [m.IdMatch]: parsedEvents }));
-               }
-            },
-            error: (err) => console.error('Erro ao atualizar timeline', err)
-          });
+          this.fetchTimelineForMatch(m);
         });
 
         this.liveMatchUpdates.set(updates);
@@ -61,6 +51,19 @@ export class LiveUpdateService {
     }
   }
 
+  private fetchTimelineForMatch(m: any) {
+    // Buscar timeline de cada partida ao vivo para atualizar gols
+    this.api.getMatchTimeline(m.IdCompetition, m.IdSeason, m.IdStage, m.IdMatch, this.i18n.currentLang()).subscribe({
+      next: (timelineRes) => {
+         if (timelineRes && timelineRes.Event) {
+           const parsedEvents = this.parseEvents(timelineRes.Event);
+           this.liveEventUpdates.update(current => ({ ...current, [m.IdMatch]: parsedEvents }));
+         }
+      },
+      error: (err) => console.error('Erro ao atualizar timeline', err)
+    });
+  }
+
   private parseEvents(events: any[]) {
     return events.filter((e: any) => {
       const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
@@ -72,9 +75,10 @@ export class LiveUpdateService {
       let playerName = this.i18n.t().dashboard.player || 'Jogador';
       if (e.EventDescription && e.EventDescription[0]) {
          const desc = e.EventDescription[0].Description;
-         const matchName = desc.match(/^(.*?)\s*\(/);
+         // O(n) regex to prevent catastrophic backtracking
+         const matchName = desc.match(/^([^(]+)/);
          if (matchName && matchName[1]) {
-           playerName = matchName[1];
+           playerName = matchName[1].trim();
          } else {
            playerName = desc; // fallback
          }

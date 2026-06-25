@@ -106,8 +106,10 @@ export class DashboardComponent implements OnInit {
   });
 
   topScorers = computed(() => {
-    const eventsMap = this.mergedMatchEvents();
-    const matches = this.mergedMatches();
+    return this.calculateTopScorers(this.mergedMatchEvents(), this.mergedMatches());
+  });
+
+  private calculateTopScorers(eventsMap: Record<string, any[]>, matches: any[]) {
     const playerGoals = new Map<string, { name: string, goals: number, teamId: string }>();
 
     for (const matchId in eventsMap) {
@@ -115,37 +117,39 @@ export class DashboardComponent implements OnInit {
       if (!match) continue;
 
       const events = eventsMap[matchId] || [];
-      for (const e of events) {
-        // Exclude cards and own goals (Type 34)
-        if (!e.isCard && e.Type !== 34) {
-          // It's a goal
-          const playerId = e.IdPlayer || e.playerName; // Fallback to name if ID is missing
-          if (!playerId) continue;
-
-          // Determine the team ID (IdCountry) for the flag
-          let teamId = '';
-          if (e.IdTeam) {
-            if (e.IdTeam === match.Home?.IdTeam) teamId = match.Home?.IdCountry;
-            else if (e.IdTeam === match.Away?.IdTeam) teamId = match.Away?.IdCountry;
-          }
-          if (!teamId) {
-            // Fallback
-            teamId = e.TeamName?.[0]?.Description === match.Home?.TeamName?.[0]?.Description ? match.Home?.IdCountry : match.Away?.IdCountry;
-          }
-
-          if (!playerGoals.has(playerId)) {
-            playerGoals.set(playerId, { name: e.playerName, goals: 0, teamId: teamId || '' });
-          }
-          playerGoals.get(playerId)!.goals += 1;
-        }
-      }
+      this.processMatchGoals(events, match, playerGoals);
     }
 
     // Sort by goals descending, then by name
     return Array.from(playerGoals.values())
       .sort((a, b) => b.goals - a.goals || a.name.localeCompare(b.name))
       .slice(0, 5);
-  });
+  }
+
+  private processMatchGoals(events: any[], match: any, playerGoals: Map<string, { name: string, goals: number, teamId: string }>) {
+    for (const e of events) {
+      if (e.isCard || e.Type === 34) continue; // Exclude cards and own goals
+
+      const playerId = e.IdPlayer || e.playerName;
+      if (!playerId) continue;
+
+      const teamId = this.determineGoalTeamId(e, match);
+      
+      if (!playerGoals.has(playerId)) {
+        playerGoals.set(playerId, { name: e.playerName, goals: 0, teamId: teamId || '' });
+      }
+      playerGoals.get(playerId)!.goals += 1;
+    }
+  }
+
+  private determineGoalTeamId(e: any, match: any): string {
+    if (e.IdTeam) {
+      if (e.IdTeam === match.Home?.IdTeam) return match.Home?.IdCountry;
+      if (e.IdTeam === match.Away?.IdTeam) return match.Away?.IdCountry;
+    }
+    // Fallback
+    return e.TeamName?.[0]?.Description === match.Home?.TeamName?.[0]?.Description ? match.Home?.IdCountry : match.Away?.IdCountry;
+  }
 
   favoriteGroupStandings = computed(() => {
     const team = this.favoriteTeam();
@@ -181,73 +185,18 @@ export class DashboardComponent implements OnInit {
         // Turn on loading state since we are fetching timelines
         this.isLoadingEvents.set(true);
 
-        missingMatches.forEach(m => {
-          this.api.getMatchTimeline(m.IdCompetition, m.IdSeason, m.IdStage, m.IdMatch, lang).subscribe({
-            next: (res) => {
-              if (res && res.Event) {
-                const fetchedEvents = res.Event.filter((e: any) => {
-                  const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
-                  return e.Type === 0 || e.Type === 34 || e.Type === 41 || 
-                         typeDesc.includes('gol!') || typeDesc.includes('goal') ||
-                         e.Type === 2 || e.Type === 3 || e.Type === 4 ||
-                         typeDesc.includes('cartão') || typeDesc.includes('card');
-                }).map((e: any) => {
-                  let playerName = this.i18n.t().dashboard.player || 'Jogador';
-                  if (e.EventDescription && e.EventDescription[0]) {
-                     const desc = e.EventDescription[0].Description;
-                     const matchName = desc.match(/^(.*?)\s*\(/);
-                     if (matchName && matchName[1]) {
-                       playerName = matchName[1];
-                     } else {
-                       playerName = desc; // fallback
-                     }
-                  }
-                  
-                  let isCard = false;
-                  let cardType = '';
-                  const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
-                  if (e.Type === 2 || typeDesc.includes('amarelo') || typeDesc.includes('yellow')) {
-                     isCard = true;
-                     cardType = 'yellow';
-                  } else if (e.Type === 3 || e.Type === 4 || typeDesc.includes('vermelho') || typeDesc.includes('red')) {
-                     isCard = true;
-                     cardType = 'red';
-                  }
-
-                  return {
-                    ...e,
-                    playerName,
-                    isCard,
-                    cardType
-                  };
-                });
-                
-                newEvents[m.IdMatch] = fetchedEvents;
-              }
-            },
-            error: err => {
-              console.error('Error fetching match timeline', err);
-              pending--;
-              if (pending === 0) {
-                this.matchEvents.update(eventsMap => ({
-                  ...eventsMap,
-                  ...newEvents
-                }));
-                this.isLoadingEvents.set(false);
-              }
-            },
-            complete: () => {
-              pending--;
-              if (pending === 0) {
-                this.matchEvents.update(eventsMap => ({
-                  ...eventsMap,
-                  ...newEvents
-                }));
-                this.isLoadingEvents.set(false);
-              }
+        for (const m of missingMatches) {
+          this.fetchTimeline(m, lang, newEvents, () => {
+            pending--;
+            if (pending === 0) {
+              this.matchEvents.update(eventsMap => ({
+                ...eventsMap,
+                ...newEvents
+              }));
+              this.isLoadingEvents.set(false);
             }
           });
-        });
+        }
       }
     }, { allowSignalWrites: true });
 
@@ -333,6 +282,60 @@ export class DashboardComponent implements OnInit {
       relativeTo: this.route,
       queryParams: { match: null },
       queryParamsHandling: 'merge',
+    });
+  }
+
+  private fetchTimeline(m: any, lang: any, newEvents: Record<string, any[]>, onComplete: () => void) {
+    this.api.getMatchTimeline(m.IdCompetition, m.IdSeason, m.IdStage, m.IdMatch, lang).subscribe({
+      next: (res) => {
+        if (res && res.Event) {
+          newEvents[m.IdMatch] = this.parseEvents(res.Event);
+        }
+      },
+      error: err => {
+        console.error('Error fetching match timeline', err);
+        onComplete();
+      },
+      complete: onComplete
+    });
+  }
+
+  private parseEvents(events: any[]) {
+    return events.filter((e: any) => {
+      const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
+      return e.Type === 0 || e.Type === 34 || e.Type === 41 || 
+             typeDesc.includes('gol!') || typeDesc.includes('goal') ||
+             e.Type === 2 || e.Type === 3 || e.Type === 4 ||
+             typeDesc.includes('cartão') || typeDesc.includes('card');
+    }).map((e: any) => {
+      let playerName = this.i18n.t().dashboard.player || 'Jogador';
+      if (e.EventDescription && e.EventDescription[0]) {
+         const desc = e.EventDescription[0].Description;
+         const matchName = desc.match(/^([^(]+)/);
+         if (matchName && matchName[1]) {
+           playerName = matchName[1].trim();
+         } else {
+           playerName = desc; // fallback
+         }
+      }
+      
+      let isCard = false;
+      let cardType = '';
+      const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
+      if (e.Type === 2 || typeDesc.includes('amarelo') || typeDesc.includes('yellow')) {
+         isCard = true;
+         cardType = 'yellow';
+      } else if (e.Type === 3 || e.Type === 4 || typeDesc.includes('vermelho') || typeDesc.includes('red')) {
+         isCard = true;
+         cardType = 'red';
+      }
+
+      return {
+        ...e,
+        playerName,
+        isCard,
+        cardType
+      };
     });
   }
 }
