@@ -11,11 +11,18 @@ export class NotificationService {
   private api = inject(FifaApiService);
   private i18n = inject(I18nService);
 
-  notifyAll = signal<boolean>(localStorage.getItem('notifyAll') === 'true');
-  notifyFavorite = signal<boolean>(localStorage.getItem('notifyFavorite') === 'true');
-  notifyTime = signal<number>(parseInt(localStorage.getItem('notifyTime') || '15', 10));
+  private getStorageItem(key: string): string | null {
+    if (typeof localStorage !== 'undefined' && localStorage) {
+      return localStorage.getItem(key);
+    }
+    return null;
+  }
 
-  private notifiedMatches = new Set<string>(JSON.parse(localStorage.getItem('notifiedMatches') || '[]'));
+  notifyAll = signal<boolean>(this.getStorageItem('notifyAll') === 'true');
+  notifyFavorite = signal<boolean>(this.getStorageItem('notifyFavorite') === 'true');
+  notifyTime = signal<number>(parseInt(this.getStorageItem('notifyTime') || '15', 10));
+
+  private notifiedMatches = new Set<string>(JSON.parse(this.getStorageItem('notifiedMatches') || '[]'));
   private pollSubscription?: Subscription;
 
   constructor() {}
@@ -39,9 +46,11 @@ export class NotificationService {
     this.notifyFavorite.set(favorite);
     this.notifyTime.set(time);
     
-    localStorage.setItem('notifyAll', all.toString());
-    localStorage.setItem('notifyFavorite', favorite.toString());
-    localStorage.setItem('notifyTime', time.toString());
+    if (typeof localStorage !== 'undefined' && localStorage) {
+      localStorage.setItem('notifyAll', all.toString());
+      localStorage.setItem('notifyFavorite', favorite.toString());
+      localStorage.setItem('notifyTime', time.toString());
+    }
   }
 
   startMonitoring() {
@@ -54,7 +63,7 @@ export class NotificationService {
       if (!res || !res.Results) return;
 
       const now = new Date();
-      const favoriteTeam = localStorage.getItem('favoriteTeam');
+      const favoriteTeam = this.getStorageItem('favoriteTeam');
       const timeThreshold = this.notifyTime();
       const checkAll = this.notifyAll();
       const checkFav = this.notifyFavorite();
@@ -95,7 +104,9 @@ export class NotificationService {
   private saveNotifiedMatches() {
     // Keep only a reasonable amount to avoid blowing up localStorage
     const arr = Array.from(this.notifiedMatches).slice(-100);
-    localStorage.setItem('notifiedMatches', JSON.stringify(arr));
+    if (typeof localStorage !== 'undefined' && localStorage) {
+      localStorage.setItem('notifiedMatches', JSON.stringify(arr));
+    }
   }
 
   private triggerNotification(m: any, isFavoriteMatch: boolean = false) {

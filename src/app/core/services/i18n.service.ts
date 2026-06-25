@@ -317,20 +317,26 @@ const TRANSLATIONS: Record<Language, Translations> = {
   providedIn: 'root'
 })
 export class I18nService {
-  currentLang = signal<Language>((localStorage.getItem('language') as Language) || 'pt');
+  currentLang = signal<Language>(
+    (typeof localStorage !== 'undefined' && localStorage ? localStorage.getItem('language') as Language : null) || 'pt'
+  );
 
   t = computed(() => TRANSLATIONS[this.currentLang()]);
 
   toggleLanguage() {
     this.currentLang.update(lang => {
       const newLang = lang === 'pt' ? 'en' : 'pt';
-      localStorage.setItem('language', newLang);
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        localStorage.setItem('language', newLang);
+      }
       return newLang;
     });
   }
 
   setLanguage(lang: Language) {
     this.currentLang.set(lang);
-    localStorage.setItem('language', lang);
+    if (typeof localStorage !== 'undefined' && localStorage) {
+      localStorage.setItem('language', lang);
+    }
   }
 }

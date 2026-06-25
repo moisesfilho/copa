@@ -1,19 +1,29 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { StandingsComponent } from './standings';
+import { FifaApiService } from '../../core/services/fifa-api.service';
+import { I18nService } from '../../core/services/i18n.service';
+import { of } from 'rxjs';
+import { signal } from '@angular/core';
 
-import { Standings } from './standings';
-
-describe('Standings', () => {
-  let component: Standings;
-  let fixture: ComponentFixture<Standings>;
+describe('StandingsComponent', () => {
+  let component: StandingsComponent;
+  let fixture: ComponentFixture<StandingsComponent>;
 
   beforeEach(async () => {
+    const mockFifaApi = {
+      getMatches: () => of({})
+    };
     await TestBed.configureTestingModule({
-      imports: [Standings],
+      imports: [StandingsComponent],
+      providers: [
+        { provide: FifaApiService, useValue: mockFifaApi },
+        I18nService
+      ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Standings);
+    fixture = TestBed.createComponent(StandingsComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

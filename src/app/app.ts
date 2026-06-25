@@ -59,7 +59,7 @@ export class App implements OnInit {
   }
 
   ngOnInit() {
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = typeof localStorage !== 'undefined' && localStorage ? localStorage.getItem('theme') : null;
     if (savedTheme === 'light') {
       this.setTheme(false);
     } else {
@@ -103,10 +103,14 @@ export class App implements OnInit {
     this.isDarkMode.set(isDark);
     if (isDark) {
       document.body.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'dark');
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        localStorage.setItem('theme', 'dark');
+      }
     } else {
       document.body.setAttribute('data-theme', 'light');
-      localStorage.setItem('theme', 'light');
+      if (typeof localStorage !== 'undefined' && localStorage) {
+        localStorage.setItem('theme', 'light');
+      }
     }
   }
 }
