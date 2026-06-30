@@ -7,7 +7,8 @@
 
 
 
-.loading-state, .empty-state {
+.loading-state,
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -27,7 +28,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-icon {
@@ -46,8 +49,8 @@
   display: flex;
   justify-content: flex-start;
   align-items: stretch;
-  gap: 3rem;
-  min-width: max-content; 
+  gap: 2rem;
+  min-width: max-content;
   padding: 2rem;
   /* Allow board to grow with its content so all columns stretch to the tallest one */
   min-height: 100%;
@@ -56,7 +59,7 @@
 .bracket-column {
   display: flex;
   flex-direction: column;
-  width: 220px;
+  width: 195px;
   flex-shrink: 0;
 }
 
@@ -68,7 +71,7 @@
   margin-bottom: 2rem;
   text-transform: uppercase;
   opacity: 0.8;
-  
+
   /* Fixed height to ensure all stacks start at the exact same vertical coordinate */
   height: 3rem;
   display: flex;
@@ -93,7 +96,8 @@
 }
 
 /* Connecting Lines (Yellow) */
-.bracket-node::before, .bracket-node::after {
+.bracket-node::before,
+.bracket-node::after {
   content: '';
   position: absolute;
   z-index: 0;
@@ -102,11 +106,12 @@
 /* Left-pointing line for all except first column */
 .bracket-column:not(:first-child) .bracket-node::before {
   top: 50%;
-  left: -1.5rem;
-  width: 1.5rem;
+  left: -1rem;
+  width: 1rem;
   height: 2px;
   background-color: #ffd700;
 }
+
 .bracket-column:first-child .bracket-node::before {
   display: none;
 }
@@ -114,8 +119,8 @@
 /* Right-pointing connection for ODD nodes (goes right then down) */
 .bracket-column:not(:last-child) .bracket-node:nth-child(odd)::after {
   top: 50%;
-  right: -1.5rem;
-  width: 1.5rem;
+  right: -1rem;
+  width: 1rem;
   height: 50%;
   border-top: 2px solid #ffd700;
   border-right: 2px solid #ffd700;
@@ -125,8 +130,8 @@
 /* Right-pointing connection for EVEN nodes (goes right then up) */
 .bracket-column:not(:last-child) .bracket-node:nth-child(even)::after {
   top: 0;
-  right: -1.5rem;
-  width: 1.5rem;
+  right: -1rem;
+  width: 1rem;
   height: 50%;
   border-bottom: 2px solid #ffd700;
   border-right: 2px solid #ffd700;
@@ -136,8 +141,8 @@
 /* Single node in a column just connects straight across */
 .bracket-column:not(:last-child) .bracket-node:only-child::after {
   top: 50%;
-  right: -1.5rem;
-  width: 1.5rem;
+  right: -1rem;
+  width: 1rem;
   height: 2px;
   background-color: #ffd700;
   border: none;
@@ -170,6 +175,14 @@
   z-index: 2;
 }
 
+.bracket-match-date {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
 :host ::ng-deep .bracket-node app-match-card {
   width: 100%;
   display: block;
@@ -187,7 +200,8 @@
 
 /* Highlight the final match */
 :host ::ng-deep .final-column .match-card {
-  background: #008f39; /* Brazil green highlight */
+  background: #008f39;
+  /* Brazil green highlight */
   border-color: #00ff00;
   transform: scale(1.1);
 }
@@ -224,7 +238,7 @@
   height: 24px;
   border-radius: 2px;
   object-fit: cover;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 :host ::ng-deep .bracket-node .match-card .team-name {
@@ -232,8 +246,6 @@
   text-transform: uppercase;
   text-align: center;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   width: 100%;
   color: var(--text-primary);
   font-weight: bold;

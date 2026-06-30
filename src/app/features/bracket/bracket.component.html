@@ -29,6 +29,7 @@
                       @if (stage.id.toLowerCase().includes('final') && !stage.id.toLowerCase().includes('quarter') && !stage.id.toLowerCase().includes('quarta') && !stage.id.toLowerCase().includes('semi') && !stage.id.toLowerCase().includes('oitava') && !stage.id.toLowerCase().includes('16-avos') && !stage.id.toLowerCase().includes('dezesseis') && !stage.id.toLowerCase().includes('segunda')) {
                         <div class="final-star">★</div>
                       }
+                      <div class="bracket-match-date">{{ match.Date | date:'dd/MM - HH:mm' }}</div>
                       <app-match-card [match]="match" [isDashboardMode]="true"></app-match-card>
                     </div>
                   </div>
