@@ -4,6 +4,7 @@ import { FifaApiService } from '../../core/services/fifa-api.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { MatchCardComponent } from '../matches/match-card/match-card.component';
 import { LiveUpdateService } from '../../core/services/live-update.service';
+import { MatchDetailModalComponent } from '../matches/match-detail-modal/match-detail-modal.component';
 
 interface KnockoutStage {
   id: string;
@@ -14,7 +15,7 @@ interface KnockoutStage {
 @Component({
   selector: 'app-bracket',
   standalone: true,
-  imports: [CommonModule, MatchCardComponent],
+  imports: [CommonModule, MatchCardComponent, MatchDetailModalComponent],
   templateUrl: './bracket.component.html',
   styleUrls: ['./bracket.component.css']
 })
@@ -25,6 +26,7 @@ export class BracketComponent implements OnInit, OnDestroy {
 
   loading = signal<boolean>(true);
   allMatches = signal<any[]>([]);
+  selectedMatch = signal<any | null>(null);
 
   knockoutMatches = computed(() => {
     const liveUpdates = this.liveUpdate.liveMatchUpdates();
@@ -233,6 +235,14 @@ export class BracketComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.liveUpdate.stopPolling();
+  }
+
+  openMatchDetails(match: any) {
+    this.selectedMatch.set(match);
+  }
+
+  closeMatchDetails() {
+    this.selectedMatch.set(null);
   }
 
   private getProjectedTeam(placeholder: string, matchByNumber: Map<number, any>): any | null {

@@ -30,7 +30,11 @@
                         <div class="final-star">★</div>
                       }
                       <div class="bracket-match-date">{{ match.Date | date:'dd/MM - HH:mm' }}</div>
-                      <app-match-card [match]="match" [isDashboardMode]="true"></app-match-card>
+                      <app-match-card 
+                        [match]="match" 
+                        [isDashboardMode]="true"
+                        (matchClicked)="openMatchDetails($event)">
+                      </app-match-card>
                     </div>
                   </div>
                 }
@@ -40,5 +44,12 @@
         </div>
       }
     </div>
+  }
+
+  @if (selectedMatch()) {
+    <app-match-detail-modal 
+      [match]="selectedMatch()" 
+      (closeModal)="closeMatchDetails()">
+    </app-match-detail-modal>
   }
 </div>
