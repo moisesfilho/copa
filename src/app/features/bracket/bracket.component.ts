@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, inject, signal, computed, effect, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { I18nService } from '../../core/services/i18n.service';
@@ -18,7 +18,7 @@ interface KnockoutStage {
   templateUrl: './bracket.component.html',
   styleUrls: ['./bracket.component.css']
 })
-export class BracketComponent {
+export class BracketComponent implements OnInit, OnDestroy {
   private api = inject(FifaApiService);
   public i18n = inject(I18nService);
   private liveUpdate = inject(LiveUpdateService);
@@ -26,13 +26,38 @@ export class BracketComponent {
   loading = signal<boolean>(true);
   allMatches = signal<any[]>([]);
 
-  // We filter out any match that has a GroupName or where the Stage is obviously a group stage
   knockoutMatches = computed(() => {
-    return this.allMatches().filter(m => {
+    const liveUpdates = this.liveUpdate.liveMatchUpdates();
+    const allMatchesList = this.allMatches().map(m => {
+       return liveUpdates[m.IdMatch] || m;
+    });
+
+    const matchByNumber = new Map<number, any>();
+    allMatchesList.forEach(m => {
+      if (m.MatchNumber) {
+        matchByNumber.set(m.MatchNumber, m);
+      }
+    });
+
+    return allMatchesList.filter(m => {
       const hasGroup = m.GroupName && m.GroupName.length > 0;
       const stageName = m.StageName?.[0]?.Description?.toLowerCase() || '';
       const isGroupStage = stageName.includes('group');
       return !hasGroup && !isGroupStage;
+    }).map(m => {
+      const clonedMatch = { ...m };
+      
+      if (!clonedMatch.Home?.IdCountry && clonedMatch.PlaceHolderA) {
+        const projectedHome = this.getProjectedTeam(clonedMatch.PlaceHolderA, matchByNumber);
+        if (projectedHome) clonedMatch.Home = projectedHome;
+      }
+      
+      if (!clonedMatch.Away?.IdCountry && clonedMatch.PlaceHolderB) {
+        const projectedAway = this.getProjectedTeam(clonedMatch.PlaceHolderB, matchByNumber);
+        if (projectedAway) clonedMatch.Away = projectedAway;
+      }
+
+      return clonedMatch;
     });
   });
 
@@ -106,6 +131,44 @@ export class BracketComponent {
       const lang = this.i18n.currentLang();
       this.loadMatches(lang);
     });
+  }
+
+  ngOnInit() {
+    this.liveUpdate.startPolling();
+  }
+
+  ngOnDestroy() {
+    this.liveUpdate.stopPolling();
+  }
+
+  private getProjectedTeam(placeholder: string, matchByNumber: Map<number, any>): any | null {
+    if (!placeholder) return null;
+    const isWinner = placeholder.startsWith('W');
+    const isLoser = placeholder.startsWith('L');
+    if (!isWinner && !isLoser) return null;
+    
+    const matchNum = parseInt(placeholder.substring(1), 10);
+    if (isNaN(matchNum)) return null;
+
+    const sourceMatch = matchByNumber.get(matchNum);
+    if (!sourceMatch) return null;
+
+    // Only project if match is Live (Status === 3)
+    if (sourceMatch.MatchStatus !== 3) return null;
+
+    const homeScore = sourceMatch.HomeTeamScore ?? 0;
+    const awayScore = sourceMatch.AwayTeamScore ?? 0;
+
+    if (homeScore === awayScore) return null; // Tied, no projection
+
+    const winningTeam = homeScore > awayScore ? sourceMatch.Home : sourceMatch.Away;
+    const losingTeam = homeScore < awayScore ? sourceMatch.Home : sourceMatch.Away;
+
+    if (isWinner) {
+      return winningTeam ? { ...winningTeam, isProjected: true } : null;
+    } else {
+      return losingTeam ? { ...losingTeam, isProjected: true } : null;
+    }
   }
 
   private loadMatches(lang: string) {

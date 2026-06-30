@@ -4,7 +4,7 @@ import { FifaApiService } from '../../core/services/fifa-api.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { LiveUpdateService } from '../../core/services/live-update.service';
 import { of } from 'rxjs';
-import { vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('BracketComponent', () => {
   let component: BracketComponent;
@@ -54,7 +54,9 @@ describe('BracketComponent', () => {
 
     mockLiveUpdateService = {
       liveMatchUpdates: vi.fn().mockReturnValue({}),
-      liveEventUpdates: vi.fn().mockReturnValue({})
+      liveEventUpdates: vi.fn().mockReturnValue({}),
+      startPolling: vi.fn(),
+      stopPolling: vi.fn()
     };
 
     await TestBed.configureTestingModule({
@@ -95,5 +97,84 @@ describe('BracketComponent', () => {
 
     expect(stages[1].name).toBe('Quartas de Final');
     expect(stages[2].name).toBe('Final');
+  });
+
+  it('should project the winning team into a future match if the source match is live', () => {
+    // Setup a mock scenario
+    const mockLiveMatch = {
+      IdMatch: '73',
+      MatchNumber: 73,
+      MatchStatus: 3, // Live
+      HomeTeamScore: 2,
+      AwayTeamScore: 1,
+      Home: { TeamName: [{ Description: 'Noruega' }] },
+      Away: { TeamName: [{ Description: 'Costa do Marfim' }] }
+    };
+
+    const mockFutureMatch = {
+      IdMatch: '90',
+      MatchNumber: 90,
+      MatchStatus: 1, // Upcoming
+      GroupName: [],
+      StageName: [{ Description: 'Quarter-finals' }],
+      Date: '2026-07-03T16:00:00Z',
+      PlaceHolderA: 'W73',
+      Home: null
+    };
+
+    // Simulate the effect of the API loading these matches
+    component.allMatches.set([mockLiveMatch, mockFutureMatch]);
+    
+    // Simulating no polling live updates initially, just relying on the base array
+    // which has the live match because `allMatches()` returns it.
+    
+    component.ngOnInit();
+    
+    const knockoutMatches = component.knockoutMatches();
+    
+    // Future match is the second one in the filtered array 
+    // (since mockLiveMatch is missing StageName it gets filtered out by the group check, wait we should give it a StageName)
+    // Actually, let's just find the future match.
+    const futureMatchComputed = knockoutMatches.find(m => m.IdMatch === '90');
+    expect(futureMatchComputed).toBeDefined();
+    
+    // The Home team should be projected to Noruega
+    expect(futureMatchComputed?.Home).toBeTruthy();
+    expect(futureMatchComputed?.Home?.TeamName[0].Description).toBe('Noruega');
+    expect(futureMatchComputed?.Home?.isProjected).toBe(true);
+  });
+
+  it('should not project a team if the source match is tied', () => {
+    // Setup a mock scenario where the live match is tied
+    const mockLiveMatch = {
+      IdMatch: '73',
+      MatchNumber: 73,
+      MatchStatus: 3, // Live
+      HomeTeamScore: 1,
+      AwayTeamScore: 1,
+      Home: { TeamName: [{ Description: 'Noruega' }] },
+      Away: { TeamName: [{ Description: 'Costa do Marfim' }] }
+    };
+
+    const mockFutureMatch = {
+      IdMatch: '90',
+      MatchNumber: 90,
+      MatchStatus: 1, // Upcoming
+      GroupName: [],
+      StageName: [{ Description: 'Quarter-finals' }],
+      Date: '2026-07-03T16:00:00Z',
+      PlaceHolderA: 'W73',
+      Home: null
+    };
+
+    component.allMatches.set([mockLiveMatch, mockFutureMatch]);
+    
+    component.ngOnInit();
+    
+    const knockoutMatches = component.knockoutMatches();
+    const futureMatchComputed = knockoutMatches.find(m => m.IdMatch === '90');
+    
+    // The Home team should remain null because the match is tied
+    expect(futureMatchComputed?.Home).toBeNull();
   });
 });

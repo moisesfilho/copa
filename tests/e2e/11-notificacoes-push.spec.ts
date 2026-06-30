@@ -3,7 +3,8 @@ import * as matchesMock from './fixtures/matches.json';
 import * as resourcesMock from './fixtures/ui-resources.json';
 
 test.describe('11 - Notificacoes Push', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, context }) => {
+    await context.grantPermissions(['notifications']);
     await page.route('**/api/v3/calendar/matches**', async route => route.fulfill({ json: matchesMock }));
     await page.route('**/api/resources**', async route => route.fulfill({ json: resourcesMock }));
     await page.goto('/configuracoes');
