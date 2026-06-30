@@ -1,10 +1,8 @@
 <div class="bracket-container">
-  <div class="page-header">
-    <div class="header-content">
-      <h1>🔀 {{ i18n.t().bracket.title }}</h1>
-      <p class="subtitle">{{ i18n.t().bracket.subtitle }}</p>
-    </div>
-  </div>
+  <header class="page-header glass-panel">
+    <h1>{{ i18n.t().bracket.title }}</h1>
+    <p>{{ i18n.t().bracket.subtitle }}</p>
+  </header>
 
   @if (loading()) {
     <div class="loading-state">
@@ -12,7 +10,7 @@
       <p>{{ i18n.t().dashboard.loading }}</p>
     </div>
   } @else {
-    <div class="bracket-wrapper">
+    <div class="bracket-wrapper glass-panel">
       @if (stages().length === 0) {
         <div class="empty-state">
           <div class="empty-icon">🏆</div>

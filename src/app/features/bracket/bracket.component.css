@@ -5,25 +5,7 @@
   flex-direction: column;
 }
 
-.page-header {
-  margin-bottom: 2rem;
-  text-align: center;
-}
 
-.header-content h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin: 0;
-  color: #ffd700;
-  text-transform: uppercase;
-}
-
-.subtitle {
-  color: var(--text-muted);
-  font-size: 1.2rem;
-  margin-top: 0.5rem;
-  font-style: italic;
-}
 
 .loading-state, .empty-state {
   display: flex;
@@ -58,8 +40,6 @@
   flex: 1;
   overflow: auto;
   padding: 1rem;
-  background: #111a2e; /* Darker background similar to image */
-  border-radius: 1rem;
 }
 
 .bracket-board {
@@ -84,7 +64,7 @@
   text-align: center;
   font-size: 1rem;
   font-weight: bold;
-  color: #ffffff;
+  color: var(--text-primary);
   margin-bottom: 2rem;
   text-transform: uppercase;
   opacity: 0.8;
@@ -198,11 +178,11 @@
 :host ::ng-deep .bracket-node .match-card {
   margin: 0;
   width: 100%;
-  background: #1e3a5f;
-  border: 1px solid #3a5f8f;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 8px;
   padding: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  box-shadow: var(--glass-shadow);
 }
 
 /* Highlight the final match */
@@ -255,7 +235,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
-  color: #fff;
+  color: var(--text-primary);
   font-weight: bold;
 }
 
@@ -270,7 +250,7 @@
 :host ::ng-deep .bracket-node .match-card .score {
   font-size: 1rem;
   font-weight: bold;
-  color: #fff;
+  color: var(--text-primary);
   background: transparent;
   padding: 0;
 }
