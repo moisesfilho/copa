@@ -49,4 +49,17 @@ export class I18nService {
       localStorage.setItem('language', lang);
     }
   }
+
+  translateStage(originalName: string | undefined): string {
+    if (!originalName) return '';
+    const sName = originalName.toLowerCase();
+    const t = this.t().bracket;
+    if (sName.includes('32') || sName.includes('1ª') || sName.includes('2ª') || sName.includes('segunda') || sName.includes('16-avos') || sName.includes('dezesseis') || sName.includes('16th')) return t.roundOf32;
+    if (sName.includes('16') || sName.includes('oitava') || sName.includes('eighth')) return t.roundOf16;
+    if (sName.includes('quarter') || sName.includes('quarta')) return t.quarterFinals;
+    if (sName.includes('semi')) return t.semiFinals;
+    if (sName.includes('third') || sName.includes('terceiro') || sName.includes('terc') || sName.includes('bronze')) return t.thirdPlace;
+    if (sName.includes('final') || sName.includes('ouro') || sName.includes('gold')) return t.final;
+    return originalName;
+  }
 }

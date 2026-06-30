@@ -1,7 +1,7 @@
 <div class="card match-card glass-panel" [class.live]="isLive" [class.dashboard-mode]="isDashboardMode"
   (click)="onClick()">
   <div class="card-header">
-    <span class="stage">{{ displayMatch.StageName?.[0]?.Description || i18n.t().match.noInfo }}</span>
+    <span class="stage">{{ i18n.translateStage(displayMatch.StageName?.[0]?.Description) || i18n.t().match.noInfo }}</span>
     <span class="date">{{ displayMatch.Date | date: 'dd/MM/yyyy HH:mm' }}</span>
   </div>
 

@@ -49,6 +49,13 @@ describe('BracketComponent', () => {
           live: 'AO VIVO',
           finished: 'FIM'
         }
+      }),
+      translateStage: vi.fn().mockImplementation((name) => {
+        if (!name) return '';
+        if (name.includes('Round of 16')) return 'Oitavas de Final';
+        if (name.includes('Quarter-finals')) return 'Quartas de Final';
+        if (name.includes('Final')) return 'Final';
+        return name;
       })
     };
 

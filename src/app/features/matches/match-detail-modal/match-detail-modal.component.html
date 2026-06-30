@@ -28,7 +28,7 @@
         <div>
           <header class="modal-header">
             <div class="match-stage">
-              <span class="stage">{{ match.StageName?.[0]?.Description }}</span>
+              <span class="stage">{{ i18n.translateStage(match.StageName?.[0]?.Description) }}</span>
               @if (match.GroupName?.[0]?.Description) {
                 <span class="group"> • {{ match.GroupName[0].Description }}</span>
               }
