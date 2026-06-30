@@ -34,10 +34,16 @@ export class MatchCardComponent {
   }
 
   get homeTeam() {
+    if (this.isDashboardMode && this.displayMatch?.Home?.Abbreviation) {
+      return this.displayMatch.Home.Abbreviation;
+    }
     return this.displayMatch?.Home?.TeamName?.[0]?.Description || 'TBD';
   }
 
   get awayTeam() {
+    if (this.isDashboardMode && this.displayMatch?.Away?.Abbreviation) {
+      return this.displayMatch.Away.Abbreviation;
+    }
     return this.displayMatch?.Away?.TeamName?.[0]?.Description || 'TBD';
   }
 

@@ -138,63 +138,7 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
             return isMatchStateEvent || e.Period === 11 || e.Type === 0 || e.Type === 34 || e.Type === 41 || e.Type === 65 || e.Type === 66 || e.Type === 33 || e.Type === 60 ||
                    e.Type === 2 || e.Type === 3 || e.Type === 4 ||
                    typeDesc.includes('cartão') || typeDesc.includes('card');
-          }).map((e: any) => {
-            const typeDescLowerCase = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
-            const isNeutral = e.Type === 7 || e.Type === 8 || e.Type === 26 || typeDescLowerCase.includes('hidratação') || typeDescLowerCase.includes('cooling') || typeDescLowerCase.includes('hydration');
-            
-            let realTime = '';
-            if (e.Timestamp) {
-              const d = new Date(e.Timestamp);
-              realTime = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
-            
-            let playerName = 'Jogador';
-            if (isNeutral) {
-               playerName = e.TypeLocalized?.[0]?.Description || 'Evento da partida';
-               
-               if (e.Type === 8 && e.Period === 3) {
-                  playerName = lang === 'pt' ? 'Início do Intervalo' : 'Half-time Starts';
-               } else if (e.Type === 7 && e.Period === 5) {
-                  playerName = lang === 'pt' ? 'Término do Intervalo / Reinício da Partida' : 'Half-time Ends / Match Restarts';
-               }
-            } else if (e.EventDescription && e.EventDescription[0]) {
-               const desc = e.EventDescription[0].Description;
-               const match = desc.match(/^([^(]+)/);
-               if (match && match[1]) {
-                 playerName = match[1].trim();
-               } else {
-                 playerName = desc; // fallback se não achar o parêntese
-               }
-            }
-            const isExtraTime = e.Period === 7 || e.Period === 9;
-            const isShootout = e.Period === 11 || e.Type === 65 || e.Type === 66 || (e.MatchMinute && String(e.MatchMinute).toLowerCase().includes('pen'));
-            
-            const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
-            const isMissedPenalty = e.Type === 66 || e.Type === 33 || e.Type === 60 || 
-                                    (e.Period === 11 && e.Type !== 65 && e.Type !== 41 && e.Type !== 0 && !typeDesc.includes('gol') && !typeDesc.includes('goal'));
-            
-            let isCard = false;
-            let cardType = '';
-            if (e.Type === 2 || typeDesc.includes('amarelo') || typeDesc.includes('yellow')) {
-               isCard = true;
-               cardType = 'yellow';
-            } else if (e.Type === 3 || e.Type === 4 || typeDesc.includes('vermelho') || typeDesc.includes('red')) {
-               isCard = true;
-               cardType = 'red';
-            }
-            
-            return {
-              ...e,
-              playerName,
-              isExtraTime,
-              isShootout,
-              isMissedPenalty,
-              isCard,
-              cardType,
-              isNeutral,
-              realTime
-            };
-          });
+          }).map((e: any) => this.parseTimelineEvent(e, lang));
           
           const regular: any[] = [];
           const extra: any[] = [];
@@ -245,6 +189,98 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
       parsed[key] = value;
     });
     return parsed;
+  }
+
+  private getNeutralEventName(e: any, lang: string): string {
+    if (e.Type === 8 && e.Period === 3) {
+      return lang === 'pt' ? 'Início do Intervalo' : 'Half-time Starts';
+    }
+    if (e.Type === 7 && e.Period === 5) {
+      return lang === 'pt' ? 'Término do Intervalo / Reinício da Partida' : 'Half-time Ends / Match Restarts';
+    }
+    const typeLoc = e.TypeLocalized;
+    if (typeLoc && typeLoc.length > 0) {
+      return typeLoc[0].Description || 'Evento da partida';
+    }
+    return 'Evento da partida';
+  }
+
+  private getEventDescriptionName(e: any): string {
+    const descArray = e.EventDescription;
+    if (descArray && descArray.length > 0) {
+      const desc = descArray[0].Description;
+      const match = desc.match(/^([^(]+)/);
+      if (match && match[1]) {
+        return match[1].trim();
+      }
+      return desc;
+    }
+    return 'Jogador';
+  }
+
+  private getPlayerName(e: any, isNeutral: boolean, lang: string): string {
+    if (isNeutral) {
+      return this.getNeutralEventName(e, lang);
+    }
+    return this.getEventDescriptionName(e);
+  }
+
+  private isMissedPenaltyEvent(e: any, typeDesc: string): boolean {
+    return e.Type === 66 || e.Type === 33 || e.Type === 60 || 
+           (e.Period === 11 && e.Type !== 65 && e.Type !== 41 && e.Type !== 0 && !typeDesc.includes('gol') && !typeDesc.includes('goal'));
+  }
+
+  private getCardInfo(e: any, typeDesc: string): { isCard: boolean, cardType: string } {
+    if (e.Type === 2 || typeDesc.includes('amarelo') || typeDesc.includes('yellow')) {
+       return { isCard: true, cardType: 'yellow' };
+    }
+    if (e.Type === 3 || e.Type === 4 || typeDesc.includes('vermelho') || typeDesc.includes('red')) {
+       return { isCard: true, cardType: 'red' };
+    }
+    return { isCard: false, cardType: '' };
+  }
+
+  private isNeutralEvent(e: any, typeDesc: string): boolean {
+    return e.Type === 7 || e.Type === 8 || e.Type === 26 || 
+           typeDesc.includes('hidratação') || typeDesc.includes('cooling') || typeDesc.includes('hydration');
+  }
+
+  private isShootoutEvent(e: any): boolean {
+    return e.Period === 11 || e.Type === 65 || e.Type === 66 || 
+           !!(e.MatchMinute && String(e.MatchMinute).toLowerCase().includes('pen'));
+  }
+  
+  private isExtraTimeEvent(e: any): boolean {
+    return e.Period === 7 || e.Period === 9;
+  }
+
+  private parseTimelineEvent(e: any, lang: string) {
+    const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
+    const isNeutral = this.isNeutralEvent(e, typeDesc);
+    
+    let realTime = '';
+    if (e.Timestamp) {
+      realTime = new Date(e.Timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    const playerName = this.getPlayerName(e, isNeutral, lang);
+    const isExtraTime = this.isExtraTimeEvent(e);
+    const isShootout = this.isShootoutEvent(e);
+    
+    const isMissedPenalty = this.isMissedPenaltyEvent(e, typeDesc);
+    const { isCard, cardType } = this.getCardInfo(e, typeDesc);
+    
+    return {
+      ...e,
+      playerName,
+      isExtraTime,
+      isShootout,
+      isMissedPenalty,
+      isCard,
+      cardType,
+      isNeutral,
+      realTime
+    };
   }
 
   getFlagEmoji(fifaCode: string): string {

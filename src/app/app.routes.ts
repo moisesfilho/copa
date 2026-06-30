@@ -14,6 +14,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/standings/standings').then(m => m.StandingsComponent)
   },
   {
+    path: 'chaveamento',
+    loadComponent: () => import('./features/bracket/bracket.component').then(m => m.BracketComponent)
+  },
+  {
     path: 'sobre',
     loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent)
   },

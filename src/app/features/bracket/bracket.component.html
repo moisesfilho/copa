@@ -1,0 +1,45 @@
+<div class="bracket-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>🔀 {{ i18n.t().bracket.title }}</h1>
+      <p class="subtitle">{{ i18n.t().bracket.subtitle }}</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>{{ i18n.t().dashboard.loading }}</p>
+    </div>
+  } @else {
+    <div class="bracket-wrapper">
+      @if (stages().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">🏆</div>
+          <h3>Nenhuma partida eliminatória</h3>
+          <p>Os confrontos ainda não foram definidos ou carregados.</p>
+        </div>
+      } @else {
+        <div class="bracket-board">
+          @for (stage of stages(); track stage.id) {
+            <div class="bracket-column">
+              <h3 class="stage-title">{{ stage.name }}</h3>
+              <div class="matches-stack">
+                @for (match of stage.matches; track match.IdMatch) {
+                  <div class="bracket-node">
+                    <div class="match-card-wrapper">
+                      @if (stage.id.toLowerCase().includes('final') && !stage.id.toLowerCase().includes('quarter') && !stage.id.toLowerCase().includes('quarta') && !stage.id.toLowerCase().includes('semi') && !stage.id.toLowerCase().includes('oitava') && !stage.id.toLowerCase().includes('16-avos') && !stage.id.toLowerCase().includes('dezesseis') && !stage.id.toLowerCase().includes('segunda')) {
+                        <div class="final-star">★</div>
+                      }
+                      <app-match-card [match]="match" [isDashboardMode]="true"></app-match-card>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
