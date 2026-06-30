@@ -138,6 +138,10 @@ const TRANSLATIONS: Record<Language, Translations> = {
       description: 'Bem-vindo ao **Copados 2026**, uma aplicação moderna desenvolvida para você acompanhar de perto todas as emoções, partidas e resultados da Copa do Mundo.',
       featuresTitle: '✨ Principais Funcionalidades',
       features: [
+        '**Chaveamento (Mata-mata)**: Árvore completa das fases eliminatórias com suporte a cruzamentos em tempo real.',
+        '**Detalhes da Partida**: Estatísticas avançadas, posse de bola, escalações, eventos e equipe de arbitragem.',
+        '**Notificações Push**: Alertas configuráveis para não perder nenhum jogo da sua seleção ou do torneio.',
+        '**Filtros Inteligentes**: Navegue pelas partidas buscando por fase, grupo ou país.',
         '**Acompanhamento Ao Vivo**: Atualizações de placares, gols e cartões em tempo real.',
         '**Seleção Favorita**: Escolha o seu país do coração e tenha o painel principal focado nas estatísticas da sua seleção.',
         '**Lista de Artilheiros**: Fique de olho nos jogadores que mais balançaram a rede.',
@@ -298,6 +302,10 @@ const TRANSLATIONS: Record<Language, Translations> = {
       description: 'Welcome to **Copados 2026**, a modern application developed for you to closely follow all the emotions, matches, and results of the World Cup.',
       featuresTitle: '✨ Main Features',
       features: [
+        '**Bracket View**: Complete knockout stage tree with real-time matchup projections.',
+        '**Match Details**: Advanced statistics, ball possession, lineups, events, and referee team.',
+        '**Push Notifications**: Configurable alerts so you never miss a match from your team or the tournament.',
+        '**Smart Filters**: Navigate through matches by searching by stage, group, or country.',
         '**Live Tracking**: Real-time updates of scores, goals, and cards.',
         '**Favorite Team**: Choose your favorite country and have the main panel focused on its statistics.',
         '**Top Scorers**: Keep an eye on the players who have scored the most goals.',

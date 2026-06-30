@@ -73,9 +73,103 @@ export class BracketComponent implements OnInit, OnDestroy {
       stageMap.get(stageName)!.push(m);
     });
 
-    // Sort matches in each stage by date
+    // Build bracket tree scoring for visual alignment
+    const matchOrderScore = new Map<number, number>();
+    const matchByNumber = new Map<number, any>();
+    matches.forEach(m => {
+      if (m.MatchNumber) matchByNumber.set(m.MatchNumber, m);
+    });
+
+    const assignOrder = (match: any, center: number, width: number) => {
+      if (!match || !match.MatchNumber) return;
+      if (matchOrderScore.has(match.MatchNumber)) return; // Already visited
+
+      matchOrderScore.set(match.MatchNumber, center);
+      
+      const phA = match.PlaceHolderA;
+      const phB = match.PlaceHolderB;
+      let sourceA: any = null;
+      let sourceB: any = null;
+
+      if (phA && phA.startsWith('W')) {
+        sourceA = matchByNumber.get(parseInt(phA.substring(1), 10));
+      }
+      if (phB && phB.startsWith('W')) {
+        sourceB = matchByNumber.get(parseInt(phB.substring(1), 10));
+      }
+
+      const children = [];
+      if (sourceA) children.push(sourceA);
+      if (sourceB) children.push(sourceB);
+
+      // Sort children by date to ensure the earliest match stays at the top of the bracket pair
+      children.sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
+
+      if (children.length === 2) {
+        assignOrder(children[0], center - width / 2, width / 2);
+        assignOrder(children[1], center + width / 2, width / 2);
+      } else if (children.length === 1) {
+        assignOrder(children[0], center, width / 2);
+      }
+    };
+
+    // Find all roots (matches that are not referenced by any PlaceHolder)
+    const placeholderSet = new Set<string>();
+    matches.forEach(m => {
+      if (m.PlaceHolderA) placeholderSet.add(m.PlaceHolderA);
+      if (m.PlaceHolderB) placeholderSet.add(m.PlaceHolderB);
+    });
+
+    const rootMatches = matches.filter(m => {
+      if (!m.MatchNumber) return false;
+      return !placeholderSet.has(`W${m.MatchNumber}`) && !placeholderSet.has(`L${m.MatchNumber}`);
+    });
+
+    // Find the final match to serve as the absolute center root
+    const finalMatch = rootMatches.find(m => {
+      const sName = (m.StageName?.[0]?.Description || '').toLowerCase();
+      return (sName.includes('final') || sName.includes('ouro') || sName.includes('gold')) 
+             && !sName.includes('quarter') && !sName.includes('quarta') 
+             && !sName.includes('semi') && !sName.includes('16') 
+             && !sName.includes('32') && !sName.includes('third') && !sName.includes('terceiro');
+    });
+
+    if (finalMatch) {
+      assignOrder(finalMatch, 0, 1000000);
+    }
+
+    // Any other roots that weren't assigned (e.g. missing Final, third-place match, partial mock data)
+    let rootFallback = 2000000;
+    rootMatches.forEach(root => {
+      if (root.MatchNumber && !matchOrderScore.has(root.MatchNumber)) {
+        assignOrder(root, rootFallback, 1000000);
+        rootFallback += 2000000;
+      }
+    });
+
+    // Any completely disconnected or malformed matches
+    let fallbackScore = rootFallback + 2000000;
+    matches.forEach(m => {
+      if (m.MatchNumber && !matchOrderScore.has(m.MatchNumber)) {
+        matchOrderScore.set(m.MatchNumber, fallbackScore);
+        fallbackScore += 2000000;
+      }
+    });
+
+    // Sort matches in each stage by tree-score to preserve exact visual bracket tree alignment. Fallback to Date.
     stageMap.forEach(matchList => {
-      matchList.sort((a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime());
+      matchList.sort((a, b) => {
+        const scoreA = matchOrderScore.get(a.MatchNumber);
+        const scoreB = matchOrderScore.get(b.MatchNumber);
+        
+        if (scoreA !== undefined && scoreB !== undefined) {
+          return scoreA - scoreB;
+        }
+        if (a.MatchNumber && b.MatchNumber) {
+          return a.MatchNumber - b.MatchNumber;
+        }
+        return new Date(a.Date).getTime() - new Date(b.Date).getTime();
+      });
     });
 
     // Try to order stages logically (Round of 32 -> Round of 16 -> Quarter -> Semi -> Final)
