@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnChanges, OnInit, OnDestroy, SimpleChanges, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges, OnInit, OnDestroy, SimpleChanges, inject, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { FifaApiService } from '../../../core/services/fifa-api.service';
@@ -21,7 +21,40 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
   @Output() closeModal = new EventEmitter<void>();
 
   teamStats = signal<{ home: any, away: any, inContest?: number } | null>(null);
-  goals = signal<any[]>([]);
+  regularEvents = signal<any[]>([]);
+  extraTimeEvents = signal<any[]>([]);
+  shootoutEvents = signal<any[]>([]);
+  matchEndEvent = signal<any | null>(null);
+  
+  homePenaltiesScored = computed(() => {
+    return this.shootoutEvents().filter(e => e.IdTeam === this.match?.Home?.IdTeam && !e.isMissedPenalty).length;
+  });
+
+  awayPenaltiesScored = computed(() => {
+    return this.shootoutEvents().filter(e => e.IdTeam === this.match?.Away?.IdTeam && !e.isMissedPenalty).length;
+  });
+  
+  shootoutRounds = computed(() => {
+    const events = this.shootoutEvents();
+    if (!events.length) return [];
+    const homeId = this.match?.Home?.IdTeam;
+    const awayId = this.match?.Away?.IdTeam;
+
+    const homePenalties = events.filter(e => e.IdTeam === homeId);
+    const awayPenalties = events.filter(e => e.IdTeam === awayId);
+
+    const maxRounds = Math.max(homePenalties.length, awayPenalties.length);
+    const rounds = [];
+    for (let i = 0; i < maxRounds; i++) {
+      rounds.push({
+        round: i + 1,
+        home: homePenalties[i] || null,
+        away: awayPenalties[i] || null
+      });
+    }
+    return rounds;
+  });
+
   loadingStats = signal<boolean>(false);
 
   ngOnInit() {
@@ -61,7 +94,10 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
     if (!isPolling) {
       this.loadingStats.set(true);
       this.teamStats.set(null);
-      this.goals.set([]);
+      this.regularEvents.set([]);
+      this.extraTimeEvents.set([]);
+      this.shootoutEvents.set([]);
+      this.matchEndEvent.set(null);
     }
 
     const lang = this.i18n.currentLang();
@@ -94,12 +130,34 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
         }
         
         if (res.timeline && res.timeline.Event) {
-          const matchGoals = res.timeline.Event.filter((e: any) => 
-            e.Type === 0 || e.Type === 34 || e.Type === 41 || 
-            (e.TypeLocalized && e.TypeLocalized[0]?.Description?.toLowerCase().includes('gol!'))
-          ).map((e: any) => {
+          const allEvents = res.timeline.Event.filter((e: any) => {
+            const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
+            const isMatchStateEvent = e.Type === 7 || e.Type === 8 || e.Type === 26 || typeDesc.includes('hidratação') || typeDesc.includes('cooling') || typeDesc.includes('hydration');
+            
+            // Inclui eventos do Period 11 (Shootout) ou gols/cartões/pênaltis perdidos (Type 33, 60, 66)
+            return isMatchStateEvent || e.Period === 11 || e.Type === 0 || e.Type === 34 || e.Type === 41 || e.Type === 65 || e.Type === 66 || e.Type === 33 || e.Type === 60 ||
+                   e.Type === 2 || e.Type === 3 || e.Type === 4 ||
+                   typeDesc.includes('cartão') || typeDesc.includes('card');
+          }).map((e: any) => {
+            const typeDescLowerCase = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
+            const isNeutral = e.Type === 7 || e.Type === 8 || e.Type === 26 || typeDescLowerCase.includes('hidratação') || typeDescLowerCase.includes('cooling') || typeDescLowerCase.includes('hydration');
+            
+            let realTime = '';
+            if (e.Timestamp) {
+              const d = new Date(e.Timestamp);
+              realTime = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
             let playerName = 'Jogador';
-            if (e.EventDescription && e.EventDescription[0]) {
+            if (isNeutral) {
+               playerName = e.TypeLocalized?.[0]?.Description || 'Evento da partida';
+               
+               if (e.Type === 8 && e.Period === 3) {
+                  playerName = lang === 'pt' ? 'Início do Intervalo' : 'Half-time Starts';
+               } else if (e.Type === 7 && e.Period === 5) {
+                  playerName = lang === 'pt' ? 'Término do Intervalo / Reinício da Partida' : 'Half-time Ends / Match Restarts';
+               }
+            } else if (e.EventDescription && e.EventDescription[0]) {
                const desc = e.EventDescription[0].Description;
                const match = desc.match(/^([^(]+)/);
                if (match && match[1]) {
@@ -108,13 +166,57 @@ export class MatchDetailModalComponent implements OnChanges, OnInit, OnDestroy {
                  playerName = desc; // fallback se não achar o parêntese
                }
             }
+            const isExtraTime = e.Period === 7 || e.Period === 9;
+            const isShootout = e.Period === 11 || e.Type === 65 || e.Type === 66 || (e.MatchMinute && String(e.MatchMinute).toLowerCase().includes('pen'));
+            
+            const typeDesc = e.TypeLocalized?.[0]?.Description?.toLowerCase() || '';
+            const isMissedPenalty = e.Type === 66 || e.Type === 33 || e.Type === 60 || 
+                                    (e.Period === 11 && e.Type !== 65 && e.Type !== 41 && e.Type !== 0 && !typeDesc.includes('gol') && !typeDesc.includes('goal'));
+            
+            let isCard = false;
+            let cardType = '';
+            if (e.Type === 2 || typeDesc.includes('amarelo') || typeDesc.includes('yellow')) {
+               isCard = true;
+               cardType = 'yellow';
+            } else if (e.Type === 3 || e.Type === 4 || typeDesc.includes('vermelho') || typeDesc.includes('red')) {
+               isCard = true;
+               cardType = 'red';
+            }
+            
             return {
               ...e,
-              playerName
+              playerName,
+              isExtraTime,
+              isShootout,
+              isMissedPenalty,
+              isCard,
+              cardType,
+              isNeutral,
+              realTime
             };
           });
           
-          this.goals.set(matchGoals);
+          const regular: any[] = [];
+          const extra: any[] = [];
+          const shootout: any[] = [];
+          let matchEnd = null;
+          
+          allEvents.forEach((e: any) => {
+            if (e.Type === 26) {
+               matchEnd = e;
+            } else if (e.isShootout) {
+               shootout.push(e);
+            } else if (e.isExtraTime) {
+               extra.push(e);
+            } else {
+               regular.push(e);
+            }
+          });
+          
+          this.regularEvents.set(regular);
+          this.extraTimeEvents.set(extra);
+          this.shootoutEvents.set(shootout);
+          this.matchEndEvent.set(matchEnd);
         }
         
         if (!isPolling) {

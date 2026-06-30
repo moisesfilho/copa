@@ -11,6 +11,7 @@ export interface Translations {
   match: any;
   about: any;
   settings: any;
+  bracket: any;
   continents: { [key: string]: string };
 }
 
@@ -23,6 +24,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
       standings: 'Classificação',
       about: 'Sobre',
       settings: 'Configurações',
+      bracket: 'Chaveamento',
       install: '📲 Instalar App'
     },
     filters: {
@@ -161,6 +163,17 @@ const TRANSLATIONS: Record<Language, Translations> = {
       'Ásia (AFC)': 'Ásia (AFC)',
       'Oceania (OFC)': 'Oceania (OFC)',
       'Europa (UEFA)': 'Europa (UEFA)'
+    },
+    bracket: {
+      title: 'Chaveamento',
+      subtitle: 'Acompanhe as fases eliminatórias da Copa do Mundo.',
+      roundOf32: 'Dezesseis-avos de Final',
+      roundOf16: 'Oitavas de Final',
+      quarterFinals: 'Quartas de Final',
+      semiFinals: 'Semifinal',
+      thirdPlace: 'Disputa do 3º Lugar',
+      final: 'Final',
+      tbd: 'A Definir'
     }
   },
   en: {
@@ -171,6 +184,7 @@ const TRANSLATIONS: Record<Language, Translations> = {
       standings: 'Standings',
       about: 'About',
       settings: 'Settings',
+      bracket: 'Bracket',
       install: '📲 Install App'
     },
     filters: {
@@ -309,6 +323,17 @@ const TRANSLATIONS: Record<Language, Translations> = {
       'Ásia (AFC)': 'Asia (AFC)',
       'Oceania (OFC)': 'Oceania (OFC)',
       'Europa (UEFA)': 'Europe (UEFA)'
+    },
+    bracket: {
+      title: 'Bracket',
+      subtitle: 'Follow the World Cup knockout stages.',
+      roundOf32: 'Round of 32',
+      roundOf16: 'Round of 16',
+      quarterFinals: 'Quarter-finals',
+      semiFinals: 'Semi-finals',
+      thirdPlace: 'Play-off for third place',
+      final: 'Final',
+      tbd: 'TBD'
     }
   }
 };

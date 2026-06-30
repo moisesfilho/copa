@@ -51,6 +51,15 @@
               <div class="scorebox">
                 @if (match.MatchStatus === 0 || match.MatchStatus === 3) {
                   <span class="score">{{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}</span>
+                  @if (match.HomeTeamPenaltyScore !== null && match.AwayTeamPenaltyScore !== null) {
+                    <div class="penalties-score-modal" style="font-size: 0.9rem; color: var(--primary-color); font-weight: 600; text-align: center; margin-top: 5px;">
+                      ({{ (shootoutEvents().length > 0) ? homePenaltiesScored() : match.HomeTeamPenaltyScore }} - {{ (shootoutEvents().length > 0) ? awayPenaltiesScored() : match.AwayTeamPenaltyScore }} {{ i18n.t().match.penalty || 'Pênaltis' }})
+                    </div>
+                  } @else if (match.Period === 7 || match.Period === 9) {
+                    <div class="aet-score-modal" style="font-size: 0.8rem; color: var(--warning-color, #f39c12); font-weight: 600; text-align: center; margin-top: 5px;">
+                      {{ i18n.currentLang() === 'pt' ? 'Prorrogação' : 'Extra Time' }}
+                    </div>
+                  }
                 }
                 @if (match.MatchStatus !== 0 && match.MatchStatus !== 3) {
                   <span class="time">{{ match.Date | date: 'HH:mm' }}</span>
@@ -70,31 +79,133 @@
             </div>
           </header>
           <div class="modal-body">
-            <!-- Goals -->
-            @if (goals()?.length) {
-              <div class="goals-section">
-                <h3>{{ i18n.t().match.goals }}</h3>
-                <div class="goals-list">
-                  @for (goal of goals(); track goal) {
+            <!-- Timeline de Eventos -->
+            @if (regularEvents()?.length || extraTimeEvents()?.length) {
+              <div class="timeline-section">
+                <h3>{{ i18n.currentLang() === 'pt' ? 'Linha do Tempo' : 'Timeline' }}</h3>
+                <div class="timeline-container">
+                  
+                  <ng-template #eventTemplate let-event>
                     <div
-                      class="goal-item"
+                      class="timeline-event"
                       [ngClass]="{
-                        'home-goal': goal.IdTeam === match.Home?.IdTeam,
-                        'away-goal': goal.IdTeam === match.Away?.IdTeam,
+                        'home-side': !event.isNeutral && event.IdTeam === match.Home?.IdTeam,
+                        'away-side': !event.isNeutral && event.IdTeam === match.Away?.IdTeam,
+                        'neutral-side': event.isNeutral
                       }"
                     >
-                      <div class="goal-time">{{ goal.MatchMinute }}</div>
-                      <div class="goal-info">
-                        <strong>{{ goal.playerName }}</strong>
-                        @if (goal.Type === 34) {
-                          <span class="goal-type">{{ i18n.t().match.penalty }}</span>
-                        }
-                        @if (goal.Type === 41) {
-                          <span class="goal-type">{{ i18n.t().match.ownGoal }}</span>
-                        }
+                      <div class="timeline-content" [class.missed-penalty]="event.isMissedPenalty">
+                        <div class="timeline-header">
+                          <span class="timeline-time">{{ (event.isNeutral && event.realTime) ? event.realTime : event.MatchMinute }}</span>
+                          @if (!event.isNeutral) {
+                            @if (event.isCard) {
+                              <span class="card-icon" [ngClass]="event.cardType"></span>
+                            } @else if (event.isMissedPenalty) {
+                              <span class="goal-icon">❌</span>
+                            } @else {
+                              <span class="goal-icon">⚽</span>
+                            }
+                          } @else {
+                            <span class="goal-icon">⏱️</span>
+                          }
+                        </div>
+                        <div class="timeline-details">
+                          <strong>{{ event.playerName }}</strong>
+                          @if (!event.isCard && !event.isNeutral && (event.Type === 41 || event.isMissedPenalty)) {
+                            <span class="event-type">{{ event.isMissedPenalty ? 'Pênalti Perdido' : i18n.t().match.penalty }}</span>
+                          }
+                          @if (!event.isCard && !event.isNeutral && event.Type === 34) {
+                            <span class="event-type">{{ i18n.t().match.ownGoal }}</span>
+                          }
+                          @if (!event.isNeutral && event.isExtraTime) {
+                            <span class="event-type extra-time-badge" style="background: rgba(243, 156, 18, 0.2); color: #f39c12;">
+                              {{ i18n.currentLang() === 'pt' ? 'Prorrogação' : 'ET' }}
+                            </span>
+                          }
+                        </div>
                       </div>
+                      <div class="timeline-dot" [class.missed-dot]="event.isMissedPenalty"></div>
                     </div>
+                  </ng-template>
+
+                  @if (regularEvents().length) {
+                    <div class="timeline-divider">
+                      <span>{{ i18n.currentLang() === 'pt' ? 'Tempo Regulamentar' : 'Regular Time' }}</span>
+                    </div>
+                    @for (event of regularEvents(); track event) {
+                      <ng-container *ngTemplateOutlet="eventTemplate; context: {$implicit: event}"></ng-container>
+                    }
                   }
+
+                  @if (extraTimeEvents()?.length) {
+                    <div class="timeline-divider">
+                      <span>{{ i18n.currentLang() === 'pt' ? 'Prorrogação' : 'Extra Time' }}</span>
+                    </div>
+                    @for (event of extraTimeEvents(); track event.IdEvent) {
+                      <ng-container *ngTemplateOutlet="eventTemplate; context: {$implicit: event}"></ng-container>
+                    }
+                  }
+                  
+                  @if (shootoutEvents()?.length) {
+                    <ng-container *ngTemplateOutlet="eventTemplate; context: {$implicit: {
+                      isNeutral: true,
+                      playerName: i18n.currentLang() === 'pt' ? 'Disputa de Pênaltis' : 'Penalty Shootout',
+                      MatchMinute: ''
+                    }}"></ng-container>
+                  }
+                  
+                  @if (matchEndEvent()) {
+                    <ng-container *ngTemplateOutlet="eventTemplate; context: {$implicit: matchEndEvent()}"></ng-container>
+                  }
+
+                </div>
+              </div>
+            }
+
+            <!-- Disputa de Pênaltis (Tabela) -->
+            @if (homePenaltiesScored() !== null && awayPenaltiesScored() !== null && shootoutRounds().length > 0) {
+              <div class="shootout-section">
+                <h3>{{ i18n.currentLang() === 'pt' ? 'Disputa de Pênaltis' : 'Penalty Shootout' }}</h3>
+                
+                <div class="shootout-summary">
+                  <span class="team-name">{{ match.Home?.TeamName?.[0]?.Description }}</span>
+                  <span class="shootout-score">{{ homePenaltiesScored() }} - {{ awayPenaltiesScored() }}</span>
+                  <span class="team-name">{{ match.Away?.TeamName?.[0]?.Description }}</span>
+                </div>
+
+                <div class="shootout-table-container">
+                  <table class="shootout-table">
+                    <thead>
+                      <tr>
+                        <th class="team-col home-col">{{ match.Home?.TeamName?.[0]?.Description || match.Home?.IdCountry }}</th>
+                        <th class="round-col">#</th>
+                        <th class="team-col away-col">{{ match.Away?.TeamName?.[0]?.Description || match.Away?.IdCountry }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (round of shootoutRounds(); track round.round) {
+                        <tr>
+                          <td class="team-col home-col">
+                            @if (round.home) {
+                              <div class="penalty-result">
+                                <span class="player-name">{{ round.home.playerName }}</span>
+                                <span class="penalty-icon">{{ round.home.isMissedPenalty ? '❌' : '⚽' }}</span>
+                              </div>
+                            }
+                          </td>
+                          <td class="round-col">{{ round.round }}</td>
+                          <td class="team-col away-col">
+                            @if (round.away) {
+                              <div class="penalty-result penalty-away">
+                                <span class="penalty-icon">{{ round.away.isMissedPenalty ? '❌' : '⚽' }}</span>
+                                <span class="player-name">{{ round.away.playerName }}</span>
+                              </div>
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
                 </div>
               </div>
             }

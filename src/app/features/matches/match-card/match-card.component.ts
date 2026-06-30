@@ -52,4 +52,21 @@ export class MatchCardComponent {
   get isLive() {
     return this.displayMatch?.MatchStatus === 3;
   }
+
+  get homePenaltyScore() {
+    return this.displayMatch?.HomeTeamPenaltyScore;
+  }
+
+  get awayPenaltyScore() {
+    return this.displayMatch?.AwayTeamPenaltyScore;
+  }
+
+  get hasPenalties() {
+    return this.homePenaltyScore != null && this.awayPenaltyScore != null;
+  }
+
+  get isExtraTime() {
+    // Period 7 or 9 indicates extra time
+    return !this.hasPenalties && (this.displayMatch?.Period === 7 || this.displayMatch?.Period === 9);
+  }
 }

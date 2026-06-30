@@ -99,8 +99,94 @@
 }
 
 .share-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Tabela de Pênaltis */
+.shootout-section {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.shootout-section h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--accent-color);
+  text-align: center;
+}
+
+.shootout-table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.shootout-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.shootout-table th, .shootout-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.shootout-table th {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.05em;
+}
+
+.shootout-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.round-col {
+  width: 10%;
+  text-align: center;
+  font-weight: 800;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.team-col {
+  width: 45%;
+}
+
+.home-col {
+  text-align: right;
+}
+
+.away-col {
+  text-align: left;
+}
+
+.penalty-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.penalty-away {
+  justify-content: flex-start;
+}
+
+.player-name {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.penalty-icon {
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 .modal-header {
@@ -190,6 +276,7 @@
 
 .scorebox {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.2);
@@ -430,59 +517,214 @@
   height: 100%;
 }
 
-.goals-section {
+.timeline-section {
   margin-bottom: 2.5rem;
 }
 
-.goals-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  max-width: 600px;
-  margin: 0 auto;
+.timeline-section h3 {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  color: var(--accent-color);
+  text-align: center;
 }
 
-.goal-item {
+.timeline-container {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.timeline-container::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  background-color: var(--glass-border);
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  margin-left: -1px;
+}
+
+.timeline-event {
+  padding: 10px 30px;
+  position: relative;
+  width: 50%;
+  box-sizing: border-box;
+}
+
+.timeline-event.home-side {
+  left: 0;
+  text-align: right;
+}
+
+.timeline-event.away-side {
+  left: 50%;
+  text-align: left;
+}
+
+.timeline-event.neutral-side {
+  left: 0;
+  width: 100%;
+  text-align: center;
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 1.5rem;
+  justify-content: center;
+  padding: 15px 0;
+}
+
+.timeline-divider {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  margin: 1.5rem 0;
+}
+
+.timeline-divider span {
+  background: var(--glass-bg, #1a1a1a);
+  color: var(--text-secondary);
+  padding: 4px 12px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   border: 1px solid var(--glass-border);
 }
 
-.goal-item.home-goal {
-  border-left: 4px solid #3b82f6;
+.timeline-content {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  padding: 12px 15px;
+  border-radius: 12px;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 220px;
 }
 
-.goal-item.away-goal {
-  border-left: 4px solid #10b981;
+.timeline-content.missed-penalty {
+  opacity: 0.7;
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
-.goal-time {
-  font-size: 1.2rem;
+.home-side .timeline-content {
+  align-items: flex-end;
+}
+
+.away-side .timeline-content {
+  align-items: flex-start;
+}
+
+.neutral-side .timeline-content {
+  align-items: center;
+  flex-direction: row;
+  max-width: none;
+  width: auto;
+  padding: 6px 15px;
+  background: var(--glass-bg, #1a1a1a);
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  gap: 0.8rem;
+}
+
+.neutral-side .timeline-header {
+  margin: 0;
+}
+
+.neutral-side .timeline-details strong {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.timeline-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-side .timeline-header {
+  flex-direction: row-reverse;
+}
+
+.timeline-time {
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--accent-color);
-  width: 50px;
 }
 
-.goal-info {
+.timeline-details {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
 }
 
-.goal-info strong {
+.timeline-details strong {
   font-size: 1.05rem;
   color: var(--text-primary);
 }
 
-.goal-type {
+.event-type {
   font-size: 0.8rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.extra-time-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.timeline-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--glass-bg);
+  border: 2px solid var(--accent-color);
+  z-index: 1;
+}
+
+.home-side .timeline-dot {
+  right: -7px;
+  border-color: #3b82f6;
+  background-color: #1a1a1a;
+}
+
+.away-side .timeline-dot {
+  left: -7px;
+  border-color: #10b981;
+  background-color: #1a1a1a;
+}
+
+.timeline-dot.missed-dot {
+  border-color: #ef4444;
+  background-color: #333;
+}
+
+.neutral-side .timeline-dot {
+  display: none;
+}
+
+.card-icon {
+  display: inline-block;
+  width: 12px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.card-icon.yellow {
+  background-color: #eab308;
+  box-shadow: 0 0 4px rgba(234, 179, 8, 0.4);
+}
+
+.card-icon.red {
+  background-color: #ef4444;
+  box-shadow: 0 0 4px rgba(239, 68, 68, 0.4);
 }
 
 .stats-loading {
