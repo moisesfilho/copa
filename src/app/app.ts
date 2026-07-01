@@ -83,8 +83,12 @@ export class App implements OnInit {
   applyUpdate() {
     this.isUpdating.set(true);
     this.swUpdate.activateUpdate().then(() => {
-      document.location.reload();
+      this.reloadPage();
     });
+  }
+
+  reloadPage() {
+    document.location.reload();
   }
 
   toggleSidebar() {

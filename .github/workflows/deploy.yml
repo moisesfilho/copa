@@ -99,7 +99,14 @@ jobs:
           key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Run Unit Tests
-        run: npm test -- --watch=false --reporters=junit --output-file=test-results/junit-unit.xml
+        run: |
+          npm test -- --watch=false --coverage --reporters=default --reporters=junit --output-file=test-results/junit-unit.xml > test_output.txt 2>&1 || TEST_FAILED=true
+          cat test_output.txt
+          echo "### 📊 Unit Test Coverage" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          sed -n '/% Coverage report from v8/,$p' test_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ "$TEST_FAILED" = "true" ]; then exit 1; fi
 
       - name: Test Report (Unit)
         uses: dorny/test-reporter@v3
