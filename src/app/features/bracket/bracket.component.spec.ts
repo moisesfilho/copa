@@ -5,6 +5,7 @@ import { I18nService } from '../../core/services/i18n.service';
 import { LiveUpdateService } from '../../core/services/live-update.service';
 import { of, Observable } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { ActivatedRoute, Router } from '@angular/router';
 
 describe('BracketComponent', () => {
   let component: BracketComponent;
@@ -71,7 +72,9 @@ describe('BracketComponent', () => {
       providers: [
         { provide: FifaApiService, useValue: mockFifaApiService },
         { provide: I18nService, useValue: mockI18nService },
-        { provide: LiveUpdateService, useValue: mockLiveUpdateService }
+        { provide: LiveUpdateService, useValue: mockLiveUpdateService },
+        { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { queryParams: {} } } },
+        { provide: Router, useValue: { navigate: vi.fn() } }
       ]
     }).compileComponents();
 
@@ -210,15 +213,18 @@ describe('BracketComponent', () => {
   });
 
   it('should open and close match details', () => {
+    const router = TestBed.inject(Router);
     const mockMatch = { IdMatch: '1' };
     
     component.openMatchDetails(mockMatch);
-    fixture.detectChanges();
-    expect(component.selectedMatch()).toEqual(mockMatch);
+    expect(router.navigate).toHaveBeenCalledWith([], expect.objectContaining({
+      queryParams: { match: '1' }
+    }));
     
     component.closeMatchDetails();
-    fixture.detectChanges();
-    expect(component.selectedMatch()).toBeNull();
+    expect(router.navigate).toHaveBeenCalledWith([], expect.objectContaining({
+      queryParams: { match: null }
+    }));
   });
 
   it('should render empty state when no stages available', () => {

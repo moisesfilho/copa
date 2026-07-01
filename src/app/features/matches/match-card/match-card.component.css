@@ -67,6 +67,36 @@
   text-overflow: ellipsis;
 }
 
+.team-name.abbr-name {
+  display: none;
+}
+
+/* Base logic for dashboard mode (assuming small screens) */
+.card.dashboard-mode .team-name.full-name {
+  display: none;
+}
+.card.dashboard-mode .team-name.abbr-name {
+  display: inline;
+}
+
+/* When screen is not small */
+@media (min-width: 768px) {
+  .card.dashboard-mode:not(.force-abbr) .team-name.full-name {
+    display: inline;
+  }
+  .card.dashboard-mode:not(.force-abbr) .team-name.abbr-name {
+    display: none;
+  }
+}
+
+/* Force abbreviations regardless of screen size */
+.card.force-abbr .team-name.full-name {
+  display: none !important;
+}
+.card.force-abbr .team-name.abbr-name {
+  display: inline !important;
+}
+
 .flag {
   width: 40px;
   height: 40px;

@@ -11,7 +11,7 @@ test.describe('01 - Dashboard Copa Mundo', () => {
 
   test('should load matches on dashboard', async ({ page }) => {
     await expect(page.locator('app-match-card')).toHaveCount(1);
-    await expect(page.locator('app-match-card').locator('text=Mexico')).toBeVisible();
-    await expect(page.locator('app-match-card').locator('text=Brazil')).toBeVisible();
+    await expect(page.locator('app-match-card').locator('text=Mexico').first()).toBeVisible();
+    await expect(page.locator('app-match-card').locator('text=Brazil').first()).toBeVisible();
   });
 });

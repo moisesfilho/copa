@@ -6,6 +6,7 @@ Bem-vindo ao **Copados 2026**, uma aplicação moderna desenvolvida para você a
 
 - **Chaveamento (Mata-mata)**: Visualize a árvore completa das fases eliminatórias (da fase de 16 avos até a grande final) com alinhamento dinâmico e suporte aos confrontos projetados.
 - **Detalhes Avançados da Partida**: Clique em qualquer jogo para ver o modal detalhado com estatísticas, posse de bola, escalações, eventos (gols, cartões) e equipe de arbitragem.
+- **Estatísticas das Seleções**: Acesse o perfil completo de cada seleção com histórico de partidas na competição, padrões táticos e informações gerais, integrados com URLs amigáveis para compartilhamento direto.
 - **Notificações Push**: Configure alertas personalizados para ser avisado antes do início de todas as partidas ou apenas dos jogos da sua seleção favorita.
 - **Acompanhamento Ao Vivo**: Atualizações de placares, gols e cartões em tempo real (atualização a cada 10 segundos).
 - **Seleção Favorita**: Escolha o seu país do coração e tenha o painel principal (Dashboard) focado nas estatísticas, próxima partida e últimos jogos apenas dessa seleção.

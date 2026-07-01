@@ -122,6 +122,7 @@
     "features": [
       "**Bracket View**: Complete knockout stage tree with real-time matchup projections.",
       "**Match Details**: Advanced statistics, ball possession, lineups, events, and referee team.",
+      "**Team Statistics**: Full profile with match history and tactical patterns, integrated with direct sharing URLs.",
       "**Push Notifications**: Configurable alerts so you never miss a match from your team or the tournament.",
       "**Smart Filters**: Navigate through matches by searching by stage, group, or country.",
       "**Live Tracking**: Real-time updates of scores, goals, and cards.",

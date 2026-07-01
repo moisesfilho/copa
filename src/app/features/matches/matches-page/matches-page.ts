@@ -5,12 +5,13 @@ import { I18nService } from '../../../core/services/i18n.service';
 import { LiveUpdateService } from '../../../core/services/live-update.service';
 import { MatchListComponent } from '../match-list/match-list.component';
 import { MatchDetailModalComponent } from '../match-detail-modal/match-detail-modal.component';
+import { TeamDetailModalComponent } from '../../teams/team-detail-modal/team-detail-modal.component';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-matches-page',
   standalone: true,
-  imports: [MatchListComponent, MatchDetailModalComponent],
+  imports: [MatchListComponent, MatchDetailModalComponent, TeamDetailModalComponent],
   templateUrl: './matches-page.html',
   styleUrls: ['./matches-page.css']
 })
@@ -30,6 +31,26 @@ export class MatchesPageComponent implements OnInit {
   uiResources = signal<any>({});
   loading = signal<boolean>(true);
   selectedMatch = signal<any | null>(null);
+
+  selectedTeamId = signal<string | null>(null);
+  selectedTeamName = signal<string>('');
+  selectedTeamCountryCode = signal<string>('');
+
+  onTeamSelected(event: {teamId: string, teamName: string, flagId: string}) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { teamId: event.teamId },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  closeTeamDetail() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { teamId: null },
+      queryParamsHandling: 'merge',
+    });
+  }
 
   constructor() {
     effect(() => {
@@ -55,13 +76,10 @@ export class MatchesPageComponent implements OnInit {
             this.matches.set(res.Results);
 
             const matchId = this.route.snapshot.queryParams['match'];
-            if (matchId && !this.selectedMatch()) {
-              const match = res.Results.find((m: any) => m.IdMatch === matchId);
-              this.selectedMatch.set(match || null);
-            } else if (this.selectedMatch()) {
-              const updatedMatch = res.Results.find((m: any) => m.IdMatch === this.selectedMatch().IdMatch);
-              this.selectedMatch.set(updatedMatch || null);
-            }
+            this.handleMatchSelectionFromUrl(res.Results, matchId, true);
+
+            const teamId = this.route.snapshot.queryParams['teamId'];
+            this.handleTeamSelectionFromUrl(res.Results, teamId, true);
           }
           this.loading.set(false);
         },
@@ -77,16 +95,46 @@ export class MatchesPageComponent implements OnInit {
     this.route.queryParams.subscribe({
       next: (params) => {
         const matchId = params['match'];
+        const teamId = params['teamId'];
         const currentMatches = this.matches();
 
-        if (matchId && currentMatches.length > 0) {
-          const match = currentMatches.find((m) => m.IdMatch === matchId);
-          if (match) this.selectedMatch.set(match);
-        } else if (!matchId && this.selectedMatch()) {
-          this.selectedMatch.set(null);
+        if (currentMatches.length > 0) {
+          this.handleMatchSelectionFromUrl(currentMatches, matchId);
+          this.handleTeamSelectionFromUrl(currentMatches, teamId);
         }
       },
     });
+  }
+
+  private handleMatchSelectionFromUrl(results: any[], matchId: string | undefined, isDataUpdate = false) {
+    if (matchId) {
+      if (!this.selectedMatch() || this.selectedMatch().IdMatch !== matchId) {
+        const match = results.find((m: any) => m.IdMatch === matchId);
+        this.selectedMatch.set(match || null);
+      } else if (isDataUpdate && this.selectedMatch()) {
+        const updatedMatch = results.find((m: any) => m.IdMatch === this.selectedMatch().IdMatch);
+        this.selectedMatch.set(updatedMatch || null);
+      }
+    } else if (this.selectedMatch()) {
+      this.selectedMatch.set(null);
+    }
+  }
+
+  private handleTeamSelectionFromUrl(results: any[], teamId: string | undefined, isDataUpdate = false) {
+    if (teamId) {
+      if (!this.selectedTeamId() || this.selectedTeamId() !== teamId || isDataUpdate) {
+        const matchWithTeam = results.find((m: any) => m.Home?.IdTeam === teamId || m.Away?.IdTeam === teamId);
+        if (matchWithTeam) {
+          const isHome = matchWithTeam.Home?.IdTeam === teamId;
+          const team = isHome ? matchWithTeam.Home : matchWithTeam.Away;
+          this.selectedTeamId.set(teamId);
+          this.selectedTeamName.set(team.TeamName?.[0]?.Description || team.IdCountry);
+          this.selectedTeamCountryCode.set(team.IdCountry);
+        }
+      }
+    } else if (this.selectedTeamId()) {
+      this.selectedTeamId.set(null);
+    }
   }
 
   onMatchSelected(match: any) {

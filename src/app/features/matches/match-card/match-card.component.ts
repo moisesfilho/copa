@@ -18,8 +18,10 @@ export class MatchCardComponent {
   @Input() events: any[] = [];
   @Input() uiResources: any;
   @Input() isDashboardMode = false;
+  @Input() forceAbbreviations = false;
 
   @Output() matchClicked = new EventEmitter<any>();
+  @Output() teamClicked = new EventEmitter<{teamId: string, teamName: string, flagId: string}>();
 
   get displayMatch() {
     return this.liveService.liveMatchUpdates()[this.match?.IdMatch] || this.match;
@@ -33,18 +35,25 @@ export class MatchCardComponent {
     this.matchClicked.emit(this.displayMatch);
   }
 
-  get homeTeam() {
-    if (this.isDashboardMode && this.displayMatch?.Home?.Abbreviation) {
-      return this.displayMatch.Home.Abbreviation;
-    }
+  onTeamClick(event: Event, teamId: string, teamName: string, flagId: string) {
+    event.stopPropagation();
+    this.teamClicked.emit({teamId, teamName, flagId});
+  }
+
+  get homeTeamFull() {
     return this.displayMatch?.Home?.TeamName?.[0]?.Description || 'TBD';
   }
 
-  get awayTeam() {
-    if (this.isDashboardMode && this.displayMatch?.Away?.Abbreviation) {
-      return this.displayMatch.Away.Abbreviation;
-    }
+  get homeTeamAbbr() {
+    return this.displayMatch?.Home?.Abbreviation || this.homeTeamFull;
+  }
+
+  get awayTeamFull() {
     return this.displayMatch?.Away?.TeamName?.[0]?.Description || 'TBD';
+  }
+
+  get awayTeamAbbr() {
+    return this.displayMatch?.Away?.Abbreviation || this.awayTeamFull;
   }
 
   get homeScore() {

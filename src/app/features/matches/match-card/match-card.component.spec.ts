@@ -31,31 +31,31 @@ describe('MatchCardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display team names', () => {
+  it('should display full team names', () => {
     component.match = {
       IdMatch: '1',
       Home: { TeamName: [{ Description: 'Brazil' }], Abbreviation: 'BRA' },
       Away: { TeamName: [{ Description: 'Argentina' }], Abbreviation: 'ARG' }
     };
-    expect(component.homeTeam).toBe('Brazil');
-    expect(component.awayTeam).toBe('Argentina');
+    expect(component.homeTeamFull).toBe('Brazil');
+    expect(component.awayTeamFull).toBe('Argentina');
   });
 
-  it('should use abbreviations in dashboard mode', () => {
+  it('should resolve abbreviations correctly', () => {
     component.match = {
       IdMatch: '1',
       Home: { TeamName: [{ Description: 'Brazil' }], Abbreviation: 'BRA' },
       Away: { TeamName: [{ Description: 'Argentina' }], Abbreviation: 'ARG' }
     };
     component.isDashboardMode = true;
-    expect(component.homeTeam).toBe('BRA');
-    expect(component.awayTeam).toBe('ARG');
+    expect(component.homeTeamAbbr).toBe('BRA');
+    expect(component.awayTeamAbbr).toBe('ARG');
   });
 
   it('should return TBD if team is missing', () => {
     component.match = { IdMatch: '1' };
-    expect(component.homeTeam).toBe('TBD');
-    expect(component.awayTeam).toBe('TBD');
+    expect(component.homeTeamFull).toBe('TBD');
+    expect(component.awayTeamFull).toBe('TBD');
   });
 
   it('should get scores or fallback to dash', () => {

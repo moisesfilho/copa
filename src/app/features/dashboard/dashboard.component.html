@@ -42,6 +42,7 @@
                   [uiResources]="uiResources()"
                   [isDashboardMode]="true"
                   (matchClicked)="onMatchSelected($event)"
+                  (teamClicked)="onTeamSelected($event)"
                 ></app-match-card>
               }
             </div>
@@ -57,6 +58,7 @@
               [uiResources]="uiResources()"
               [isDashboardMode]="true"
               (matchClicked)="onMatchSelected($event)"
+              (teamClicked)="onTeamSelected($event)"
             ></app-match-card>
           } @else {
             <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
@@ -75,6 +77,7 @@
                 [uiResources]="uiResources()"
                 [isDashboardMode]="true"
                 (matchClicked)="onMatchSelected($event)"
+                (teamClicked)="onTeamSelected($event)"
               ></app-match-card>
             } @else {
               <div class="glass-panel" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
@@ -285,6 +288,15 @@
         [match]="selectedMatch()"
         (closeModal)="closeModal()"
       ></app-match-detail-modal>
+    }
+
+    @if (selectedTeamId()) {
+      <app-team-detail-modal
+        [teamId]="selectedTeamId()"
+        [teamName]="selectedTeamName()"
+        [teamCountryCode]="selectedTeamCountryCode()"
+        (closeModal)="closeTeamDetail()">
+      </app-team-detail-modal>
     }
   </main>
 </div>

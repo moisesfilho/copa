@@ -1,10 +1,12 @@
 import { Component, inject, signal, computed, effect, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FifaApiService } from '../../core/services/fifa-api.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { MatchCardComponent } from '../matches/match-card/match-card.component';
 import { LiveUpdateService } from '../../core/services/live-update.service';
 import { MatchDetailModalComponent } from '../matches/match-detail-modal/match-detail-modal.component';
+import { TeamDetailModalComponent } from '../teams/team-detail-modal/team-detail-modal.component';
 
 interface KnockoutStage {
   id: string;
@@ -15,7 +17,7 @@ interface KnockoutStage {
 @Component({
   selector: 'app-bracket',
   standalone: true,
-  imports: [CommonModule, MatchCardComponent, MatchDetailModalComponent],
+  imports: [CommonModule, MatchCardComponent, MatchDetailModalComponent, TeamDetailModalComponent],
   templateUrl: './bracket.component.html',
   styleUrls: ['./bracket.component.css']
 })
@@ -23,10 +25,13 @@ export class BracketComponent implements OnInit, OnDestroy {
   private api = inject(FifaApiService);
   public i18n = inject(I18nService);
   private liveUpdate = inject(LiveUpdateService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   loading = signal<boolean>(true);
   allMatches = signal<any[]>([]);
   selectedMatch = signal<any | null>(null);
+  selectedTeam = signal<{teamId: string, teamName: string, flagId: string} | null>(null);
 
   knockoutMatches = computed(() => {
     const liveUpdates = this.liveUpdate.liveMatchUpdates();
@@ -231,6 +236,51 @@ export class BracketComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.liveUpdate.startPolling();
+    this.route.queryParams.subscribe({
+      next: (params) => {
+        const teamId = params['teamId'];
+        const matchId = params['match'];
+        const all = this.allMatches();
+
+        if (all.length > 0) {
+          this.handleTeamSelectionFromUrl(all, teamId);
+          this.handleMatchSelectionFromUrl(all, matchId);
+        }
+      },
+    });
+  }
+
+  private handleTeamSelectionFromUrl(results: any[], teamId: string | undefined, isDataUpdate = false) {
+    if (teamId) {
+      if (!this.selectedTeam() || this.selectedTeam()?.teamId !== teamId || isDataUpdate) {
+        const matchWithTeam = results.find((m) => m.Home?.IdTeam === teamId || m.Away?.IdTeam === teamId);
+        if (matchWithTeam) {
+          const isHome = matchWithTeam.Home?.IdTeam === teamId;
+          const team = isHome ? matchWithTeam.Home : matchWithTeam.Away;
+          this.selectedTeam.set({
+            teamId,
+            teamName: team.TeamName?.[0]?.Description || team.IdCountry,
+            flagId: team.IdCountry
+          });
+        }
+      }
+    } else if (this.selectedTeam()) {
+      this.selectedTeam.set(null);
+    }
+  }
+
+  private handleMatchSelectionFromUrl(results: any[], matchId: string | undefined, isDataUpdate = false) {
+    if (matchId) {
+      if (!this.selectedMatch() || this.selectedMatch().IdMatch !== matchId) {
+        const match = results.find((m) => m.IdMatch === matchId);
+        this.selectedMatch.set(match || null);
+      } else if (isDataUpdate && this.selectedMatch()) {
+        const updatedMatch = results.find((m: any) => m.IdMatch === this.selectedMatch().IdMatch);
+        this.selectedMatch.set(updatedMatch || null);
+      }
+    } else if (this.selectedMatch()) {
+      this.selectedMatch.set(null);
+    }
   }
 
   ngOnDestroy() {
@@ -238,11 +288,37 @@ export class BracketComponent implements OnInit, OnDestroy {
   }
 
   openMatchDetails(match: any) {
-    this.selectedMatch.set(match);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { match: match.IdMatch },
+      queryParamsHandling: 'merge',
+    });
   }
 
   closeMatchDetails() {
-    this.selectedMatch.set(null);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { match: null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  openTeamDetails(teamData: {teamId: string, teamName: string, flagId: string}) {
+    if (teamData.teamId && teamData.teamName) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { teamId: teamData.teamId },
+        queryParamsHandling: 'merge',
+      });
+    }
+  }
+
+  closeTeamDetails() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { teamId: null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   private getProjectedTeam(placeholder: string, matchByNumber: Map<number, any>): any | null {
@@ -281,6 +357,12 @@ export class BracketComponent implements OnInit, OnDestroy {
       next: (res) => {
         if (res && res.Results) {
           this.allMatches.set(res.Results);
+          
+          const matchId = this.route.snapshot.queryParams['match'];
+          this.handleMatchSelectionFromUrl(res.Results, matchId, true);
+
+          const teamId = this.route.snapshot.queryParams['teamId'];
+          this.handleTeamSelectionFromUrl(res.Results, teamId, true);
         }
         this.loading.set(false);
       },

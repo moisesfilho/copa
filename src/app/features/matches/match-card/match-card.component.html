@@ -1,4 +1,4 @@
-<div class="card match-card glass-panel" [class.live]="isLive" [class.dashboard-mode]="isDashboardMode"
+<div class="card match-card glass-panel" [class.live]="isLive" [class.dashboard-mode]="isDashboardMode" [class.force-abbr]="forceAbbreviations"
   (click)="onClick()">
   <div class="card-header">
     <span class="stage">{{ i18n.translateStage(displayMatch.StageName?.[0]?.Description) || i18n.t().match.noInfo }}</span>
@@ -6,15 +6,16 @@
   </div>
 
   <div class="match-info">
-    <div class="team home">
+    <div class="team home" (click)="onTeamClick($event, displayMatch.Home?.IdTeam, displayMatch.Home?.TeamName?.[0]?.Description || homeTeamFull, displayMatch.Home?.IdCountry)" style="cursor: pointer;" tabindex="0" (keydown.enter)="onTeamClick($event, displayMatch.Home?.IdTeam, displayMatch.Home?.TeamName?.[0]?.Description || homeTeamFull, displayMatch.Home?.IdCountry)">
       @if (displayMatch.Home?.IdCountry) {
-      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + displayMatch.Home.IdCountry" [alt]="homeTeam"
+      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + displayMatch.Home.IdCountry" [alt]="homeTeamFull"
         class="flag" />
       }
       @if (!displayMatch.Home?.IdCountry) {
       <div class="flag placeholder"></div>
       }
-      <span class="team-name">{{ homeTeam }}</span>
+      <span class="team-name full-name">{{ homeTeamFull }}</span>
+      <span class="team-name abbr-name">{{ homeTeamAbbr }}</span>
     </div>
 
     <div class="score-container">
@@ -48,10 +49,11 @@
       }
     </div>
 
-    <div class="team away">
-      <span class="team-name">{{ awayTeam }}</span>
+    <div class="team away" (click)="onTeamClick($event, displayMatch.Away?.IdTeam, displayMatch.Away?.TeamName?.[0]?.Description || awayTeamFull, displayMatch.Away?.IdCountry)" style="cursor: pointer;" tabindex="0" (keydown.enter)="onTeamClick($event, displayMatch.Away?.IdTeam, displayMatch.Away?.TeamName?.[0]?.Description || awayTeamFull, displayMatch.Away?.IdCountry)">
+      <span class="team-name full-name">{{ awayTeamFull }}</span>
+      <span class="team-name abbr-name">{{ awayTeamAbbr }}</span>
       @if (displayMatch.Away?.IdCountry) {
-      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + displayMatch.Away.IdCountry" [alt]="awayTeam"
+      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + displayMatch.Away.IdCountry" [alt]="awayTeamFull"
         class="flag" />
       }
       @if (!displayMatch.Away?.IdCountry) {

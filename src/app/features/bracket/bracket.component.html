@@ -33,7 +33,9 @@
                       <app-match-card 
                         [match]="match" 
                         [isDashboardMode]="true"
-                        (matchClicked)="openMatchDetails($event)">
+                        [forceAbbreviations]="true"
+                        (matchClicked)="openMatchDetails($event)"
+                        (teamClicked)="openTeamDetails($event)">
                       </app-match-card>
                     </div>
                   </div>
@@ -51,5 +53,14 @@
       [match]="selectedMatch()" 
       (closeModal)="closeMatchDetails()">
     </app-match-detail-modal>
+  }
+
+  @if (selectedTeam()) {
+    <app-team-detail-modal
+      [teamId]="selectedTeam()?.teamId || null"
+      [teamName]="selectedTeam()?.teamName || ''"
+      [teamCountryCode]="selectedTeam()?.flagId || ''"
+      (closeModal)="closeTeamDetails()">
+    </app-team-detail-modal>
   }
 </div>

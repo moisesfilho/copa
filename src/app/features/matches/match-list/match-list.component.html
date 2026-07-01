@@ -83,6 +83,7 @@
       [match]="m"
       [uiResources]="uiResources"
       (matchClicked)="onMatchClick($event)"
+      (teamClicked)="teamClicked.emit($event)"
     ></app-match-card>
   }
 </div>

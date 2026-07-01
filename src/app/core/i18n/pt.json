@@ -122,6 +122,7 @@
     "features": [
       "**Chaveamento (Mata-mata)**: Árvore completa das fases eliminatórias com suporte a cruzamentos em tempo real.",
       "**Detalhes da Partida**: Estatísticas avançadas, posse de bola, escalações, eventos e equipe de arbitragem.",
+      "**Estatísticas das Seleções**: Acesse o perfil completo com histórico de partidas e padrões táticos, integrados com URLs de compartilhamento direto.",
       "**Notificações Push**: Alertas configuráveis para não perder nenhum jogo da sua seleção ou do torneio.",
       "**Filtros Inteligentes**: Navegue pelas partidas buscando por fase, grupo ou país.",
       "**Acompanhamento Ao Vivo**: Atualizações de placares, gols e cartões em tempo real.",

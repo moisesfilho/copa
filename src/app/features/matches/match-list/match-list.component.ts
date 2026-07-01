@@ -24,7 +24,9 @@ import { I18nService } from '../../../core/services/i18n.service';
 export class MatchListComponent implements OnChanges, OnInit {
   @Input() matches: any[] = [];
   @Input() uiResources: any = {};
+
   @Output() matchClicked = new EventEmitter<any>();
+  @Output() teamClicked = new EventEmitter<{teamId: string, teamName: string, flagId: string}>();
 
   constructor(
     private route: ActivatedRoute,

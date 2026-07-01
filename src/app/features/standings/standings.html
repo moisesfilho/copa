@@ -36,7 +36,7 @@
                 @for (team of standings()[group]; track team; let i = $index) {
                   <tr [class.qualified]="i < 2">
                     <td class="pos">{{ i + 1 }}</td>
-                    <td class="team-col">
+                    <td class="team-col" (click)="openTeamDetail(team.id)" style="cursor: pointer;" tabindex="0" (keydown.enter)="openTeamDetail(team.id)">
                       <img
                         [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + team.flagId"
                         [alt]="team.name"
@@ -79,3 +79,12 @@
     </div>
   }
 </div>
+
+@if (selectedTeamId()) {
+  <app-team-detail-modal
+    [teamId]="selectedTeamId()"
+    [teamName]="selectedTeamName()"
+    [teamCountryCode]="selectedTeamCountryCode()"
+    (closeModal)="closeTeamDetail()">
+  </app-team-detail-modal>
+}

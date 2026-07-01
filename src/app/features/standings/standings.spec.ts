@@ -4,6 +4,7 @@ import { FifaApiService } from '../../core/services/fifa-api.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
+import { ActivatedRoute } from '@angular/router';
 
 describe('StandingsComponent', () => {
   let component: StandingsComponent;
@@ -30,7 +31,8 @@ describe('StandingsComponent', () => {
       imports: [StandingsComponent],
       providers: [
         { provide: FifaApiService, useValue: apiSpy },
-        I18nService
+        I18nService,
+        { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { queryParams: {} } } }
       ]
     }).compileComponents();
 

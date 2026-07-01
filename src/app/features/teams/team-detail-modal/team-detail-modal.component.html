@@ -1,0 +1,146 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content glass-panel" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" [attr.aria-label]="'Detalhes da Seleção ' + teamName">
+    
+    <div class="modal-header">
+      <div class="header-actions">
+        <button class="share-btn" (click)="shareTeam()" aria-label="Compartilhar detalhes da seleção" title="Compartilhar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+        </button>
+        <button class="close-btn" (click)="onClose()" aria-label="Fechar detalhes da seleção">✕</button>
+      </div>
+      <div class="header-title">
+        <img class="flag" [src]="'https://api.fifa.com/api/v3/picture/flags-sq-4/' + teamCountryCode" [alt]="teamCountryCode" />
+        <h2>{{ teamName }}</h2>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      @if (loading()) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Buscando estatísticas e histórico da equipe...</p>
+        </div>
+      } @else if (stats(); as teamStats) {
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>⚽ Artilheiros</h3>
+            @if (teamStats.scorers.length > 0) {
+              @for (scorer of teamStats.scorers; track scorer.name) {
+                <div class="list-item">
+                  <span>{{ scorer.name }}</span>
+                  <span class="count">{{ scorer.goals }}</span>
+                </div>
+              }
+            } @else {
+              <p class="empty-state">Nenhum gol marcado pela seleção até o momento.</p>
+            }
+          </div>
+
+          <div class="stat-card">
+            <h3>🟨 Cartões</h3>
+            @if (teamStats.yellowCards.length > 0 || teamStats.redCards.length > 0) {
+              @for (red of teamStats.redCards; track red.name) {
+                <div class="list-item">
+                  <span>{{ red.name }}</span>
+                  <span class="count" style="color: #ef4444;">{{ red.count }} 🟥</span>
+                </div>
+              }
+              @for (yellow of teamStats.yellowCards; track yellow.name) {
+                <div class="list-item">
+                  <span>{{ yellow.name }}</span>
+                  <span class="count" style="color: #f59e0b;">{{ yellow.count }} 🟨</span>
+                </div>
+              }
+            } @else {
+              <p class="empty-state">Nenhum cartão recebido pela seleção.</p>
+            }
+          </div>
+
+          <div class="stat-card">
+            <h3>📋 Padrões Táticos</h3>
+            @if (teamStats.tactics.length > 0) {
+              @for (tactic of teamStats.tactics; track tactic.matchId) {
+                <div class="list-item">
+                  <span>vs {{ tactic.opponent }}</span>
+                  <span class="count" style="color: var(--text-color);">{{ tactic.tactic }}</span>
+                </div>
+              }
+            } @else {
+              <p class="empty-state">Dados táticos não disponíveis.</p>
+            }
+          </div>
+        </div>
+
+        <div class="stat-card" style="margin-bottom: 2.5rem;">
+          <h3 style="margin-bottom: 1.5rem;">📅 Histórico de Partidas</h3>
+          <div class="match-list">
+            @for (match of teamStats.pastMatches; track match.IdMatch) {
+              <div class="match-item" 
+                   [class.win]="isWin(match)"
+                   [class.loss]="isLoss(match)"
+                   [class.draw]="isDraw(match)">
+                <div class="match-teams">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Home.IdCountry" [alt]="match.Home.IdCountry" style="width: 24px; border-radius: 2px;" />
+                    <span>{{ match.Home?.TeamName?.[0]?.Description || match.Home.IdCountry }}</span>
+                  </div>
+                  
+                  <div style="display: flex; flex-direction: column; align-items: center; gap: 0.25rem;">
+                    <span class="match-score">{{ match.HomeTeamScore }} - {{ match.AwayTeamScore }}</span>
+                    @if (match.HomeTeamPenaltyScore !== null && match.AwayTeamPenaltyScore !== null) {
+                      <span style="font-size: 0.7rem; color: var(--text-secondary); background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--glass-border);">
+                        Pên: {{ match.HomeTeamPenaltyScore }} - {{ match.AwayTeamPenaltyScore }}
+                      </span>
+                    }
+                  </div>
+
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span>{{ match.Away?.TeamName?.[0]?.Description || match.Away.IdCountry }}</span>
+                    <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Away.IdCountry" [alt]="match.Away.IdCountry" style="width: 24px; border-radius: 2px;" />
+                  </div>
+                </div>
+                <div class="match-date">
+                  {{ match.Date | date:'dd/MM' }}
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (teamStats.upcomingMatches.length > 0) {
+          <div class="stat-card">
+            <h3 style="margin-bottom: 1.5rem;">🔜 Próximas Partidas</h3>
+            <div class="match-list">
+              @for (match of teamStats.upcomingMatches; track match.IdMatch) {
+                <div class="match-item upcoming">
+                  <div class="match-teams">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Home.IdCountry" [alt]="match.Home.IdCountry" style="width: 24px; border-radius: 2px;" />
+                      <span>{{ match.Home?.TeamName?.[0]?.Description || match.Home.IdCountry }}</span>
+                    </div>
+                    <span class="match-score">vs</span>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span>{{ match.Away?.TeamName?.[0]?.Description || match.Away.IdCountry }}</span>
+                      <img [src]="'https://api.fifa.com/api/v3/picture/flags-sq-2/' + match.Away.IdCountry" [alt]="match.Away.IdCountry" style="width: 24px; border-radius: 2px;" />
+                    </div>
+                  </div>
+                  <div class="match-date">
+                    {{ match.Date | date:'dd/MM HH:mm' }}
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+      }
+    </div>
+  </div>
+</div>

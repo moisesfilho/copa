@@ -17,6 +17,7 @@
         [matches]="mergedMatches()"
         [uiResources]="uiResources()"
         (matchClicked)="onMatchSelected($event)"
+        (teamClicked)="onTeamSelected($event)"
       ></app-match-list>
     }
 
@@ -25,6 +26,15 @@
         [match]="selectedMatch()"
         (closeModal)="closeModal()"
       ></app-match-detail-modal>
+    }
+
+    @if (selectedTeamId()) {
+      <app-team-detail-modal
+        [teamId]="selectedTeamId()"
+        [teamName]="selectedTeamName()"
+        [teamCountryCode]="selectedTeamCountryCode()"
+        (closeModal)="closeTeamDetail()">
+      </app-team-detail-modal>
     }
   </main>
 </div>
