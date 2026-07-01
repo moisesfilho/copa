@@ -1,5 +1,7 @@
+---
 name: padrao-testes-unitarios
 description: Aplica as diretrizes e padrões de qualidade do projeto (Padrão AAA, princípios F.I.R.S.T e regras de mutação) sempre que criar, refatorar ou avaliar testes unitários.
+---
 
 Goal: 
 Garantir que todos os testes gerados, refatorados ou sugeridos pela IA sigam o padrão rigoroso de qualidade do projeto, focando em testes de comportamento, cobertura de ramificações e resistência contra testes de mutação.
